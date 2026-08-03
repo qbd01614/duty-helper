@@ -1,10 +1,8 @@
-
 {
-  "name":"值星小幫手",
-  "short_name":"值星小幫手",
-  "start_url":"./index.html",
-  "display":"standalone",
-  "background_color":"#f3f4f6",
-  "theme_color":"#111827",
-  "icons":[]
+  "name": "值星小幫手 V3",
+  "short_name": "值星小幫手",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111827"
 }
