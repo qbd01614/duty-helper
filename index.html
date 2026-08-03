@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V3.6</title>
-<link rel="manifest" href="manifest.json?v=36">
+<title>值星小幫手 V3.7</title>
+<link rel="manifest" href="manifest.json?v=37">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -29,7 +29,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V3.6</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V3.7</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -72,7 +72,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <input id="scheduleDate" type="date">
   <div class="row">
    <button id="autoAssign" class="primary">🤖 一鍵智慧排哨</button>
-   <button id="validateBtn">🔍 二次驗證</button>
+   <button id="validateBtn">🔍 二次驗證</button><button id="repairBtn">🛠️ 一鍵修正錯誤</button>
    <button id="unlockAll">🔓解除全部鎖定</button>
    <button id="saveOfficial">💾正式儲存</button>
   </div>
@@ -107,7 +107,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V3.6";
+const APP_VERSION="V3.7";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -185,7 +185,11 @@ function statusAllowed(person,s){
  if(!Array.isArray(person.qualifications)||!person.qualifications.includes(s.post))return [false,"未具備"+s.post+"資格"];
  if(["休假","受訓","不可排哨"].includes(st))return [false,st+"不可排哨"];
  const r=slotRange(s);
- if(st==="會客室"&&overlap(r[0],r[1],480,1320))return [false,"會客室 08–22 不排哨"];
+ if(st==="會客室"){
+   let x=r[0],y=r[1];
+   if(x<720){x+=1440;y+=1440;}
+   if(!(x>=1320&&y<=1560))return [false,"會客室僅可排完整落在22:00～02:00的班次"];
+ }
  if(st==="當日18休假"&&r[1]>960)return [false,"當日18休假：班次不可碰到16:00以後"];
  if(st==="隔日08休假"&&r[1]>300)return [false,"隔日08休假：班次不可碰到05:00以後"];
  return [true,"可排"];
@@ -233,6 +237,40 @@ function anguanAllowed(name,s,id){
  }
  return [true,""];
 }
+function samePostRestAllowed(name,s,id){
+ if(s.post==="安官")return anguanAllowed(name,s,id);
+ if(!["管制","門禁"].includes(s.post))return [true,""];
+ const others=currentDay().slots.filter(x=>x.id!==id&&x.post===s.post&&x.person===name);
+ for(const x of others){
+   const a=slotRange(x),b=slotRange(s);
+   if(overlap(a[0],a[1],b[0],b[1]))return [false,s.post+"勤務重疊"];
+   let minGap=99999;
+   for(const shift of [-1440,0,1440]){
+     const c=b[0]+shift,d=b[1]+shift;
+     if(c>=a[1])minGap=Math.min(minGap,c-a[1]);
+     else if(a[0]>=d)minGap=Math.min(minGap,a[0]-d);
+   }
+   if(minGap<360)return [false,s.post+"休息未達6小時"];
+ }
+ return [true,""];
+}
+function preferredRestScore(name,s){
+ if(!["管制","門禁"].includes(s.post))return 0;
+ const others=currentDay().slots.filter(x=>x.id!==s.id&&x.post===s.post&&x.person===name);
+ if(!others.length)return -20;
+ let minGap=99999;
+ for(const x of others){
+   const a=slotRange(x),b=slotRange(s);
+   for(const shift of [-1440,0,1440]){
+     const c=b[0]+shift,d=b[1]+shift;
+     if(c>=a[1])minGap=Math.min(minGap,c-a[1]);
+     else if(a[0]>=d)minGap=Math.min(minGap,a[0]-d);
+   }
+ }
+ if(minGap>=480)return -12;
+ if(minGap>=360)return 8;
+ return 1000;
+}
 function eligible(name,s,id){
  const p=state.people.find(x=>x.name===name);
  let r=statusAllowed(p,s);if(!r[0])return r;
@@ -241,7 +279,7 @@ function eligible(name,s,id){
  const existing=currentDay().slots.find(x=>x.id===id);
  if(isNight(s)&&(c.night[name]||0)>=3&&(!existing||existing.person!==name))return [false,"夜哨已達3次"];
  if(isHard(s)&&previousHard(name))return [false,"昨日已有艱苦哨"];
- r=anguanAllowed(name,s,id);if(!r[0])return r;
+ r=samePostRestAllowed(name,s,id);if(!r[0])return r;
  return [true,"符合規則"];
 }
 function score(name,s){
@@ -249,6 +287,7 @@ function score(name,s){
  let v=(c.total[name]||0)*10+(c.night[name]||0)*5+(c.hard[name]||0)*4;
  if(isNight(s))v+=(c.night[name]||0)*10;
  if(isHard(s))v+=(c.hard[name]||0)*8;
+ v+=preferredRestScore(name,s);
  return v;
 }
 function candidates(s){
@@ -315,6 +354,21 @@ function autoAssign(){
  targets.forEach(s=>{const list=candidates(s);if(list.length)s.person=list[0].name;});
  saveState();
  $("#validationBox").innerHTML=issueBox(validateSchedule());
+}
+function repairSchedule(){
+ snapshot();
+ let changed=0;
+ const slots=currentDay().slots;
+ slots.forEach(s=>{
+   if(!s.person||s.locked)return;
+   const r=eligible(s.person,s,s.id);
+   if(!r[0]){s.person="";changed++;}
+ });
+ const targets=slots.filter(s=>!s.locked&&!s.person).sort((a,b)=>((isNight(b)?1:0)+(isHard(b)?1:0))-((isNight(a)?1:0)+(isHard(a)?1:0)));
+ targets.forEach(s=>{const list=candidates(s);if(list.length){s.person=list[0].name;changed++;}});
+ saveState();
+ const issues=validateSchedule();
+ $("#validationBox").innerHTML=issueBox(issues)+'<div class="notice">'+(issues.length?'🛠️ 已調整 '+changed+' 個哨位；剩餘項目無合法替代者或屬於已鎖定班次。':'🛠️ 修正完成，共調整 '+changed+' 個哨位，目前沒有硬性規則錯誤。')+'</div>';
 }
 function renderPeople(){
  const search=($("#personSearch")?.value||"").trim().toLowerCase();
@@ -413,6 +467,7 @@ $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;i
 $("#autoAssign").onclick=autoAssign;
 $("#homeAuto").onclick=()=>{autoAssign();document.querySelector('[data-page="schedule"]').click();};
 $("#validateBtn").onclick=()=>{$("#validationBox").innerHTML=issueBox(validateSchedule());};
+$("#repairBtn").onclick=repairSchedule;
 $("#unlockAll").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=false);saveState();};
 $("#saveOfficial").onclick=()=>{currentDay().official=true;currentDay().peopleQualifications={};state.people.forEach(p=>currentDay().peopleQualifications[p.name]=clone(p.qualifications||[]));saveState();alert("今日哨表與哨別資格已正式儲存；明日可自動沿用。");};
 $("#overridePrev").onchange=e=>{snapshot();state.prevOverride=e.target.checked;if(state.prevOverride&&!state.manualPrev[currentDate()])state.manualPrev[currentDate()]=clone((state.days[addDays(currentDate(),-1)]||{}).slots||baseSlots());saveState();};
@@ -422,7 +477,7 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V3.6備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V3.7備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
