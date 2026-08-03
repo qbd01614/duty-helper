@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V4.6</title>
-<link rel="manifest" href="manifest.json?v=46">
+<title>值星小幫手 V4.7</title>
+<link rel="manifest" href="manifest.json?v=47">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -29,7 +29,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V4.6</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V4.7</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -116,7 +116,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V4.6";
+const APP_VERSION="V4.7";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -486,12 +486,20 @@ function reAssignToday(){
    '<br>若不滿意本次結果，可使用 ↩️ 復原。</div>';
 }
 function clearTodaySchedule(){
- if(!confirm("⚠️ 確定一鍵清理今日哨表？\n\n今日所有勤務人員、手動調整與鎖定狀態都會完全清除，不做任何保留。\n人員基本資料與今日人員狀態不會刪除。"))return;
- snapshot();
+ const typed=prompt("⚠️ 這項操作無法復原。\n\n將完全清除今日所有勤務人員與鎖定狀態，且不建立復原點。\n\n請輸入「清除」兩個字以確認：","");
+ if(typed===null)return;
+ if(typed!=="清除"){
+   alert("輸入內容不正確，已取消一鍵清理。");
+   return;
+ }
+ // 特殊高風險清理：刻意不呼叫 snapshot()，因此不建立 Undo 復原點。
  const slots=currentDay().slots;
  slots.forEach(s=>{s.person="";s.locked=false;});
+ // 同時清掉既有 Undo/Redo，避免透過舊復原紀錄把清理前哨表救回。
+ state.undo=[];
+ state.redo=[];
  saveState();
- $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已完全清除</b><br>共清除 '+slots.length+' 個哨位的人員安排與鎖定狀態。若誤清可使用 ↩️ 復原。</div>';
+ $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已永久清除</b><br>共清除 '+slots.length+' 個哨位的人員安排與鎖定狀態。此操作沒有建立復原點，無法使用 ↩️ 復原。</div>';
 }
 function renderDailyDutyStats(){
  const rows=state.people.map(p=>{
@@ -773,7 +781,7 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V4.6備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V4.7備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
