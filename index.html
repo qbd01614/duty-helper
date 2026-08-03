@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V4.1</title>
-<link rel="manifest" href="manifest.json?v=41">
+<title>值星小幫手 V4.2</title>
+<link rel="manifest" href="manifest.json?v=42">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -29,7 +29,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V4.1</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V4.2</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -73,7 +73,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <h2>📋 今日固定哨表</h2>
   <input id="scheduleDate" type="date">
   <div class="row">
-   <button id="autoAssign" class="primary">🤖 一鍵智慧排哨</button>
+   <button id="autoAssign" class="primary">🤖 一鍵智慧排哨</button><button id="reAssign">🔄 一鍵重新排哨</button>
    <button id="validateBtn">🔍 二次驗證</button><button id="repairBtn">🛠️ 一鍵修正錯誤</button>
    <button id="lockAll">🔒鎖定整張哨表</button><button id="unlockAll">🔓解除全部鎖定</button>
    <button id="saveOfficial">💾正式儲存</button>
@@ -115,7 +115,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V4.1";
+const APP_VERSION="V4.2";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -395,6 +395,47 @@ function autoAssign(){
  saveState();
  $("#validationBox").innerHTML=issueBox(validateSchedule());
 }
+function reAssignToday(){
+ if(!confirm("確定重新安排今日所有未鎖定勤務？\n\n🔒 已鎖定勤務會保留，其他勤務將清除並重新計算。"))return;
+ // 建立復原點，讓使用者可以回到重新排哨前
+ snapshot();
+ const slots=currentDay().slots;
+ slots.forEach(s=>{if(!s.locked)s.person="";});
+
+ const targets=slots.filter(s=>!s.locked)
+   .sort((a,b)=>((isNight(b)?1:0)+(isHard(b)?1:0))-((isNight(a)?1:0)+(isHard(a)?1:0)));
+
+ for(const s of targets){
+   const list=candidates(s);
+   let placed=false;
+   for(const cand of list){
+     s.person=cand.name;
+     const r=eligible(cand.name,s,s.id);
+     if(r[0]){placed=true;break;}
+     s.person="";
+   }
+   if(!placed)s.person="";
+ }
+
+ // 重新排完強制驗證，任何未鎖定違規安排立即撤回
+ let changed=true,guard=0;
+ while(changed&&guard<50){
+   changed=false;guard++;
+   for(const s of slots){
+     if(!s.person||s.locked)continue;
+     const r=eligible(s.person,s,s.id);
+     if(!r[0]){s.person="";changed=true;}
+   }
+ }
+
+ saveState();
+ const issues=validateSchedule();
+ const empty=slots.filter(s=>!s.person).length;
+ $("#validationBox").innerHTML=issueBox(issues)+
+   '<div class="notice"><b>🔄 今日重新排哨完成</b><br>'+
+   (empty?'目前仍有 '+empty+' 個空哨，代表在現有條件下沒有合法人員可安排。':'36 個哨位均已安排。')+
+   '<br>若不滿意本次結果，可使用 ↩️ 復原。</div>';
+}
 function repairSchedule(){
  snapshot();
  let changed=0;
@@ -588,6 +629,7 @@ $("#copyPrevQual").onclick=()=>{
 };
 $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,status:"正常",qualifications:[]});$("#newPerson").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
+$("#reAssign").onclick=reAssignToday;
 $("#homeAuto").onclick=()=>{autoAssign();document.querySelector('[data-page="schedule"]').click();};
 $("#homeIssues").onclick=()=>{document.querySelector('[data-page="schedule"]').click();$("#validationBox").innerHTML=issueBox(validateSchedule());};
 $("#homeLock").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=true);saveState();};
@@ -628,7 +670,7 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V4.1備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V4.2備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
