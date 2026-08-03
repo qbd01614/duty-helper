@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V3.3</title>
-<link rel="manifest" href="manifest.json?v=33">
+<title>值星小幫手 V3.4</title>
+<link rel="manifest" href="manifest.json?v=34">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -29,7 +29,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V3.3</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V3.4</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -46,6 +46,22 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <p class="muted">每天主要維護這裡。系統會依狀態自動安排勤務。</p>
   <div class="row"><input id="newPerson" placeholder="新增人員姓名"><button id="addPerson">新增</button></div>
   <div class="row" style="margin-top:8px"><button id="allQual">☑ 全員三哨全選</button><button id="copyPrevQual">📋 套用昨日資格</button></div>
+  <div class="card" style="margin-top:10px;background:#f9fafb;box-shadow:none;border:1px solid #eee">
+    <h3 style="margin-bottom:8px">🔎 人員搜尋 / 篩選</h3>
+    <input id="personSearch" placeholder="輸入姓名搜尋">
+    <div class="row" style="margin-top:8px">
+      <select id="statusFilter">
+        <option value="">全部狀態</option>
+        <option>正常</option><option>受訓</option><option>休假</option><option>會客室</option><option>當日18休假</option><option>隔日08休假</option><option>不可排哨</option>
+      </select>
+      <select id="qualFilter">
+        <option value="">全部哨別</option>
+        <option>安官</option><option>管制</option><option>門禁</option>
+      </select>
+      <button id="clearPeopleFilter">清除條件</button>
+    </div>
+    <div id="filterCount" class="muted" style="margin-top:6px"></div>
+  </div>
   <div id="peopleList"></div>
  </div>
 </section>
@@ -91,7 +107,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V3.3";
+const APP_VERSION="V3.4";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -293,7 +309,19 @@ function autoAssign(){
  $("#validationBox").innerHTML=issueBox(validateSchedule());
 }
 function renderPeople(){
- $("#peopleList").innerHTML=state.people.map((p,i)=>{
+ const search=($("#personSearch")?.value||"").trim().toLowerCase();
+ const stf=$("#statusFilter")?.value||"";
+ const qf=$("#qualFilter")?.value||"";
+ const indexed=state.people.map((p,i)=>({p,i}));
+ const filtered=indexed.filter(({p})=>{
+   const nameOk=!search||String(p.name||"").toLowerCase().includes(search);
+   const stOk=!stf||p.status===stf;
+   const q=Array.isArray(p.qualifications)?p.qualifications:["安官","管制","門禁"];
+   const qOk=!qf||q.includes(qf);
+   return nameOk&&stOk&&qOk;
+ });
+ if($("#filterCount"))$("#filterCount").textContent="顯示 "+filtered.length+" / "+state.people.length+" 人";
+ $("#peopleList").innerHTML=filtered.map(({p,i})=>{
   const q=Array.isArray(p.qualifications)?p.qualifications:["安官","管制","門禁"];
   const checks=["安官","管制","門禁"].map(post=>'<label style="font-size:12px;margin-right:6px"><input type="checkbox" class="qualCheck" data-i="'+i+'" data-post="'+post+'" '+(q.includes(post)?"checked":"")+'> '+post+'</label>').join("");
   return '<div style="padding:10px 0;border-bottom:1px solid #eee"><div class="person"><b>'+p.name+'</b><select class="personStatus" data-i="'+i+'">'+["正常","受訓","休假","會客室","當日18休假","隔日08休假","不可排哨"].map(x=>'<option '+(p.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select><button class="personDel" data-i="'+i+'">刪</button></div><div style="padding:4px 0 2px"><span class="muted">可排哨別：</span>'+checks+' <button class="qualAll" data-i="'+i+'" style="padding:5px 8px">全選</button></div></div>';
@@ -356,6 +384,10 @@ $$(".bottom button").forEach(b=>b.onclick=()=>{
  $$(".page").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.page).classList.add("active");
 });
 $("#scheduleDate").onchange=renderAll;
+$("#personSearch").oninput=()=>renderPeople();
+$("#statusFilter").onchange=()=>renderPeople();
+$("#qualFilter").onchange=()=>renderPeople();
+$("#clearPeopleFilter").onclick=()=>{$("#personSearch").value="";$("#statusFilter").value="";$("#qualFilter").value="";renderPeople();};
 $("#allQual").onclick=()=>{snapshot();state.people.forEach(p=>p.qualifications=["安官","管制","門禁"]);saveState();};
 $("#copyPrevQual").onclick=()=>{
  const prev=state.days[addDays(currentDate(),-1)];
@@ -377,7 +409,7 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V3.3備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V3.4備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
