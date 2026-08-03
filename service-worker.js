@@ -1,6 +1,4 @@
-const VERSION="V3.2";
-self.addEventListener("install",e=>{self.skipWaiting();});
-self.addEventListener("activate",e=>e.waitUntil(
-  caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>self.registration.unregister()).then(()=>self.clients.claim())
-));
+const VERSION="V3.3";
+self.addEventListener("install",e=>self.skipWaiting());
+self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>self.registration.unregister()).then(()=>self.clients.claim())));
 self.addEventListener("fetch",()=>{});
