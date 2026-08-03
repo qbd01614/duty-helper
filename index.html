@@ -1,0 +1,158 @@
+
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>值星小幫手 v1</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>🪖 值星小幫手</h1>
+      <p id="todayText"></p>
+    </div>
+    <button id="undoBtn" class="icon-btn" title="復原上一步">↩️</button>
+  </header>
+
+  <main class="app">
+    <section id="home" class="page active">
+      <div class="card hero">
+        <h2>今日總覽</h2>
+        <div class="grid2">
+          <div class="stat"><span>明日哨表</span><strong id="tomorrowStatus">尚未完成</strong></div>
+          <div class="stat"><span>未完成待辦</span><strong id="todoCount">0</strong></div>
+          <div class="stat"><span>夜哨超標</span><strong id="nightOverCount">0</strong></div>
+          <div class="stat"><span>艱苦哨連續</span><strong id="hardConflictCount">0</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⏰ 排哨任務提醒</h3>
+        <label>每日提醒時間 <input id="scheduleReminderTime" type="time" value="16:00"></label>
+        <button id="saveReminderBtn">儲存提醒設定</button>
+        <div id="scheduleReminderBox" class="notice"></div>
+      </div>
+
+      <div class="card">
+        <h3>🔍 一鍵勤務安全檢查</h3>
+        <button id="runCheckBtn" class="primary">開始檢查</button>
+        <div id="checkResult"></div>
+      </div>
+    </section>
+
+    <section id="schedule" class="page">
+      <div class="card">
+        <h2>📋 排哨</h2>
+        <label>勤務日期 <input id="scheduleDate" type="date"></label>
+        <div class="row">
+          <button id="addShiftBtn">＋新增班次</button>
+          <button id="smartAssignBtn" class="primary">智慧排哨</button>
+          <button id="saveScheduleBtn">💾儲存哨表</button>
+        </div>
+        <div id="shiftList"></div>
+      </div>
+
+      <div class="card">
+        <h3>📋 前一天哨表（可手動輸入）</h3>
+        <p class="muted">收假或接值星時，可手動輸入昨天不是你排的勤務。</p>
+        <button id="addPrevShiftBtn">＋新增昨日班次</button>
+        <div id="prevShiftList"></div>
+      </div>
+    </section>
+
+    <section id="stats" class="page">
+      <div class="card">
+        <h2>📊 哨勤統計</h2>
+        <h3>🌙 夜哨（上限 3 次）</h3>
+        <div id="nightStats"></div>
+        <h3>💪 艱苦哨（不得連續）</h3>
+        <div id="hardStats"></div>
+      </div>
+
+      <div class="card">
+        <h3>🚶 外散統計（每週最多 1 次）</h3>
+        <div class="row">
+          <select id="outingPerson"></select>
+          <input id="outingDate" type="date">
+          <button id="addOutingBtn">登記外散</button>
+        </div>
+        <div id="outingStats"></div>
+      </div>
+    </section>
+
+    <section id="todo" class="page">
+      <div class="card">
+        <h2>✅ 待辦事項</h2>
+        <div class="stack">
+          <input id="todoText" placeholder="例如：1600 前完成明日哨表">
+          <input id="todoTime" type="datetime-local">
+          <button id="addTodoBtn" class="primary">新增待辦</button>
+        </div>
+        <div id="todoList"></div>
+      </div>
+    </section>
+
+    <section id="more" class="page">
+      <div class="card">
+        <h2>👥 人員管理</h2>
+        <div class="row">
+          <input id="personName" placeholder="姓名">
+          <select id="personStatus">
+            <option>正常</option>
+            <option>休假</option>
+            <option>公差</option>
+            <option>受訓</option>
+            <option>不可排哨</option>
+          </select>
+          <button id="addPersonBtn">新增</button>
+        </div>
+        <div id="personList"></div>
+      </div>
+
+      <div class="card">
+        <h2>📝 電子交接簿</h2>
+        <div class="stack">
+          <input id="handoverFrom" placeholder="交班人">
+          <input id="handoverTo" placeholder="接班人">
+          <textarea id="handoverNote" placeholder="重要事項、異常事項、待辦事項"></textarea>
+          <button id="saveHandoverBtn">儲存交接</button>
+        </div>
+        <div id="handoverList"></div>
+      </div>
+
+      <div class="card danger-zone">
+        <h2>🧹 交接後資料清除</h2>
+        <p class="muted">預設只清除本次值星暫存：待辦、昨日手動資料、未儲存草稿、外散暫存。人員、正式哨表與交接紀錄會保留。</p>
+        <button id="clearSessionBtn" class="danger">清除本次值星資料</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-page="home" class="active">🏠<span>首頁</span></button>
+    <button data-page="schedule">📋<span>排哨</span></button>
+    <button data-page="stats">📊<span>統計</span></button>
+    <button data-page="todo">✅<span>待辦</span></button>
+    <button data-page="more">☰<span>更多</span></button>
+  </nav>
+
+  <template id="shiftRowTemplate">
+    <div class="shift-row">
+      <input class="shift-start" type="time">
+      <input class="shift-end" type="time">
+      <input class="shift-post" placeholder="哨位">
+      <select class="shift-person"></select>
+      <label class="tiny"><input class="shift-night" type="checkbox">夜</label>
+      <label class="tiny"><input class="shift-hard" type="checkbox">艱</label>
+      <button class="fix-btn">修正</button>
+      <button class="delete-btn">刪</button>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
