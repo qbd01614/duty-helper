@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V3.8</title>
-<link rel="manifest" href="manifest.json?v=38">
+<title>值星小幫手 V3.9</title>
+<link rel="manifest" href="manifest.json?v=39">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -29,14 +29,16 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V3.8</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V3.9</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
 <main>
 <section id="home" class="page active">
  <div class="card hero"><h2>今日人力儀表板</h2><div id="dashboard" class="dash"></div></div>
- <div class="card"><h3>勤務健康度</h3><div id="health"></div><button id="homeAuto" class="primary">🤖 一鍵智慧排哨</button></div>
+ <div class="card"><h3>勤務控制台</h3><div id="health"></div>
+<div class="row"><button id="homeAuto" class="primary">🤖 一鍵智慧排哨</button><button id="homeIssues">🚨 今日異常</button><button id="homeLock">🔒 鎖定整表</button></div>
+<div id="fairnessBox" class="notice"></div></div>
  <div class="card"><h3>⏰ 排哨提醒</h3><input id="remindTime" type="time"><button id="saveReminder">儲存</button><div id="remindBox" class="notice"></div></div>
 </section>
 
@@ -73,11 +75,15 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <div class="row">
    <button id="autoAssign" class="primary">🤖 一鍵智慧排哨</button>
    <button id="validateBtn">🔍 二次驗證</button><button id="repairBtn">🛠️ 一鍵修正錯誤</button>
-   <button id="unlockAll">🔓解除全部鎖定</button>
+   <button id="lockAll">🔒鎖定整張哨表</button><button id="unlockAll">🔓解除全部鎖定</button>
    <button id="saveOfficial">💾正式儲存</button>
   </div>
   <div id="validationBox"></div>
  </div>
+ <div class="card"><h3>↔️ 快速互換勤務</h3>
+ <div class="row"><select id="swapA"></select><select id="swapB"></select></div>
+ <div class="row"><button id="findSwap">🔎 尋找可交換勤務</button><button id="doSwap">↔️ 模擬並交換</button></div><div id="swapBox" class="notice"></div></div>
+ <div class="card"><h3>👤 個人勤務卡</h3><select id="personCardSelect"></select><div id="personCardBox"></div></div>
  <div class="card"><h3>安官＋管制（08 起班）</h3><div class="tablewrap"><table><thead><tr><th>時間</th><th>安官</th><th>管制</th><th>標記</th></tr></thead><tbody id="doubleTable"></tbody></table></div></div>
  <div class="card"><h3>門禁（07 起班）</h3><div class="tablewrap"><table><thead><tr><th>時間</th><th>門禁</th><th>標記</th></tr></thead><tbody id="gateTable"></tbody></table></div></div>
  <div class="card"><h3>昨日勤務</h3><p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。</p><label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label><div id="prevBox"></div></div>
@@ -85,12 +91,14 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <section id="stats" class="page">
  <div class="card"><h2>📊 勤務統計</h2><div id="statsBox"></div></div>
- <div class="card"><h3>🚶 外散（每週最多 1 次）</h3><div class="row"><select id="outingPerson"></select><input id="outingDate" type="date"><button id="addOuting">登記</button></div><div id="outingBox"></div></div>
+ <div class="card"><h3>🚶 今日可外散（手動設定）</h3>
+<div class="row"><select id="todayOutingPerson"></select><button id="addTodayOuting">加入今日名單</button></div><div id="todayOutingBox"></div></div>
+<div class="card"><h3>✅ 已外散登記（每週最多 1 次）</h3><div class="row"><select id="outingPerson"></select><input id="outingDate" type="date"><button id="addOuting">登記</button></div><div id="outingBox"></div></div>
 </section>
 
 <section id="more" class="page">
  <div class="card"><h2>✅ 待辦事項</h2><input id="todoText" placeholder="待辦事項"><input id="todoTime" type="datetime-local"><button id="addTodo">新增</button><div id="todoList"></div></div>
- <div class="card"><h2>📝 電子交接簿</h2><input id="handoverFrom" placeholder="交班人"><input id="handoverTo" placeholder="接班人"><textarea id="handoverNote" placeholder="交接事項"></textarea><button id="saveHandover">儲存交接</button><div id="handoverList"></div></div>
+ <div class="card"><h2>📝 自動交接摘要</h2><button id="makeSummary">產生今日摘要</button><textarea id="summaryBox" readonly placeholder="按上方按鈕產生摘要"></textarea></div><div class="card"><h2>📝 電子交接簿</h2><input id="handoverFrom" placeholder="交班人"><input id="handoverTo" placeholder="接班人"><textarea id="handoverNote" placeholder="交接事項"></textarea><button id="saveHandover">儲存交接</button><div id="handoverList"></div></div>
  <div class="card"><h2>🤖 值星助手</h2><button id="aiCheck">檢查目前哨表</button><button id="aiNight">夜哨統計</button><div id="aiBox" class="notice">規則式助手，資料不會送到外部 AI。</div></div>
  <div class="card"><h2>💾 備份／還原</h2><button id="backupBtn">下載備份</button><input id="restoreFile" type="file" accept=".json,application/json"></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
@@ -107,12 +115,12 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V3.8";
+const APP_VERSION="V3.9";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
 const GATE_TIMES=["07-09","09-11","11-13","13-15","15-17","17-19","19-21","21-23","23-01","01-03","03-05","05-07"];
-const EMPTY={people:[],days:{},manualPrev:{},prevOverride:false,outings:[],todos:[],handovers:[],reminder:"16:00",undo:[],redo:[]};
+const EMPTY={people:[],days:{},manualPrev:{},prevOverride:false,outings:[],todayOuting:[],todos:[],handovers:[],reminder:"16:00",reminderDismissed:"",undo:[],redo:[]};
 
 let state=loadState();
 const $=s=>document.querySelector(s);
@@ -120,6 +128,10 @@ const $$=s=>Array.from(document.querySelectorAll(s));
 
 function clone(x){return JSON.parse(JSON.stringify(x));}
 function normalizePeople(s){
+ s.todayOuting=Array.isArray(s.todayOuting)?s.todayOuting:[];
+ s.outings=Array.isArray(s.outings)?s.outings:[]; s.outings=s.outings.map((o,i)=>Object.assign({id:"legacy-"+i+"-"+(o.date||"")},o));
+ s.todos=Array.isArray(s.todos)?s.todos:[];
+ s.handovers=Array.isArray(s.handovers)?s.handovers:[];
  s.people=(s.people||[]).map(p=>({
    name:p.name,
    status:p.status||"正常",
@@ -370,6 +382,53 @@ function repairSchedule(){
  const issues=validateSchedule();
  $("#validationBox").innerHTML=issueBox(issues)+'<div class="notice">'+(issues.length?'🛠️ 已調整 '+changed+' 個哨位；剩餘項目無合法替代者或屬於已鎖定班次。':'🛠️ 修正完成，共調整 '+changed+' 個哨位，目前沒有硬性規則錯誤。')+'</div>';
 }
+function shiftOptionList(){
+ const assigned=currentDay().slots.filter(s=>s.person);
+ return '<option value="">選擇勤務</option>'+assigned.map(s=>'<option value="'+s.id+'">'+label(s)+' '+s.post+'｜'+s.person+'</option>').join("");
+}
+function simulateSwap(a,b){
+ if(!a||!b||a.id===b.id)return [false,"請選擇兩個不同勤務"];
+ const pa=a.person,pb=b.person;if(!pa||!pb)return [false,"兩個勤務都必須已有人員"];
+ a.person=pb;b.person=pa;
+ const ra=eligible(pb,a,a.id),rb=eligible(pa,b,b.id);
+ a.person=pa;b.person=pb;
+ if(!ra[0])return [false,pb+" 換到 "+label(a)+" "+a.post+" 不符合："+ra[1]];
+ if(!rb[0])return [false,pa+" 換到 "+label(b)+" "+b.post+" 不符合："+rb[1]];
+ return [true,"雙方資格、狀態、勤務衝突與休息規則均符合"];
+}
+function renderSwapTools(){
+ const opts=shiftOptionList();$("#swapA").innerHTML=opts;$("#swapB").innerHTML=opts;
+ $("#personCardSelect").innerHTML='<option value="">選擇人員</option>'+state.people.map(p=>'<option>'+p.name+'</option>').join("");
+}
+function renderPersonCard(name){
+ if(!name){$("#personCardBox").innerHTML="";return;}
+ const arr=currentDay().slots.filter(s=>s.person===name),c=allCounts();
+ $("#personCardBox").innerHTML='<div class="notice"><b>'+name+'</b><br>'+(arr.length?arr.map(s=>label(s)+" "+s.post).join("、"):"今日無勤務")+'<br>總哨 '+(c.total[name]||0)+'｜夜哨 '+(c.night[name]||0)+'｜艱苦哨 '+(c.hard[name]||0)+'</div>';
+}
+function makeHandoverSummary(){
+ const d=currentDate(),issues=validateSchedule(),filled=currentDay().slots.filter(s=>s.person).length;
+ const counts={};state.people.forEach(p=>counts[p.status]=(counts[p.status]||0)+1);
+ const text='【'+d+' 值星交接摘要】\n總人數：'+state.people.length+'｜在營：'+state.people.filter(p=>!["休假","受訓"].includes(p.status)).length+
+ '\n休假：'+(counts["休假"]||0)+'｜受訓：'+(counts["受訓"]||0)+'｜會客室：'+(counts["會客室"]||0)+
+ '\n今日可外散：'+validTodayOutingNames().length+' 人｜本週已外散：'+getWeekOutings().length+' 人次'+
+ '\n排哨完成：'+filled+'/36｜異常：'+issues.length+' 項'+(issues.length?'\n待處理：'+issues.slice(0,6).join("；"):'\n哨表狀態：正常');
+ $("#summaryBox").value=text;
+}
+function reminderStatus(){
+ const now=new Date(),today=todayISO(),time=state.reminder||"16:00",parts=time.split(":").map(Number);
+ const due=new Date();due.setHours(parts[0],parts[1],0,0);
+ const tomorrow=state.days[addDays(today,1)];
+ const done=!!(tomorrow&&tomorrow.official&&tomorrow.slots&&tomorrow.slots.every(s=>s.person));
+ return {overdue:now>=due&&!done&&state.reminderDismissed!==today,done,time};
+}
+function checkReminder(showAlert=false){
+ const r=reminderStatus();
+ if(r.done)$("#remindBox").innerHTML='✅ 明日哨表已完成正式儲存';
+ else if(r.overdue){
+   $("#remindBox").innerHTML='<b class="bad">⚠ 已超過 '+r.time+'，明日哨表尚未完成。</b>';
+   if(showAlert)alert("⚠ 排哨提醒：明日哨表尚未完成！");
+ }else $("#remindBox").textContent="每日排哨提醒："+r.time;
+}
 function renderPeople(){
  const search=($("#personSearch")?.value||"").trim().toLowerCase();
  const stf=$("#statusFilter")?.value||"";
@@ -399,16 +458,18 @@ function renderPeople(){
  $$(".qualAll").forEach(x=>x.onclick=()=>{snapshot();state.people[Number(x.dataset.i)].qualifications=["安官","管制","門禁"];saveState();});
  $$(".qualNone").forEach(x=>x.onclick=()=>{snapshot();state.people[Number(x.dataset.i)].qualifications=[];saveState();});
 }function dashboard(){
- const count=s=>state.people.filter(p=>p.status===s).length;
- const total=state.people.length;
+ const count=s=>state.people.filter(p=>p.status===s).length,total=state.people.length;
  const inCamp=state.people.filter(p=>!["休假","受訓"].includes(p.status)).length;
- const now=new Date(),h=now.getHours(),probe={start:h,end:(h+1)%24,post:"管制"};
- const available=state.people.filter(p=>statusAllowed(p,probe)[0]).length;
- const outingEligible=getTodayOutingEligible().length;
- const items=[["總人數",total],["今日在營",inCamp],["目前可排",available],["🚶 今日可外散",outingEligible],["休假",count("休假")],["受訓",count("受訓")],["會客室",count("會客室")],["當日18休假",count("當日18休假")],["隔日08休假",count("隔日08休假")],["不可排哨",count("不可排哨")]];
- $("#dashboard").innerHTML=items.map(x=>'<div class="tile"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>').join("");
- const issues=validateSchedule(),filled=currentDay().slots.filter(s=>s.person).length;
- $("#health").innerHTML='<p><b>'+(issues.length?'🟠 需要處理':'🟢 正常')+'</b></p><p>'+filled+'/36 哨位完成｜衝突 '+issues.length+'</p>';
+ const filled=currentDay().slots.filter(s=>s.person).length,issues=validateSchedule();
+ const outing=validTodayOutingNames().length;
+ const items=[["總人數",total,""],["今日在營",inCamp,""],["📋 排哨完成",filled+"/36","schedule"],["🚨 今日異常",issues.length,"schedule"],["🚶 今日可外散",outing,"stats"],["休假",count("休假"),""],["受訓",count("受訓"),""],["會客室",count("會客室"),""],["當日18休假",count("當日18休假"),""],["隔日08休假",count("隔日08休假"),""]];
+ $("#dashboard").innerHTML=items.map(x=>'<div class="tile '+(x[2]?'dashLink':'')+'" data-page="'+x[2]+'"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>').join("");
+ $$(".dashLink").forEach(x=>x.onclick=()=>document.querySelector('[data-page="'+x.dataset.page+'"]').click());
+ const status=issues.length?"🔴 有違規":filled<36?"🟡 待完成":"🟢 正常";
+ $("#health").innerHTML='<p><b>'+status+'</b></p><p>'+filled+'/36 哨位完成｜異常 '+issues.length+' 項</p>';
+ const c=allCounts(),vals=state.people.map(p=>({n:p.name,v:(c.total[p.name]||0)+(c.night[p.name]||0)*2+(c.hard[p.name]||0)*2}));
+ const avg=vals.length?vals.reduce((s,x)=>s+x.v,0)/vals.length:0,heavy=vals.filter(x=>x.v>avg+4).map(x=>x.n);
+ $("#fairnessBox").innerHTML='<b>⚖️ 勤務公平度：</b>'+(heavy.length?'⚠ 勤務偏重：'+heavy.join("、"):'目前未發現明顯偏重');
 }
 function renderPrevious(){
  $("#overridePrev").checked=state.prevOverride;
@@ -416,16 +477,10 @@ function renderPrevious(){
  $("#prevBox").innerHTML=p.length?'<div class="tablewrap"><table><tr><th>時間</th><th>哨位</th><th>人員</th><th>標記</th></tr>'+p.map(s=>'<tr><td>'+label(s)+'</td><td>'+s.post+'</td><td>'+(state.prevOverride?'<select class="prevSelect" data-id="'+s.id+'">'+personOptions(s.person)+'</select>':(s.person||"—"))+'</td><td>'+tags(s)+'</td></tr>').join("")+'</table></div>':'<p class="muted">沒有昨日正式資料。</p>';
  $$(".prevSelect").forEach(sel=>sel.onchange=()=>{const arr=state.manualPrev[currentDate()]||[];const s=arr.find(x=>x.id===sel.dataset.id);if(s){s.person=sel.value;saveState();}});
 }
-function outingExcluded(p){
- return ["休假","受訓","當日18休假"].includes(p.status);
-}
-function getTodayOutingEligible(){
- const d=currentDate(),w=currentWeekRange(d);
- return state.people.filter(p=>{
-   if(outingExcluded(p))return false;
-   const used=(state.outings||[]).some(o=>o.person===p.name&&o.date>=w[0]&&o.date<=w[1]);
-   return !used;
- });
+function outingExcluded(p){return ["休假","受訓","當日18休假"].includes(p.status);}
+function validTodayOutingNames(){
+ state.todayOuting=(state.todayOuting||[]).filter(n=>{const p=state.people.find(x=>x.name===n);return p&&!outingExcluded(p);});
+ return state.todayOuting;
 }
 function getWeekOutings(){
  const d=currentDate(),w=currentWeekRange(d);
@@ -433,18 +488,16 @@ function getWeekOutings(){
 }
 function renderStats(){
  const c=allCounts();
- $("#statsBox").innerHTML='<div class="tablewrap"><table><tr><th>人員</th><th>總哨</th><th>夜哨</th><th>艱苦哨</th></tr>'+state.people.map(p=>'<tr><td>'+p.name+'</td><td>'+(c.total[p.name]||0)+'</td><td>'+(c.night[p.name]||0)+'</td><td>'+(c.hard[p.name]||0)+'</td></tr>').join("")+'</table></div>';
-
- const eligible=getTodayOutingEligible();
- const week=getWeekOutings();
- $("#outingPerson").innerHTML='<option value="">選擇今日可外散人員</option>'+eligible.map(p=>'<option>'+p.name+'</option>').join("");
-
- $("#outingBox").innerHTML=
-   '<h3 style="margin-top:12px">🚶 今日可外散（'+eligible.length+' 人）</h3>'+
-   (eligible.length?eligible.map(p=>'<div class="item"><b>'+p.name+'</b><span>'+p.status+'</span></div>').join(""):'<p class="muted">目前沒有可安排外散的人員。</p>')+
-   '<h3 style="margin-top:16px">✅ 本週已外散（'+week.length+' 人次）</h3>'+
-   (week.length?week.map(o=>'<div class="item"><span>'+o.person+'</span><span>'+o.date+'</span></div>').join(""):'<p class="muted">本週尚無外散紀錄。</p>')+
-   '<p class="muted">休假、受訓、當日18休假不列入今日外散候選；每人每週最多1次。</p>';
+ $("#statsBox").innerHTML='<div class="tablewrap"><table><tr><th>人員</th><th>總哨</th><th>夜哨</th><th>艱苦哨</th></tr>'+state.people.map(p=>'<tr class="personStat" data-name="'+p.name+'"><td>'+p.name+'</td><td>'+(c.total[p.name]||0)+'</td><td>'+(c.night[p.name]||0)+'</td><td>'+(c.hard[p.name]||0)+'</td></tr>').join("")+'</table></div>';
+ const names=validTodayOutingNames(), week=getWeekOutings();
+ const pool=state.people.filter(p=>!outingExcluded(p)&&!names.includes(p.name));
+ $("#todayOutingPerson").innerHTML='<option value="">選擇人員</option>'+pool.map(p=>'<option>'+p.name+'</option>').join("");
+ $("#todayOutingBox").innerHTML=names.length?names.map((n,i)=>'<div class="item"><b>'+n+'</b><button class="todayOutDel" data-i="'+i+'">移除</button></div>').join(""):'<p class="muted">尚未手動設定今日可外散人員。</p>';
+ const already=new Set(week.map(o=>o.person));
+ $("#outingPerson").innerHTML='<option value="">選擇已外散人員</option>'+names.filter(n=>!already.has(n)).map(n=>'<option>'+n+'</option>').join("");
+ $("#outingBox").innerHTML='<h3>本週已外散（'+week.length+' 人次）</h3>'+(week.length?week.map(o=>'<div class="item"><span>'+o.person+'｜'+o.date+'</span><button class="outingDel" data-id="'+o.id+'">🗑️ 刪除</button></div>').join(""):'<p class="muted">本週尚無外散紀錄。</p>');
+ $$(".todayOutDel").forEach(x=>x.onclick=()=>{snapshot();state.todayOuting.splice(Number(x.dataset.i),1);saveState();});
+ $$(".outingDel").forEach(x=>x.onclick=()=>{if(!confirm("確定刪除此筆已外散紀錄？"))return;snapshot();state.outings=state.outings.filter(o=>o.id!==x.dataset.id);saveState();});
 }
 function renderMore(){
  $("#todoList").innerHTML=state.todos.map((t,i)=>'<div class="item"><label><input type="checkbox" class="todoCheck" data-i="'+i+'" '+(t.done?'checked':'')+'> '+t.text+'<br><small>'+(t.time||"")+'</small></label><button class="todoDel" data-i="'+i+'">刪</button></div>').join("");
@@ -454,11 +507,11 @@ function renderMore(){
 }
 function renderReminder(){
  $("#remindTime").value=state.reminder||"16:00";
- $("#remindBox").textContent="每日排哨提醒："+(state.reminder||"16:00");
+ checkReminder(false);
 }
 function renderAll(){
  $("#clock").textContent=new Date().toLocaleString("zh-TW");
- renderPeople();renderScheduleTables();dashboard();renderPrevious();renderStats();renderMore();renderReminder();
+ renderPeople();renderScheduleTables();dashboard();renderPrevious();renderStats();renderMore();renderReminder();renderSwapTools();checkReminder(false);
 }
 function currentWeekRange(d){
  const x=new Date(d+"T00:00:00"),offset=(x.getDay()+6)%7,mon=new Date(x);mon.setDate(x.getDate()-offset);const sun=new Date(mon);sun.setDate(mon.getDate()+6);return [todayISO(mon),todayISO(sun)];
@@ -491,6 +544,28 @@ $("#copyPrevQual").onclick=()=>{
 $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,status:"正常",qualifications:[]});$("#newPerson").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
 $("#homeAuto").onclick=()=>{autoAssign();document.querySelector('[data-page="schedule"]').click();};
+$("#homeIssues").onclick=()=>{document.querySelector('[data-page="schedule"]').click();$("#validationBox").innerHTML=issueBox(validateSchedule());};
+$("#homeLock").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=true);saveState();};
+$("#lockAll").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=true);saveState();};
+$("#personCardSelect").onchange=e=>renderPersonCard(e.target.value);
+$("#findSwap").onclick=()=>{
+ const a=currentDay().slots.find(s=>s.id===$("#swapA").value);if(!a)return alert("請先選擇勤務 A");
+ const candidates=currentDay().slots.filter(b=>b.id!==a.id&&b.person).map(b=>({b,r:simulateSwap(a,b)})).filter(x=>x.r[0]);
+ $("#swapBox").innerHTML=candidates.length?'<b>可交換勤務：</b><br>'+candidates.slice(0,8).map(x=>label(x.b)+" "+x.b.post+"｜"+x.b.person).join("<br>"):"目前找不到符合全部規則的交換勤務";
+};
+$("#doSwap").onclick=()=>{
+ const a=currentDay().slots.find(s=>s.id===$("#swapA").value),b=currentDay().slots.find(s=>s.id===$("#swapB").value);
+ const r=simulateSwap(a,b);if(!r[0])return $("#swapBox").innerHTML='<b class="bad">❌ '+r[1]+'</b>';
+ if(!confirm("模擬驗證通過。確定交換並鎖定兩個哨位？"))return;
+ snapshot();const x=a.person;a.person=b.person;b.person=x;a.locked=b.locked=true;saveState();$("#swapBox").innerHTML='<b class="ok">✅ 交換完成並已鎖定</b>';
+};
+$("#addTodayOuting").onclick=()=>{
+ const n=$("#todayOutingPerson").value;if(!n)return;const p=state.people.find(x=>x.name===n);
+ if(!p||outingExcluded(p))return alert("此人目前狀態不可加入今日外散");
+ snapshot();if(!state.todayOuting.includes(n))state.todayOuting.push(n);saveState();
+};
+$("#makeSummary").onclick=makeHandoverSummary;
+
 $("#validateBtn").onclick=()=>{$("#validationBox").innerHTML=issueBox(validateSchedule());};
 $("#repairBtn").onclick=repairSchedule;
 $("#unlockAll").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=false);saveState();};
@@ -499,23 +574,24 @@ $("#overridePrev").onchange=e=>{snapshot();state.prevOverride=e.target.checked;i
 $("#saveReminder").onclick=()=>{state.reminder=$("#remindTime").value;saveState();};
 $("#addOuting").onclick=()=>{
  const name=$("#outingPerson").value,d=$("#outingDate").value;if(!name)return;
- const person=state.people.find(p=>p.name===name);
- if(!person||outingExcluded(person))return alert("此人今日狀態不可安排外散");
+ if(!validTodayOutingNames().includes(name))return alert("請先把此人加入今日可外散名單");
  const w=currentWeekRange(d);
  if(state.outings.some(o=>o.person===name&&o.date>=w[0]&&o.date<=w[1]))return alert("此人本週已外散1次");
- snapshot();state.outings.push({person:name,date:d});saveState();
+ snapshot();state.outings.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),person:name,date:d});saveState();
 };
 $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snapshot();state.todos.push({text:t,time:$("#todoTime").value,done:false});$("#todoText").value="";saveState();};
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V3.8備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V3.9備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
 $("#redoBtn").onclick=()=>{if(!state.redo.length)return alert("沒有可重做");state.undo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.redo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
 
 renderAll();
+setTimeout(()=>checkReminder(true),800);
+setInterval(()=>checkReminder(false),60000);
 setInterval(()=>$("#clock").textContent=new Date().toLocaleString("zh-TW"),60000);
 
 /* 強制淘汰舊版 Service Worker，避免再卡 V3 舊快取 */
