@@ -1,158 +1,163 @@
-
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#111827" />
-  <title>值星小幫手 V2</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>值星小幫手 V2.1</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--danger:#b91c1c;--warn:#92400e;--ok:#166534}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;padding-bottom:82px}
+.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;background:#111827;color:#fff;padding:12px 14px}.topbar h1{font-size:19px;margin:0}.topbar button{background:#374151;color:#fff}
+.app{max-width:780px;margin:auto;padding:12px}.page{display:none}.page.active{display:block}.card{background:#fff;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 10px #0000000d}.hero{background:linear-gradient(135deg,#111827,#374151);color:#fff}
+h2,h3{margin-top:0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{background:#ffffff18;padding:11px;border-radius:12px}.stat span{display:block;font-size:12px;opacity:.8}.stat strong{font-size:19px}
+.row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.stack{display:grid;gap:8px}
+input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}textarea{min-height:90px}button{border:0;border-radius:10px;padding:10px 12px;background:#e5e7eb}.primary{background:#111827;color:#fff}.danger{background:var(--danger);color:#fff}
+.notice{margin-top:9px;padding:10px;background:#fef3c7;border-radius:10px;color:#78350f}.muted{font-size:13px;color:var(--muted)}
+.shift{border:1px solid #e5e7eb;border-radius:14px;padding:10px;margin-top:10px}.shiftgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.wide{grid-column:span 2}.flags label{display:flex;align-items:center;gap:4px}.flags input{width:auto}.msg{font-size:12px}
+.bad{color:var(--danger);font-weight:700}.warn{color:var(--warn);font-weight:700}.ok{color:var(--ok);font-weight:700}
+.item{padding:10px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;gap:8px;align-items:center}.item small{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 5px;border-bottom:1px solid #eee;text-align:left}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #ddd;padding-bottom:env(safe-area-inset-bottom)}.bottom button{border-radius:0;background:#fff;padding:8px 2px;font-size:20px}.bottom span{display:block;font-size:11px}.bottom .active{background:#f3f4f6;font-weight:700}
+@media(min-width:650px){.shiftgrid{grid-template-columns:1fr 1fr 1.3fr 1.5fr}.wide{grid-column:auto}}
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <h1>🪖 值星小幫手 V2</h1>
-      <p id="todayText"></p>
-    </div>
-    <button id="undoBtn" class="icon-btn" title="復原上一步">↩️</button>
-  </header>
+<header class="topbar"><div><h1>🪖 值星小幫手 V2.1</h1><small id="clock"></small></div><div><button id="undo">↩️</button> <button id="redo">↪️</button></div></header>
+<main class="app">
+<section id="home" class="page active">
+ <div class="card hero"><h2>今日總覽</h2><div class="grid2"><div class="stat"><span>明日哨表</span><strong id="tomorrow">—</strong></div><div class="stat"><span>未完成待辦</span><strong id="todoN">0</strong></div><div class="stat"><span>夜哨超標</span><strong id="nightN">0</strong></div><div class="stat"><span>規則衝突</span><strong id="conflictN">0</strong></div></div></div>
+ <div class="card"><h3>⏰ 排哨提醒</h3><input id="remindTime" type="time" value="16:00"><button id="saveRemind">儲存提醒</button><div id="remindBox" class="notice"></div></div>
+ <div class="card"><h3>🔍 勤務安全檢查</h3><button id="runCheck" class="primary">開始檢查</button><div id="checkBox"></div></div>
+</section>
 
-  <main class="app">
-    <section id="home" class="page active">
-      <div class="card hero">
-        <h2>今日總覽</h2>
-        <div class="grid2">
-          <div class="stat"><span>明日哨表</span><strong id="tomorrowStatus">尚未完成</strong></div>
-          <div class="stat"><span>未完成待辦</span><strong id="todoCount">0</strong></div>
-          <div class="stat"><span>夜哨超標</span><strong id="nightOverCount">0</strong></div>
-          <div class="stat"><span>艱苦哨連續</span><strong id="hardConflictCount">0</strong></div>
-        </div>
-      </div>
+<section id="schedule" class="page">
+ <div class="card"><h2>📋 排哨</h2><input id="date" type="date"><div class="row"><button id="addShift">＋班次</button><button id="smart" class="primary">智慧排哨</button><button id="saveSch">💾 儲存</button></div><div id="shifts"></div></div>
+ <div class="card"><h3>📋 前一天勤務（手動）</h3><button id="addPrev">＋昨日班次</button><div id="prev"></div></div>
+</section>
 
-      <div class="card">
-        <h3>⏰ 排哨任務提醒</h3>
-        <label>每日提醒時間 <input id="scheduleReminderTime" type="time" value="16:00"></label>
-        <button id="saveReminderBtn">儲存提醒設定</button>
-        <div id="scheduleReminderBox" class="notice"></div>
-      </div>
+<section id="stats" class="page">
+ <div class="card"><h2>📊 統計</h2><h3>🌙 夜哨（≤3）</h3><div id="nightStats"></div><h3>💪 艱苦哨（不得連續）</h3><div id="hardStats"></div></div>
+ <div class="card"><h3>🚶 外散（每週≤1）</h3><select id="outingPerson"></select><input id="outingDate" type="date"><button id="addOuting">登記外散</button><div id="outingStats"></div></div>
+</section>
 
-      <div class="card">
-        <h3>🔍 一鍵勤務安全檢查</h3>
-        <button id="runCheckBtn" class="primary">開始檢查</button>
-        <div id="checkResult"></div>
-      </div>
-    </section>
+<section id="todo" class="page">
+ <div class="card"><h2>✅ 待辦</h2><input id="todoText" placeholder="待辦事項"><input id="todoTime" type="datetime-local"><button id="addTodo" class="primary">新增</button><div id="todos"></div></div>
+</section>
 
-    <section id="schedule" class="page">
-      <div class="card">
-        <h2>📋 排哨</h2>
-        <label>勤務日期 <input id="scheduleDate" type="date"></label>
-        <div class="row">
-          <button id="addShiftBtn">＋新增班次</button>
-          <button id="smartAssignBtn" class="primary">智慧排哨</button>
-          <button id="saveScheduleBtn">💾儲存哨表</button>
-        </div>
-        <div id="shiftList"></div>
-      </div>
+<section id="more" class="page">
+ <div class="card"><h2>👥 人員管理</h2><input id="pname" placeholder="姓名"><select id="pstatus">
+ <option>正常</option><option>休假</option><option>公差</option><option>受訓</option><option>不可排哨</option>
+ <option>會客室</option><option>當日18休假</option><option>隔日08休假</option></select><button id="addPerson">新增人員</button><div id="people"></div></div>
+ <div class="card"><h2>📝 電子交接簿</h2><input id="from" placeholder="交班人"><input id="to" placeholder="接班人"><textarea id="note" placeholder="交接事項"></textarea><button id="addHandover">儲存交接</button><div id="handovers"></div></div>
+ <div class="card"><h2>🤖 值星助手</h2><button id="aiCheck">檢查目前哨表</button><div id="aiBox" class="notice">規則式助手，不會把資料送到外部。</div></div>
+ <div class="card"><h2>💾 資料備份</h2><button id="backup">下載備份</button><input id="restore" type="file" accept=".json,application/json"></div>
+ <div class="card"><h2>🧹 交接後清除</h2><button id="clear" class="danger">清除本次值星暫存</button></div>
+</section>
+</main>
+<nav class="bottom"><button data-p="home" class="active">🏠<span>首頁</span></button><button data-p="schedule">📋<span>排哨</span></button><button data-p="stats">📊<span>統計</span></button><button data-p="todo">✅<span>待辦</span></button><button data-p="more">☰<span>更多</span></button></nav>
 
-      <div class="card">
-        <h3>📋 前一天哨表（可手動輸入）</h3>
-        <p class="muted">收假或接值星時，可手動輸入昨天不是你排的勤務。</p>
-        <button id="addPrevShiftBtn">＋新增昨日班次</button>
-        <div id="prevShiftList"></div>
-      </div>
-    </section>
-
-    <section id="stats" class="page">
-      <div class="card">
-        <h2>📊 哨勤統計</h2>
-        <h3>🌙 夜哨（上限 3 次）</h3>
-        <div id="nightStats"></div>
-        <h3>💪 艱苦哨（不得連續）</h3>
-        <div id="hardStats"></div>
-      </div>
-
-      <div class="card">
-        <h3>🚶 外散統計（每週最多 1 次）</h3>
-        <div class="row">
-          <select id="outingPerson"></select>
-          <input id="outingDate" type="date">
-          <button id="addOutingBtn">登記外散</button>
-        </div>
-        <div id="outingStats"></div>
-      </div>
-    </section>
-
-    <section id="todo" class="page">
-      <div class="card">
-        <h2>✅ 待辦事項</h2>
-        <div class="stack">
-          <input id="todoText" placeholder="例如：1600 前完成明日哨表">
-          <input id="todoTime" type="datetime-local">
-          <button id="addTodoBtn" class="primary">新增待辦</button>
-        </div>
-        <div id="todoList"></div>
-      </div>
-    </section>
-
-    <section id="more" class="page">
-      <div class="card">
-        <h2>👥 人員管理</h2>
-        <div class="row">
-          <input id="personName" placeholder="姓名">
-          <select id="personStatus">
-            <option>正常</option>
-            <option>休假</option>
-            <option>公差</option>
-            <option>受訓</option>
-            <option>不可排哨</option>
-          </select>
-          <button id="addPersonBtn">新增</button>
-        </div>
-        <div id="personList"></div>
-      </div>
-
-      <div class="card">
-        <h2>📝 電子交接簿</h2>
-        <div class="stack">
-          <input id="handoverFrom" placeholder="交班人">
-          <input id="handoverTo" placeholder="接班人">
-          <textarea id="handoverNote" placeholder="重要事項、異常事項、待辦事項"></textarea>
-          <button id="saveHandoverBtn">儲存交接</button>
-        </div>
-        <div id="handoverList"></div>
-      </div>
-
-      <div class="card danger-zone">
-        <h2>🧹 交接後資料清除</h2>
-        <p class="muted">預設只清除本次值星暫存：待辦、昨日手動資料、未儲存草稿、外散暫存。人員、正式哨表與交接紀錄會保留。</p>
-        <button id="clearSessionBtn" class="danger">清除本次值星資料</button>
-      </div>
-    </section>
-  </main>
-
-  <nav class="bottom-nav">
-    <button data-page="home" class="active">🏠<span>首頁</span></button>
-    <button data-page="schedule">📋<span>排哨</span></button>
-    <button data-page="stats">📊<span>統計</span></button>
-    <button data-page="todo">✅<span>待辦</span></button>
-    <button data-page="more">☰<span>更多</span></button>
-  </nav>
-
-  <template id="shiftRowTemplate">
-    <div class="shift-row">
-      <input class="shift-start" type="time">
-      <input class="shift-end" type="time">
-      <input class="shift-post" placeholder="哨位">
-      <select class="shift-person"></select>
-      <label class="tiny"><input class="shift-night" type="checkbox">夜</label>
-      <label class="tiny"><input class="shift-hard" type="checkbox">艱</label>
-      <button class="fix-btn">修正</button>
-      <button class="delete-btn">刪</button>
-    </div>
-  </template>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<script>
+const KEY="dutyHelperV21";
+const blank={people:[],schedules:{},prev:[],todos:[],outings:[],handovers:[],remind:"16:00",undo:[],redo:[]};
+let S=(()=>{try{return {...blank,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch{return {...blank}}})();
+const $=q=>document.querySelector(q), $$=q=>[...document.querySelectorAll(q)];
+function save(){localStorage.setItem(KEY,JSON.stringify(S));render()}
+function snap(){S.undo.push(JSON.stringify({...S,undo:[],redo:[]}));if(S.undo.length>10)S.undo.shift();S.redo=[]}
+function iso(d=new Date()){let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)}
+function addDay(s,n){let d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d)}
+function m(t){let [h,x]=String(t||"00:00").split(":").map(Number);return h*60+x}
+function intv(a,b){a=m(a);b=m(b);if(b<=a)b+=1440;return[a,b]}
+function ov(a,b,c,d){return Math.max(a,c)<Math.min(b,d)}
+function date(){return $("#date").value||iso()}
+function cur(){return S.schedules[date()]||[]}
+function setcur(a){S.schedules[date()]=a}
+function statusOK(p,sh){
+ if(!p)return[false,"未指定"];
+ let [a,b]=intv(sh.start,sh.end),st=p.status;
+ if(["休假","公差","受訓","不可排哨"].includes(st))return[false,st+"不可排"];
+ if(st==="會客室"&&ov(a,b,480,1320))return[false,"會客室 08–22 不排，22後才可排"];
+ if(st==="當日18休假"&&b>960)return[false,"當日18休假：不可碰到16:00以後"];
+ if(st==="隔日08休假"&&b>300)return[false,"隔日08休假：不可碰到05:00以後"];
+ return[true,"可排"];
+}
+function counts(){
+ let total={},night={},hard={};
+ Object.values(S.schedules).flat().forEach(x=>{if(!x.person)return;total[x.person]=(total[x.person]||0)+1;if(x.night)night[x.person]=(night[x.person]||0)+1;if(x.hard)hard[x.person]=(hard[x.person]||0)+1});
+ return{total,night,hard}
+}
+function candidate(name,sh,idx=-1){
+ let p=S.people.find(x=>x.name===name);let r=statusOK(p,sh);if(!r[0])return r;
+ let c=counts();
+ if(cur().some((x,i)=>i!==idx&&x.person===name&&ov(...intv(x.start,x.end),...intv(sh.start,sh.end))))return[false,"同時段已有勤務"];
+ if(sh.night&&(c.night[name]||0)>=3)return[false,"夜哨已達3次"];
+ if(sh.hard&&S.prev.some(x=>x.person===name&&x.hard))return[false,"昨日已有艱苦哨"];
+ return[true,"符合規則"];
+}
+function opts(sel=""){return '<option value="">未指定</option>'+S.people.map(p=>`<option ${p.name===sel?"selected":""}>${p.name}</option>`).join("")}
+function renderShiftList(el,a,isPrev=false){
+ el.innerHTML="";
+ a.forEach((s,i)=>{
+  let d=document.createElement("div");d.className="shift";
+  d.innerHTML=`<div class="shiftgrid"><label>開始<input class="st" type="time" value="${s.start||""}"></label><label>結束<input class="en" type="time" value="${s.end||""}"></label><label class="wide">哨位<input class="post" value="${s.post||""}"></label><label class="wide">人員<select class="person">${opts(s.person)}</select></label></div><div class="row flags"><label><input class="night" type="checkbox" ${s.night?"checked":""}>夜哨</label><label><input class="hard" type="checkbox" ${s.hard?"checked":""}>艱苦哨</label><span class="msg"></span></div><div class="row"><button class="fix">🔧修正</button><button class="del">刪除</button></div>`;
+  let msg=d.querySelector(".msg");
+  if(isPrev)msg.textContent="昨日資料"; else if(s.person){let r=candidate(s.person,s,i);msg.innerHTML=r[0]?'<span class="ok">✓符合</span>':'<span class="bad">⚠'+r[1]+'</span>'}
+  d.querySelectorAll("input,select").forEach(x=>x.onchange=()=>{
+    let n={start:d.querySelector(".st").value,end:d.querySelector(".en").value,post:d.querySelector(".post").value,person:d.querySelector(".person").value,night:d.querySelector(".night").checked,hard:d.querySelector(".hard").checked};
+    if(!isPrev&&n.person){let r=candidate(n.person,n,i);if(!r[0]&&!confirm("⚠ "+r[1]+"\n仍要保留嗎？")){render();return}}
+    snap();let t=isPrev?S.prev:cur();t[i]=n;if(!isPrev)setcur(t);save();
+  });
+  d.querySelector(".del").onclick=()=>{snap();let t=isPrev?S.prev:cur();t.splice(i,1);if(!isPrev)setcur(t);save()};
+  d.querySelector(".fix").onclick=()=>{
+    if(isPrev)return alert("昨日資料直接修改即可");
+    let good=S.people.filter(p=>candidate(p.name,s,i)[0]).sort((a,b)=>(counts().total[a.name]||0)-(counts().total[b.name]||0));
+    if(!good.length)return alert("沒有符合規則的替補人員");
+    let n=prompt("建議替補：\n"+good.map(x=>x.name).join("\n")+"\n\n輸入姓名",good[0].name);
+    if(n&&good.some(x=>x.name===n)){snap();s.person=n;save()}
+  };
+  el.appendChild(d);
+ })
+}
+function checks(){
+ let e=[],c=counts();
+ Object.entries(c.night).forEach(([n,v])=>{if(v>3)e.push(n+" 夜哨 "+v+" 次")});
+ cur().forEach((s,i)=>{if(!s.person)e.push((s.post||"未命名")+" 尚未排人");else{let r=candidate(s.person,s,i);if(!r[0])e.push(s.person+"："+r[1])}});
+ S.people.forEach(p=>{if(S.prev.some(x=>x.person===p.name&&x.hard)&&cur().some(x=>x.person===p.name&&x.hard))e.push(p.name+" 艱苦哨連續")});
+ return[...new Set(e)]
+}
+function tab(h,rows){return `<table><tr>${h.map(x=>"<th>"+x+"</th>").join("")}</tr>${rows.map(r=>"<tr>"+r.map(x=>"<td>"+x+"</td>").join("")+"</tr>").join("")}</table>`}
+function render(){
+ $("#clock").textContent=new Date().toLocaleString("zh-TW");
+ renderShiftList($("#shifts"),cur());renderShiftList($("#prev"),S.prev,true);
+ $("#people").innerHTML=S.people.map((p,i)=>`<div class="item"><div><b>${p.name}</b><br><small>${p.status}</small></div><button data-i="${i}" class="pd">刪除</button></div>`).join("");
+ $$(".pd").forEach(b=>b.onclick=()=>{snap();S.people.splice(+b.dataset.i,1);save()});
+ $("#todos").innerHTML=S.todos.map((t,i)=>`<div class="item"><label><input data-i="${i}" class="tc" type="checkbox" ${t.done?"checked":""}> ${t.text}<br><small>${t.time||""}</small></label><button data-i="${i}" class="td">刪除</button></div>`).join("");
+ $$(".tc").forEach(x=>x.onchange=()=>{snap();S.todos[+x.dataset.i].done=x.checked;save()});$$(".td").forEach(x=>x.onclick=()=>{snap();S.todos.splice(+x.dataset.i,1);save()});
+ let c=counts();$("#nightStats").innerHTML=tab(["人員","次數"],S.people.map(p=>[p.name,c.night[p.name]||0]));$("#hardStats").innerHTML=tab(["人員","次數"],S.people.map(p=>[p.name,c.hard[p.name]||0]));
+ $("#outingPerson").innerHTML=opts();$("#outingStats").innerHTML=tab(["人員","狀態"],S.people.map(p=>[p.name,S.outings.some(o=>o.person===p.name)?"已外散":"尚未外散"]));
+ $("#handovers").innerHTML=S.handovers.slice().reverse().map(h=>`<div class="item"><div><b>${h.date}｜${h.from}→${h.to}</b><br><small>${h.note}</small></div></div>`).join("");
+ $("#tomorrow").textContent=S.schedules[addDay(iso(),1)]?.length?"已建立":"尚未完成";$("#todoN").textContent=S.todos.filter(t=>!t.done).length;$("#nightN").textContent=Object.values(c.night).filter(n=>n>3).length;$("#conflictN").textContent=checks().length;
+ let rt=S.remind||"16:00";$("#remindTime").value=rt;$("#remindBox").textContent="提醒時間："+rt;
+}
+$("#date").value=iso();$("#outingDate").value=iso();
+$$(".bottom button").forEach(b=>b.onclick=()=>{$$(".bottom button").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".page").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.p).classList.add("active")});
+$("#date").onchange=render;
+$("#addPerson").onclick=()=>{let n=$("#pname").value.trim();if(!n)return;snap();S.people.push({name:n,status:$("#pstatus").value});$("#pname").value="";save()};
+$("#addShift").onclick=()=>{snap();let a=cur();a.push({start:"08:00",end:"10:00",post:"",person:"",night:false,hard:false});setcur(a);save()};
+$("#addPrev").onclick=()=>{snap();S.prev.push({start:"22:00",end:"00:00",post:"",person:"",night:true,hard:false});save()};
+$("#smart").onclick=()=>{if(!cur().length)return alert("先新增班次");snap();let a=cur(),c=counts();a.forEach((s,i)=>{s.person="";let g=S.people.filter(p=>candidate(p.name,s,i)[0]).sort((x,y)=>(c.total[x.name]||0)-(c.total[y.name]||0));if(g.length)s.person=g[0].name});setcur(a);save()};
+$("#saveSch").onclick=()=>{save();alert("已儲存")};
+$("#runCheck").onclick=()=>{let e=checks();$("#checkBox").innerHTML='<div class="notice">'+(e.length?"⚠ "+e.join("<br>"):'<span class="ok">✅ 未發現衝突</span>')+"</div>"};
+$("#addTodo").onclick=()=>{let t=$("#todoText").value.trim();if(!t)return;snap();S.todos.push({text:t,time:$("#todoTime").value,done:false});$("#todoText").value="";save()};
+$("#addOuting").onclick=()=>{let p=$("#outingPerson").value;if(!p)return;if(S.outings.some(o=>o.person===p))return alert("本週已外散1次");snap();S.outings.push({person:p,date:$("#outingDate").value});save()};
+$("#addHandover").onclick=()=>{snap();S.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#from").value,to:$("#to").value,note:$("#note").value});$("#note").value="";save()};
+$("#saveRemind").onclick=()=>{S.remind=$("#remindTime").value;save()};
+$("#aiCheck").onclick=()=>{let e=checks();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前未發現規則衝突"};
+$("#undo").onclick=()=>{if(!S.undo.length)return alert("沒有可復原");S.redo.push(JSON.stringify({...S,undo:[],redo:[]}));let x=JSON.parse(S.undo.pop()),u=S.undo,r=S.redo;S={...x,undo:u,redo:r};save()};
+$("#redo").onclick=()=>{if(!S.redo.length)return alert("沒有可重做");S.undo.push(JSON.stringify({...S,undo:[],redo:[]}));let x=JSON.parse(S.redo.pop()),u=S.undo,r=S.redo;S={...x,undo:u,redo:r};save()};
+$("#backup").onclick=()=>{let blob=new Blob([JSON.stringify({...S,undo:[],redo:[]},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手備份_"+iso()+".json";a.click()};
+$("#restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(confirm("確定還原？")){S={...blank,...x,undo:[],redo:[]};save()}}catch{alert("檔案錯誤")}};r.readAsText(f)};
+$("#clear").onclick=()=>{if(confirm("確定交接後清除本次暫存？")&&confirm("再次確認？")){snap();S.todos=[];S.prev=[];S.outings=[];save()}};
+render();
+</script>
+</body></html>
