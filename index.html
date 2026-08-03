@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V4.0</title>
-<link rel="manifest" href="manifest.json?v=40">
+<title>值星小幫手 V4.1</title>
+<link rel="manifest" href="manifest.json?v=41">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -29,7 +29,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V4.0</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V4.1</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -115,7 +115,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V4.0";
+const APP_VERSION="V4.1";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -382,17 +382,14 @@ function autoAssign(){
    }
    if(!placed)s.person="";
  }
- // 強制全表驗證：若系統排出違規，撤回該未鎖定安排
- let issues=validateSchedule();
- if(issues.length){
-   let changed=true,guard=0;
-   while(changed&&guard<50){
-     changed=false;guard++;
-     for(const s of slots){
-       if(!s.person||s.locked)continue;
-       const r=eligible(s.person,s,s.id);
-       if(!r[0]){s.person="";changed=true;}
-     }
+ // 排完再次逐班強制驗證；未鎖定且違規的安排直接撤回
+ let changed=true,guard=0;
+ while(changed&&guard<50){
+   changed=false;guard++;
+   for(const s of slots){
+     if(!s.person||s.locked)continue;
+     const r=eligible(s.person,s,s.id);
+     if(!r[0]){s.person="";changed=true;}
    }
  }
  saveState();
@@ -402,31 +399,22 @@ function repairSchedule(){
  snapshot();
  let changed=0;
  const slots=currentDay().slots;
-
- // 先撤回所有未鎖定且違規的安排
  slots.forEach(s=>{
    if(!s.person||s.locked)return;
    const r=eligible(s.person,s,s.id);
    if(!r[0]){s.person="";changed++;}
  });
-
- // 重新補空哨，每次都使用相同的全局休息規則驗證
- const targets=slots.filter(s=>!s.locked&&!s.person)
-   .sort((a,b)=>((isNight(b)?1:0)+(isHard(b)?1:0))-((isNight(a)?1:0)+(isHard(a)?1:0)));
+ const targets=slots.filter(s=>!s.locked&&!s.person).sort((a,b)=>((isNight(b)?1:0)+(isHard(b)?1:0))-((isNight(a)?1:0)+(isHard(a)?1:0)));
  for(const s of targets){
    const list=candidates(s);
-   let placed=false;
    for(const cand of list){
      s.person=cand.name;
      const r=eligible(cand.name,s,s.id);
-     if(r[0]){placed=true;changed++;break;}
+     if(r[0]){changed++;break;}
      s.person="";
    }
-   if(!placed)s.person="";
  }
-
- // 最後再做全表強制驗證，任何未鎖定違規安排直接撤回
- let guard=0,again=true;
+ let again=true,guard=0;
  while(again&&guard<50){
    again=false;guard++;
    for(const s of slots){
@@ -435,12 +423,56 @@ function repairSchedule(){
      if(!r[0]){s.person="";changed++;again=true;}
    }
  }
-
  saveState();
  const issues=validateSchedule();
- $("#validationBox").innerHTML=issueBox(issues)+'<div class="notice">'+
-   (issues.length?'🛠️ 已調整 '+changed+' 個哨位；剩餘項目為無合法替代者或已鎖定勤務。':'🛠️ 修正完成，共調整 '+changed+' 個哨位，目前沒有硬性規則錯誤。')+
-   '</div>';
+ $("#validationBox").innerHTML=issueBox(issues)+'<div class="notice">'+(issues.length?'🛠️ 已調整 '+changed+' 個哨位；剩餘項目無合法替代者或屬於已鎖定班次。':'🛠️ 修正完成，共調整 '+changed+' 個哨位，目前沒有硬性規則錯誤。')+'</div>';
+}
+function shiftOptionList(){
+ const assigned=currentDay().slots.filter(s=>s.person);
+ return '<option value="">選擇勤務</option>'+assigned.map(s=>'<option value="'+s.id+'">'+label(s)+' '+s.post+'｜'+s.person+'</option>').join("");
+}
+function simulateSwap(a,b){
+ if(!a||!b||a.id===b.id)return [false,"請選擇兩個不同勤務"];
+ const pa=a.person,pb=b.person;if(!pa||!pb)return [false,"兩個勤務都必須已有人員"];
+ a.person=pb;b.person=pa;
+ const ra=eligible(pb,a,a.id),rb=eligible(pa,b,b.id);
+ a.person=pa;b.person=pb;
+ if(!ra[0])return [false,pb+" 換到 "+label(a)+" "+a.post+" 不符合："+ra[1]];
+ if(!rb[0])return [false,pa+" 換到 "+label(b)+" "+b.post+" 不符合："+rb[1]];
+ return [true,"雙方資格、狀態、勤務衝突與休息規則均符合"];
+}
+function renderSwapTools(){
+ const opts=shiftOptionList();$("#swapA").innerHTML=opts;$("#swapB").innerHTML=opts;
+ $("#personCardSelect").innerHTML='<option value="">選擇人員</option>'+state.people.map(p=>'<option>'+p.name+'</option>').join("");
+}
+function renderPersonCard(name){
+ if(!name){$("#personCardBox").innerHTML="";return;}
+ const arr=currentDay().slots.filter(s=>s.person===name),c=allCounts();
+ $("#personCardBox").innerHTML='<div class="notice"><b>'+name+'</b><br>'+(arr.length?arr.map(s=>label(s)+" "+s.post).join("、"):"今日無勤務")+'<br>總哨 '+(c.total[name]||0)+'｜夜哨 '+(c.night[name]||0)+'｜艱苦哨 '+(c.hard[name]||0)+'</div>';
+}
+function makeHandoverSummary(){
+ const d=currentDate(),issues=validateSchedule(),filled=currentDay().slots.filter(s=>s.person).length;
+ const counts={};state.people.forEach(p=>counts[p.status]=(counts[p.status]||0)+1);
+ const text='【'+d+' 值星交接摘要】\n總人數：'+state.people.length+'｜在營：'+state.people.filter(p=>!["休假","受訓"].includes(p.status)).length+
+ '\n休假：'+(counts["休假"]||0)+'｜受訓：'+(counts["受訓"]||0)+'｜會客室：'+(counts["會客室"]||0)+
+ '\n今日可外散：'+validTodayOutingNames().length+' 人｜本週已外散：'+getWeekOutings().length+' 人次'+
+ '\n排哨完成：'+filled+'/36｜異常：'+issues.length+' 項'+(issues.length?'\n待處理：'+issues.slice(0,6).join("；"):'\n哨表狀態：正常');
+ $("#summaryBox").value=text;
+}
+function reminderStatus(){
+ const now=new Date(),today=todayISO(),time=state.reminder||"16:00",parts=time.split(":").map(Number);
+ const due=new Date();due.setHours(parts[0],parts[1],0,0);
+ const tomorrow=state.days[addDays(today,1)];
+ const done=!!(tomorrow&&tomorrow.official&&tomorrow.slots&&tomorrow.slots.every(s=>s.person));
+ return {overdue:now>=due&&!done&&state.reminderDismissed!==today,done,time};
+}
+function checkReminder(showAlert=false){
+ const r=reminderStatus();
+ if(r.done)$("#remindBox").innerHTML='✅ 明日哨表已完成正式儲存';
+ else if(r.overdue){
+   $("#remindBox").innerHTML='<b class="bad">⚠ 已超過 '+r.time+'，明日哨表尚未完成。</b>';
+   if(showAlert)alert("⚠ 排哨提醒：明日哨表尚未完成！");
+ }else $("#remindBox").textContent="每日排哨提醒："+r.time;
 }
 function renderPeople(){
  const search=($("#personSearch")?.value||"").trim().toLowerCase();
@@ -596,7 +628,7 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V4.0備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V4.1備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
