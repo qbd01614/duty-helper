@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.17</title>
-<link rel="manifest" href="manifest.json?v=517">
+<title>值星小幫手 V5.17.1</title>
+<link rel="manifest" href="manifest.json?v=5171">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -84,7 +84,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.17</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.17.1</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -151,6 +151,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <h3>昨日勤務</h3>
   <p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。手動輸入後會同步回寫成前一日的正式當日哨表。</p>
   <label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label>
+  <div class="row" style="margin-top:8px"><button id="syncPrevOfficial">↩️ 同步到前一日當日哨表</button><span id="prevSyncStatus" class="muted"></span></div>
   <div id="prevBoard" class="postBoard" style="margin-top:10px"></div>
  </div>
 
@@ -194,7 +195,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.17</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.17.1</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -230,7 +231,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.17";
+const APP_VERSION="V5.17.1";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -1141,19 +1142,33 @@ function ensureManualPrevSlots(){
  }
  return state.manualPrev[d];
 }
+function ensureOfficialDay(dateStr){
+ if(!state.days[dateStr])state.days[dateStr]={slots:baseSlots(),official:false};
+ const d=state.days[dateStr];
+ if(!Array.isArray(d.slots)||d.slots.length!==36){
+   const old=Array.isArray(d.slots)?d.slots:[];
+   const fresh=baseSlots();
+   fresh.forEach(s=>{const x=old.find(o=>o.id===s.id||(o.post===s.post&&slotDisplayTime(o)===slotDisplayTime(s)));if(x){s.person=x.person||"";s.locked=!!x.locked;}});
+   d.slots=fresh;
+ }
+ return d;
+}
+function mirrorPreviousSlotToOfficial(slotId){
+ const today=currentDate(),prevDate=addDays(today,-1),manual=ensureManualPrevSlots();
+ const source=manual.find(x=>x.id===slotId);if(!source)return;
+ const target=ensureOfficialDay(prevDate);
+ const dest=target.slots.find(x=>x.id===source.id)||(target.slots||[]).find(x=>x.post===source.post&&slotDisplayTime(x)===slotDisplayTime(source));
+ if(dest){dest.person=source.person||"";dest.locked=!!source.person;}
+ target.official=true;target.manualImportedFrom=today;target.manualImportedAt=new Date().toISOString();
+}
 function syncManualPreviousToOfficial(){
- const today=currentDate(),prevDate=addDays(today,-1);
- const manual=ensureManualPrevSlots();
- if(!state.days[prevDate])state.days[prevDate]={slots:baseSlots(),official:false};
- const target=state.days[prevDate];
- const fresh=baseSlots();
- fresh.forEach(s=>{
-   const x=manual.find(o=>o.id===s.id||(o.post===s.post&&slotDisplayTime(o)===slotDisplayTime(s)));
-   if(x)s.person=x.person||"";
+ const today=currentDate(),prevDate=addDays(today,-1),manual=ensureManualPrevSlots(),target=ensureOfficialDay(prevDate);
+ manual.forEach(source=>{
+   const dest=target.slots.find(x=>x.id===source.id)||(target.slots||[]).find(x=>x.post===source.post&&slotDisplayTime(x)===slotDisplayTime(source));
+   if(dest){dest.person=source.person||"";dest.locked=!!source.person;}
  });
- target.slots=fresh;
- target.official=true;
- target.manualImportedFrom=today;
+ target.official=true;target.manualImportedFrom=today;target.manualImportedAt=new Date().toISOString();
+ return prevDate;
 }
 function previousSourceSlots(){
  if(state.prevOverride)return ensureManualPrevSlots();
@@ -1169,13 +1184,20 @@ function openPrevCandidate(slotId){
  state.people.map(p=>'<div class="candidateRow"><div><b>'+p.name+'</b><div class="muted">昨日實際勤務紀錄</div></div><button class="pickPrevCandidate" data-slot="'+s.id+'" data-name="'+p.name+'">選擇</button></div>').join("");
  $$(".pickPrevCandidate").forEach(btn=>btn.onclick=()=>{
    const slot=ensureManualPrevSlots().find(x=>x.id===btn.dataset.slot);
-   snapshot();slot.person=btn.dataset.name;syncManualPreviousToOfficial();saveState();
+   snapshot();slot.person=btn.dataset.name;mirrorPreviousSlotToOfficial(slot.id);saveState();
+   const pd=addDays(currentDate(),-1);
+   if($("#prevSyncStatus"))$("#prevSyncStatus").textContent="已同步至 "+pd+" 當日哨表";
    $("#prevCandidateOverlay").style.display="none";
  });
  $("#prevCandidateOverlay").style.display="block";
 }
 function renderPrevious(){
  const board=$("#prevBoard");if(!board)return;
+ const prevDate=addDays(currentDate(),-1);
+ if($("#prevSyncStatus")&&state.prevOverride){
+   const pd=state.days[prevDate];
+   $("#prevSyncStatus").textContent=(pd&&pd.manualImportedFrom===currentDate())?("✅ 已回寫 "+prevDate):("將回寫至 "+prevDate);
+ }
  const slots=previousSourceSlots();
  const editable=!!state.prevOverride;
  const posts=[["安官","🛡️"],["管制","🎛️"],["門禁","🚪"]];
@@ -1355,7 +1377,7 @@ function openPage(id){
 $$(".moreLaunch").forEach(b=>b.onclick=()=>openPage(b.dataset.subpage));
 $$(".backMore").forEach(b=>b.onclick=()=>openPage("more"));
 $$(".bottom button").forEach(b=>b.onclick=()=>openPage(b.dataset.page));
-$("#scheduleDate").onchange=renderAll;
+$("#scheduleDate").onchange=()=>{renderAll();if($("#prevSyncStatus"))$("#prevSyncStatus").textContent="";};
 $("#personSearch").oninput=()=>renderPeople();
 $("#statusFilter").onchange=()=>renderPeople();
 $("#qualFilter").onchange=()=>renderPeople();
@@ -1415,6 +1437,11 @@ $("#makeSummary").onclick=makeHandoverSummary;
 
 $("#repairBtn").onclick=repairSchedule;
 $("#saveOfficial").onclick=()=>{currentDay().official=true;currentDay().peopleQualifications={};state.people.forEach(p=>currentDay().peopleQualifications[p.name]=clone(p.qualifications||[]));saveState();alert("今日哨表與哨別資格已正式儲存；明日可自動沿用。");};
+$("#syncPrevOfficial").onclick=()=>{
+ if(!state.prevOverride)return alert("請先開啟「手動覆寫昨日勤務」。");
+ snapshot();const d=syncManualPreviousToOfficial();saveState();
+ $("#prevSyncStatus").textContent="✅ 已同步至 "+d+" 當日哨表";
+};
 $("#overridePrev").onchange=()=>{
  snapshot();state.prevOverride=$("#overridePrev").checked;
  if(state.prevOverride){
@@ -1543,7 +1570,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=517&refresh="+Date.now()+hash);
+  location.replace(base+"?v=5171&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
