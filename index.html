@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.16</title>
-<link rel="manifest" href="manifest.json?v=516">
+<title>值星小幫手 V5.16.1</title>
+<link rel="manifest" href="manifest.json?v=5161">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -84,7 +84,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.16</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.16.1</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -194,7 +194,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.16</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.16.1</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -227,7 +227,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.16";
+const APP_VERSION="V5.16.1";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -1199,12 +1199,17 @@ function suggestErrandPeople(typeName){
  return getErrandAvailablePeople(typeName).map(p=>({name:p.name,count:errandCountFor(p.name,typeName)})).sort((a,b)=>a.count-b.count||a.name.localeCompare(b.name,"zh-Hant"));
 }
 function renderErrands(){
+ const previousType=$("#errandTypeSelect")?$("#errandTypeSelect").value:"";
+ const previousPerson=$("#errandPersonSelect")?$("#errandPersonSelect").value:"";
  const availablePeople=getErrandAvailablePeople();
  $("#errandAvailableBox").innerHTML='<b>目前可運用人力：'+availablePeople.length+' 人</b><br>'+(availablePeople.length?availablePeople.map(p=>p.name).join("、"):'目前沒有可運用人力');
  $("#errandTypeList").innerHTML=state.errandTypes.length?state.errandTypes.map((t,i)=>'<div class="item"><span><b>'+t.name+'</b>｜'+t.start+'–'+t.end+'</span><span><button class="errandTypeEdit" data-i="'+i+'">✏️ 修正</button><button class="errandTypeDel" data-i="'+i+'">🗑️ 刪除</button></span></div>').join(""):'<p class="muted">尚未建立公差名稱。</p>';
- $("#errandTypeSelect").innerHTML='<option value="">選擇公差</option>'+state.errandTypes.map(t=>'<option>'+t.name+'</option>').join("");
+ $("#errandTypeSelect").innerHTML='<option value="">選擇公差</option>'+state.errandTypes.map(t=>'<option value="'+t.name+'">'+t.name+'</option>').join("");
+ if(previousType&&state.errandTypes.some(t=>t.name===previousType))$("#errandTypeSelect").value=previousType;
  const selectedErrandType=$("#errandTypeSelect").value||"";
- $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+getErrandAvailablePeople(selectedErrandType).map(p=>'<option>'+p.name+'</option>').join("");
+ const eligiblePeople=getErrandAvailablePeople(selectedErrandType);
+ $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+eligiblePeople.map(p=>'<option value="'+p.name+'">'+p.name+'</option>').join("");
+ if(previousPerson&&eligiblePeople.some(p=>p.name===previousPerson))$("#errandPersonSelect").value=previousPerson;
  const d=$("#errandDate").value||currentDate();
  const today=state.errandLogs.filter(x=>x.date===d);
  $("#todayErrandBox").innerHTML='<h3>📅 '+d+' 今日公差（'+today.length+'）</h3>'+(today.length?today.map(x=>'<div class="item"><span><b>'+x.person+'</b>｜'+x.type+'</span><button class="errandLogDel" data-id="'+x.id+'">🗑️刪除</button></div>').join(""):'<p class="muted">今日尚無公差。</p>');
@@ -1372,7 +1377,12 @@ $("#addErrandLog").onclick=()=>{
  snapshot();state.errandLogs.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),type,person,date});saveState();
 };
 $("#errandDate").onchange=()=>renderErrands();
-$("#errandTypeSelect").onchange=()=>renderErrands();
+$("#errandTypeSelect").onchange=()=>{
+ const type=$("#errandTypeSelect").value||"";
+ const people=getErrandAvailablePeople(type);
+ $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+people.map(p=>'<option value="'+p.name+'">'+p.name+'</option>').join("");
+ $("#errandSuggestBox").innerHTML="";
+};
 $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,rank:$("#newPersonRank").value||"",gender:$("#newPersonGender").value||"",status:"正常",exemptReason:"",qualifications:[]});$("#newPerson").value="";$("#newPersonRank").value="";$("#newPersonGender").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
 $("#clearToday").onclick=clearTodaySchedule;
@@ -1504,7 +1514,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=516&refresh="+Date.now()+hash);
+  location.replace(base+"?v=5161&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
