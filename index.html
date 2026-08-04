@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.18.5</title>
-<link rel="manifest" href="manifest.json?v=5185">
+<title>值星小幫手 V5.18.6</title>
+<link rel="manifest" href="manifest.json?v=5186">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -86,7 +86,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.18.5</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.18.6</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -163,11 +163,14 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  </div>
 
  <div class="card">
-  <h3>昨日勤務</h3>
-  <p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。手動輸入後會同步回寫成前一日的正式當日哨表。</p>
-  <label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label>
-  <div class="row" style="margin-top:8px"><button id="syncPrevOfficial">↩️ 同步到前一日當日哨表</button><span id="prevSyncStatus" class="muted"></span></div>
-  <div id="prevBoard" class="postBoard" style="margin-top:10px"></div>
+  <label style="font-weight:800"><input id="showPreviousDuty" type="checkbox"> 顯示昨日勤務</label>
+  <div id="previousDutySection" style="display:none;margin-top:10px">
+   <h3>昨日勤務</h3>
+   <p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。手動輸入後會同步回寫成前一日的正式當日哨表。</p>
+   <label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label>
+   <div class="row" style="margin-top:8px"><button id="syncPrevOfficial">↩️ 同步到前一日當日哨表</button><span id="prevSyncStatus" class="muted"></span></div>
+   <div id="prevBoard" class="postBoard" style="margin-top:10px"></div>
+  </div>
  </div>
 
  <div id="prevCandidateOverlay" class="candidateOverlay">
@@ -210,7 +213,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.18.5</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.18.6</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -246,7 +249,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.18.5";
+const APP_VERSION="V5.18.6";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -1371,6 +1374,10 @@ function openPrevCandidate(slotId){
  });
  $("#prevCandidateOverlay").style.display="block";
 }
+function updatePreviousDutyVisibility(){
+ if(!$("#showPreviousDuty")||!$("#previousDutySection"))return;
+ $("#previousDutySection").style.display=$("#showPreviousDuty").checked?"block":"none";
+}
 function renderPrevious(){
  const board=$("#prevBoard");if(!board)return;
  const prevDate=addDays(currentDate(),-1);
@@ -1585,7 +1592,7 @@ function addVisitorAssignment(){
 }
 function renderAll(){
  updateHomeClock();
- renderPeople();renderScheduleTables();renderPostBoard();renderVisitorDuty();dashboard();renderPrevious();renderStats();renderErrands();renderEmtSection();renderMore();renderDailyDutyStats();renderNightSummary();
+ renderPeople();renderScheduleTables();renderPostBoard();renderVisitorDuty();dashboard();updatePreviousDutyVisibility();renderPrevious();renderStats();renderErrands();renderEmtSection();renderMore();renderDailyDutyStats();renderNightSummary();
 }
 function currentWeekRange(d){
  const x=new Date(d+"T00:00:00"),offset=(x.getDay()+6)%7,mon=new Date(x);mon.setDate(x.getDate()-offset);const sun=new Date(mon);sun.setDate(mon.getDate()+6);return [todayISO(mon),todayISO(sun)];
@@ -1690,6 +1697,7 @@ $("#syncPrevOfficial").onclick=()=>{
  snapshot();const d=syncManualPreviousToOfficial();saveState();
  $("#prevSyncStatus").textContent="✅ 已同步至 "+d+" 當日哨表";
 };
+$("#showPreviousDuty").onchange=()=>updatePreviousDutyVisibility();
 $("#overridePrev").onchange=()=>{
  snapshot();state.prevOverride=$("#overridePrev").checked;
  if(state.prevOverride){
@@ -1818,7 +1826,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=5185&refresh="+Date.now()+hash);
+  location.replace(base+"?v=5186&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
