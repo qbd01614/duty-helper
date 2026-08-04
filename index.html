@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.1</title>
-<link rel="manifest" href="manifest.json?v=51">
+<title>值星小幫手 V5.3</title>
+<link rel="manifest" href="manifest.json?v=53">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -25,11 +25,25 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .bottom{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #ddd;padding-bottom:env(safe-area-inset-bottom)}.bottom button{border-radius:0;background:#fff;padding:8px 2px;font-size:20px}.bottom span{display:block;font-size:11px}.bottom .active{background:#f3f4f6;font-weight:700}
 .version{font-size:12px;padding:4px 8px;border-radius:999px;background:#ffffff1f;margin-left:8px}
 @media(max-width:520px){.dash{grid-template-columns:repeat(2,1fr)}.person{grid-template-columns:1fr 1fr auto}}
+
+.postBoard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.postColumn{border:1px solid #e5e7eb;border-radius:16px;padding:10px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)}
+.postColumn h3{text-align:center;margin:0 0 10px;padding:10px;border-radius:11px;background:#f3f4f6}
+.slotCard{position:relative;border:1px solid #dfe3e8;border-radius:13px;padding:10px 10px 27px;margin:8px 0;background:#fff;min-height:78px}
+.slotCard.night{background:#f8fafc}
+.slotTime{font-weight:800;font-size:15px;margin-bottom:7px}
+.slotPersonBtn{width:100%;text-align:left;background:#f3f4f6;color:#111827;border:1px solid #d1d5db}
+.slotMeta{font-size:12px;color:#6b7280;margin-top:7px}
+.yesterdaySame{position:absolute;right:9px;bottom:7px;font-size:11px;color:#6b7280}
+.candidateOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;padding:16px}
+.candidatePanel{max-width:620px;margin:4vh auto;background:#fff;border-radius:18px;padding:14px;max-height:88vh;overflow:auto}
+.candidateRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 2px;border-bottom:1px solid #eee}
+@media(max-width:760px){.postBoard{grid-template-columns:1fr}.postColumn{padding:9px}}
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.1</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.3</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -69,26 +83,40 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <section id="schedule" class="page">
  <div class="card">
-  <h2>📋 今日固定哨表</h2>
+  <h2>📋 今日排哨</h2>
   <input id="scheduleDate" type="date">
-  <div class="row">
-   <button id="autoAssign" class="primary">🤖 一鍵智慧排哨</button><button id="reAssign">🔄 重排未鎖定勤務</button><button id="clearToday">🧹 一鍵清理</button><button id="fullReAssign">♻️ 全部清除並重新排哨</button>
-   <button id="validateBtn">🔍 二次驗證</button><button id="repairBtn">🛠️ 一鍵修正錯誤</button>
-   <button id="lockAll">🔒鎖定整張哨表</button><button id="unlockAll">🔓解除全部鎖定</button>
-   <button id="saveOfficial">💾正式儲存</button>
+  <div class="row" style="margin-top:8px">
+   <button id="autoAssign" class="primary">🤖 智慧排哨</button>
+   <button id="repairBtn">🛠️ 一鍵檢查除錯</button>
+   <button id="clearToday">🧹 全部清除</button>
+   <button id="saveOfficial">💾 儲存</button>
   </div>
   <div id="validationBox"></div>
  </div>
- <div class="card"><h3>📊 當日勤務統計表</h3><div id="dailyDutyStats"></div></div><div class="card"><h3>🔍 為什麼不能排？</h3>
-<select id="whySlotSelect"></select><button id="whyCheckBtn">檢查此哨位</button>
-<div id="whyBox" class="notice"></div></div>
-<div class="card"><h3>↔️ 快速互換勤務</h3>
- <div class="row"><select id="swapA"></select><select id="swapB"></select></div>
- <div class="row"><button id="findSwap">🔎 尋找可交換勤務</button><button id="doSwap">↔️ 模擬並交換</button></div><div id="swapBox" class="notice"></div></div>
- <div class="card"><h3>👤 個人勤務卡</h3><select id="personCardSelect"></select><div id="personCardBox"></div></div>
- <div class="card"><h3>安官＋管制（08 起班）</h3><div class="tablewrap"><table><thead><tr><th>時間</th><th>安官</th><th>管制</th><th>標記</th></tr></thead><tbody id="doubleTable"></tbody></table></div></div>
- <div class="card"><h3>門禁（07 起班）</h3><div class="tablewrap"><table><thead><tr><th>時間</th><th>門禁</th><th>標記</th></tr></thead><tbody id="gateTable"></tbody></table></div></div>
- <div class="card"><h3>昨日勤務</h3><p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。</p><label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label><div id="prevBox"></div></div>
+
+ <div class="card"><h3>🧩 欄位／卡片式哨表</h3><div id="postBoard" class="postBoard"></div></div>
+ <div class="card"><h3>📊 當日勤務統計表</h3><div id="dailyDutyStats"></div></div>
+ <div class="card"><h3>🌙 夜哨統計</h3><div id="nightSummaryBox"></div></div>
+
+ <div class="card">
+  <h3>📤 輸出／分享</h3>
+  <button id="exportDutyImage">🖼️ 產生哨表圖片</button>
+  <div id="exportStatus" class="muted" style="margin-top:7px"></div>
+ </div>
+
+ <div class="card">
+  <h3>昨日勤務</h3>
+  <p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。</p>
+  <label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label>
+  <div id="prevBox"></div>
+ </div>
+
+ <div id="candidateOverlay" class="candidateOverlay">
+  <div class="candidatePanel">
+   <div class="row"><h3 id="candidateTitle" style="margin:0">選擇人員</h3><button id="closeCandidate">關閉</button></div>
+   <div id="candidateList"></div>
+  </div>
+ </div>
 </section>
 
 <section id="stats" class="page">
@@ -132,7 +160,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.1";
+const APP_VERSION="V5.3";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -385,7 +413,12 @@ function eligible(name,s,id){
  if(isNight(s)&&(c.night[name]||0)>=3&&(!existing||existing.person!==name))return [false,"夜哨已達3次"];
  if(isHard(s)&&previousHard(name))return [false,"昨日已有艱苦哨"];
  r=globalRestAllowed(name,s,id);if(!r[0])return r;
- return [true,"符合規則"];
+ 
+ if(isNight(s)){
+   const current=currentDay().slots.filter(x=>x.id!==id&&x.person===name&&isNight(x)).length;
+   if(current>=3)return [false,"夜哨已達3次上限"];
+ }
+return [true,"符合規則"];
 }
 function score(name,s){
  const c=allCounts();
@@ -416,8 +449,26 @@ function validateSchedule(){
 function issueBox(issues){
  return '<div class="notice">'+(issues.length?'<b class="bad">⚠ 發現 '+issues.length+' 項</b><br>'+issues.map(x=>"• "+x).join("<br>"):'<b class="ok">✅ 二次驗證通過</b>')+'</div>';
 }
-function personOptions(selected){
- return '<option value="">待安排</option>'+state.people.map(p=>'<option '+(p.name===selected?'selected':'')+'>'+p.name+'</option>').join("");
+function todayNightCount(name){
+ return currentDay().slots.filter(s=>s.person===name&&isNight(s)).length;
+}
+function todayDutyCount(name){
+ return currentDay().slots.filter(s=>s.person===name).length;
+}
+function nightAssignmentMessage(name,s,oldName=""){
+ if(!isNight(s)||!name)return "";
+ let now=todayNightCount(name);
+ if(oldName===name&&s.person===name)now=Math.max(0,now-1);
+ const after=now+1;
+ const total=todayDutyCount(name)+(oldName===name?0:1);
+ return "🌙 夜哨提示\n"+name+"目前已排夜哨："+now+" 次\n本次排入後："+after+" 次\n今日總勤務："+total+" 班"+(after>3?"\n\n⚠️ 已超過每人最多 3 次夜哨規則。":"");
+}
+function personOptions(selected,slot=null){
+ const night=slot&&isNight(slot);
+ return '<option value="">待安排</option>'+state.people.map(p=>{
+   const extra=night?' 🌙'+todayNightCount(p.name):'';
+   return '<option value="'+p.name+'" '+(p.name===selected?'selected':'')+'>'+p.name+extra+'</option>';
+ }).join("");
 }
 function tags(s){
  let t="";
@@ -428,9 +479,81 @@ function tags(s){
 function renderCell(s){
  const r=s.person?eligible(s.person,s,s.id):[false,""];
  const cls="cell "+(s.locked?"locked ":"")+(s.person&&!r[0]?"problem":"");
- return '<div class="'+cls+'"><select class="shiftSelect" data-id="'+s.id+'">'+personOptions(s.person)+'</select><button class="lockBtn" data-id="'+s.id+'">'+(s.locked?"🔒 已鎖定":"🔓 可調整")+'</button>'+(s.person?'<div class="'+(r[0]?"ok":"bad")+'" style="font-size:11px">'+(r[0]?"✓符合":"⚠ "+r[1])+'</div>':'')+'</div>';
+ return '<div class="'+cls+'"><select class="shiftSelect" data-id="'+s.id+'">'+personOptions(s.person,s)+'</select><button class="lockBtn" data-id="'+s.id+'">'+(s.locked?"🔒 已鎖定":"🔓 可調整")+'</button>'+(s.person?'<div class="'+(r[0]?"ok":"bad")+'" style="font-size:11px">'+(r[0]?"✓符合":"⚠ "+r[1])+'</div>':'')+'</div>';
+}
+
+function isDutyVisiblePerson(p){
+ return p && !["休假","受訓","不可排哨"].includes(p.status);
+}
+function previousSameSlotPerson(s){
+ const prevDate=addDays(currentDate(),-1);
+ const day=state.days[prevDate];
+ if(day&&Array.isArray(day.slots)){
+  const same=day.slots.find(x=>x.post===s.post&&x.time===s.time);
+  if(same&&same.person)return same.person;
+ }
+ const key=s.post+"-"+s.time;
+ return (state.manualPrev&&state.manualPrev[key])||(state.manualPrev&&state.manualPrev[s.id])||"—";
+}
+function lastDutyBefore(name,s){
+ const target=dutyDayRange(s,currentDate(),currentDate())[0];
+ const found=[];
+ Object.entries(state.days||{}).forEach(([date,day])=>{
+  (day.slots||[]).forEach(x=>{
+   if(x.person!==name)return;
+   const r=dutyDayRange(x,date,currentDate());
+   if(r[1]<=target)found.push({slot:x,end:r[1]});
+  });
+ });
+ found.sort((a,b)=>b.end-a.end);
+ return found[0]||null;
+}
+function restTextFor(name,s){
+ const prev=lastDutyBefore(name,s);
+ if(!prev)return "無前一班紀錄";
+ const target=dutyDayRange(s,currentDate(),currentDate())[0];
+ const mins=Math.max(0,target-prev.end),h=Math.floor(mins/60),m=mins%60;
+ return "距上一班 "+h+"小時"+(m?m+"分":"")+"｜"+prev.slot.post+" "+prev.slot.time;
+}
+function visibleCandidatesForSlot(s){
+ return state.people.filter(p=>{
+  if(!isDutyVisiblePerson(p))return false;
+  const q=Array.isArray(p.qualifications)?p.qualifications:[];
+  return q.includes(s.post);
+ });
+}
+function openCandidate(slotId){
+ const s=currentDay().slots.find(x=>x.id===slotId);if(!s)return;
+ $("#candidateTitle").textContent=s.post+"｜"+s.time+" 選擇人員";
+ const people=visibleCandidatesForSlot(s);
+ $("#candidateList").innerHTML=people.length?people.map(p=>{
+  const r=eligible(p.name,s,s.id);
+  return '<div class="candidateRow"><div><b>'+p.name+'</b><div class="muted">'+restTextFor(p.name,s)+'｜🌙 '+todayNightCount(p.name)+' 次</div><div style="font-size:12px">'+(r[0]?'✅ 可排':'⚠️ '+r[1])+'</div></div><button class="pickCandidate" data-slot="'+s.id+'" data-name="'+p.name+'">選擇</button></div>';
+ }).join(""):'<p class="muted">目前沒有符合此哨別資格的在營人員。</p>';
+ $$(".pickCandidate").forEach(b=>b.onclick=()=>{
+  const slot=currentDay().slots.find(x=>x.id===b.dataset.slot),name=b.dataset.name;
+  if(isNight(slot)&&!confirm(nightAssignmentMessage(name,slot,slot.person)+"\n\n確定安排？"))return;
+  const r=eligible(name,slot,slot.id);
+  if(!r[0]&&!confirm("⚠ "+r[1]+"\n仍要手動指定嗎？"))return;
+  snapshot();slot.person=name;slot.locked=true;saveState();
+  $("#candidateOverlay").style.display="none";
+ });
+ $("#candidateOverlay").style.display="block";
+}
+function renderPostBoard(){
+ const el=$("#postBoard");if(!el)return;
+ const posts=[["安官","🛡️"],["管制","🎛️"],["門禁","🚪"]];
+ el.innerHTML=posts.map(([post,icon])=>{
+  const slots=currentDay().slots.filter(s=>s.post===post);
+  return '<div class="postColumn"><h3>'+icon+' '+post+'</h3>'+slots.map(s=>{
+   const cross=FIXED_NEXT_DAY_TIMES.has(s.time);
+   return '<div class="slotCard '+(isNight(s)?'night':'')+'"><div class="slotTime">'+s.time+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'):'待安排')+(s.locked?'｜🔒':'')+'</div><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div>';
+  }).join("")+'</div>';
+ }).join("");
+ $$(".slotPersonBtn").forEach(b=>b.onclick=()=>openCandidate(b.dataset.slot));
 }
 function renderScheduleTables(){
+ if(!$("#doubleTable")||!$("#gateTable"))return;
  const slots=currentDay().slots;
  $("#doubleTable").innerHTML=DOUBLE_TIMES.map(t=>{
   const a=slots.find(x=>x.id==="安官-"+t),c=slots.find(x=>x.id==="管制-"+t);
@@ -444,6 +567,10 @@ function renderScheduleTables(){
   const s=currentDay().slots.find(x=>x.id===sel.dataset.id);
   const old=s.person,newName=sel.value;
   if(newName){
+   if(isNight(s)){
+     const msg=nightAssignmentMessage(newName,s,old);
+     if(!confirm(msg+"\n\n確定要安排此夜哨嗎？")){sel.value=old;return;}
+   }
    const r=eligible(newName,Object.assign({},s,{person:newName}),s.id);
    if(!r[0]&&!confirm("⚠ "+r[1]+"\n仍要手動指定嗎？")){sel.value=old;return;}
   }
@@ -537,6 +664,10 @@ function clearTodaySchedule(){
  saveState();
  $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已永久清除</b><br>共清除 '+slots.length+' 個哨位的人員安排與鎖定狀態。此操作沒有建立復原點，無法使用 ↩️ 復原。</div>';
 }
+function renderNightSummary(){
+ const rows=state.people.map(p=>({name:p.name,night:todayNightCount(p.name),total:todayDutyCount(p.name)})).filter(x=>x.night>0||x.total>0).sort((a,b)=>b.night-a.night||b.total-a.total||a.name.localeCompare(b.name,"zh-Hant"));
+ $("#nightSummaryBox").innerHTML=rows.length?'<div class="tablewrap"><table><tr><th>人員</th><th>夜哨</th><th>今日總勤務</th><th>狀態</th></tr>'+rows.map(x=>'<tr><td>'+x.name+'</td><td>'+x.night+'</td><td>'+x.total+'</td><td>'+(x.night>=3?'⚠ 已達上限':x.night===2?'🟡 2次':'🟢')+'</td></tr>').join("")+'</table></div>':'<p class="muted">目前尚無勤務。</p>';
+}
 function renderDailyDutyStats(){
  const rows=state.people.map(p=>{
    const arr=currentDay().slots.filter(s=>s.person===p.name);
@@ -627,15 +758,8 @@ function simulateSwap(a,b){
  if(!rb[0])return [false,pa+" 換到 "+label(b)+" "+b.post+" 不符合："+rb[1]];
  return [true,"雙方資格、狀態、勤務衝突與休息規則均符合"];
 }
-function renderSwapTools(){
- const opts=shiftOptionList();$("#swapA").innerHTML=opts;$("#swapB").innerHTML=opts;
- $("#personCardSelect").innerHTML='<option value="">選擇人員</option>'+state.people.map(p=>'<option>'+p.name+'</option>').join("");
-}
-function renderPersonCard(name){
- if(!name){$("#personCardBox").innerHTML="";return;}
- const arr=currentDay().slots.filter(s=>s.person===name),c=allCounts();
- $("#personCardBox").innerHTML='<div class="notice"><b>'+name+'</b><br>'+(arr.length?arr.map(s=>label(s)+" "+s.post).join("、"):"今日無勤務")+'<br>總哨 '+(c.total[name]||0)+'｜夜哨 '+(c.night[name]||0)+'｜艱苦哨 '+(c.hard[name]||0)+'</div>';
-}
+
+
 function makeHandoverSummary(){
  const d=currentDate(),issues=validateSchedule(),filled=currentDay().slots.filter(s=>s.person).length;
  const counts={};state.people.forEach(p=>counts[p.status]=(counts[p.status]||0)+1);
@@ -646,16 +770,8 @@ function makeHandoverSummary(){
  $("#summaryBox").value=text;
 }
 
-function renderWhyOptions(){
- const slots=currentDay().slots;
- $("#whySlotSelect").innerHTML='<option value="">選擇哨位</option>'+slots.map(s=>'<option value="'+s.id+'">'+label(s)+' '+s.post+(s.person?'｜'+s.person:'｜空哨')+'</option>').join("");
-}
-function explainSlot(id){
- const s=currentDay().slots.find(x=>x.id===id);
- if(!s){$("#whyBox").innerHTML="請先選擇哨位";return;}
- const rows=state.people.map(p=>({name:p.name,r:eligible(p.name,s,s.id)}));
- $("#whyBox").innerHTML='<b>'+label(s)+' '+s.post+'</b><br>'+rows.map(x=>(x.r[0]?'✅ ':'❌ ')+x.name+'｜'+x.r[1]).join("<br>");
-}
+
+
 function movePerson(index,delta){
  const to=index+delta;
  if(to<0||to>=state.people.length)return;
@@ -712,7 +828,7 @@ function dashboard(){
 function renderPrevious(){
  $("#overridePrev").checked=state.prevOverride;
  const p=previousSlots();
- $("#prevBox").innerHTML=p.length?'<div class="tablewrap"><table><tr><th>時間</th><th>哨位</th><th>人員</th><th>標記</th></tr>'+p.map(s=>'<tr><td>'+label(s)+'</td><td>'+s.post+'</td><td>'+(state.prevOverride?'<select class="prevSelect" data-id="'+s.id+'">'+personOptions(s.person)+'</select>':(s.person||"—"))+'</td><td>'+tags(s)+'</td></tr>').join("")+'</table></div>':'<p class="muted">沒有昨日正式資料。</p>';
+ $("#prevBox").innerHTML=p.length?'<div class="tablewrap"><table><tr><th>時間</th><th>哨位</th><th>人員</th><th>標記</th></tr>'+p.map(s=>'<tr><td>'+label(s)+'</td><td>'+s.post+'</td><td>'+(state.prevOverride?'<select class="prevSelect" data-id="'+s.id+'">'+personOptions(s.person,s)+'</select>':(s.person||"—"))+'</td><td>'+tags(s)+'</td></tr>').join("")+'</table></div>':'<p class="muted">沒有昨日正式資料。</p>';
  $$(".prevSelect").forEach(sel=>sel.onchange=()=>{const arr=state.manualPrev[currentDate()]||[];const s=arr.find(x=>x.id===sel.dataset.id);if(s){s.person=sel.value;saveState();}});
 }
 function outingExcluded(p){return ["休假","受訓","當日18休假"].includes(p.status);}
@@ -791,6 +907,7 @@ function runRuleSelfTest(){
    add("安官08-12連續4小時例外",isAnguanFourHourException(ag1,ag2));
    add("6小時門檻",360===6*60);
    add("8小時優先門檻",480===8*60);
+   add("夜哨上限3次",3===3);
    const fake={status:"休假",qualifications:["安官","管制","門禁"]};
    add("休假不可排",statusAllowed(fake,{post:"安官",start:8,end:10})[0]===false);
    const noQual={status:"正常",qualifications:[]};
@@ -812,12 +929,15 @@ function renderMore(){
 
 function renderAll(){
  $("#clock").textContent=new Date().toLocaleString("zh-TW");
- renderPeople();renderScheduleTables();dashboard();renderPrevious();renderStats();renderErrands();renderMore();renderSwapTools();renderDailyDutyStats();renderWhyOptions();
+ renderPeople();renderScheduleTables();renderPostBoard();dashboard();renderPrevious();renderStats();renderErrands();renderMore();renderDailyDutyStats();renderNightSummary();
 }
 function currentWeekRange(d){
  const x=new Date(d+"T00:00:00"),offset=(x.getDay()+6)%7,mon=new Date(x);mon.setDate(x.getDate()-offset);const sun=new Date(mon);sun.setDate(mon.getDate()+6);return [todayISO(mon),todayISO(sun)];
 }
 
+
+$("#closeCandidate").onclick=()=>$("#candidateOverlay").style.display="none";
+$("#candidateOverlay").onclick=e=>{if(e.target.id==="candidateOverlay")$("#candidateOverlay").style.display="none";};
 $("#scheduleDate").value=todayISO();
 $("#outingDate").value=todayISO();
 $("#errandDate").value=todayISO();
@@ -855,7 +975,6 @@ $("#suggestErrand").onclick=()=>{
  const arr=suggestErrandPeople(type);
  $("#errandSuggestBox").innerHTML=arr.length?arr.slice(0,8).map((x,i)=>(i===0?'⭐ ':'')+x.name+'｜'+x.count+' 次').join("<br>"):"無可建議人員";
 };
-$("#whyCheckBtn").onclick=()=>explainSlot($("#whySlotSelect").value);
 $("#runSelfTest").onclick=runRuleSelfTest;
 $("#addErrandLog").onclick=()=>{
  const type=$("#errandTypeSelect").value,person=$("#errandPersonSelect").value,date=$("#errandDate").value;
@@ -866,25 +985,10 @@ $("#addErrandLog").onclick=()=>{
 $("#errandDate").onchange=()=>renderErrands();
 $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,status:"正常",qualifications:[]});$("#newPerson").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
-$("#reAssign").onclick=reAssignToday;
 $("#clearToday").onclick=clearTodaySchedule;
-$("#fullReAssign").onclick=fullReAssignToday;
 $("#homeAuto").onclick=()=>{autoAssign();document.querySelector('[data-page="schedule"]').click();};
 $("#homeIssues").onclick=()=>{document.querySelector('[data-page="schedule"]').click();$("#validationBox").innerHTML=issueBox(validateSchedule());};
 $("#homeLock").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=true);saveState();};
-$("#lockAll").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=true);saveState();};
-$("#personCardSelect").onchange=e=>renderPersonCard(e.target.value);
-$("#findSwap").onclick=()=>{
- const a=currentDay().slots.find(s=>s.id===$("#swapA").value);if(!a)return alert("請先選擇勤務 A");
- const candidates=currentDay().slots.filter(b=>b.id!==a.id&&b.person).map(b=>({b,r:simulateSwap(a,b)})).filter(x=>x.r[0]);
- $("#swapBox").innerHTML=candidates.length?'<b>可交換勤務：</b><br>'+candidates.slice(0,8).map(x=>label(x.b)+" "+x.b.post+"｜"+x.b.person).join("<br>"):"目前找不到符合全部規則的交換勤務";
-};
-$("#doSwap").onclick=()=>{
- const a=currentDay().slots.find(s=>s.id===$("#swapA").value),b=currentDay().slots.find(s=>s.id===$("#swapB").value);
- const r=simulateSwap(a,b);if(!r[0])return $("#swapBox").innerHTML='<b class="bad">❌ '+r[1]+'</b>';
- if(!confirm("模擬驗證通過。確定交換並鎖定兩個哨位？"))return;
- snapshot();const x=a.person;a.person=b.person;b.person=x;a.locked=b.locked=true;saveState();$("#swapBox").innerHTML='<b class="ok">✅ 交換完成並已鎖定</b>';
-};
 $("#addTodayOuting").onclick=()=>{
  const n=$("#todayOutingPerson").value;if(!n)return;const p=state.people.find(x=>x.name===n);
  if(!p||outingExcluded(p))return alert("此人目前狀態不可加入今日外散");
@@ -892,9 +996,7 @@ $("#addTodayOuting").onclick=()=>{
 };
 $("#makeSummary").onclick=makeHandoverSummary;
 
-$("#validateBtn").onclick=()=>{$("#validationBox").innerHTML=issueBox(validateSchedule());};
 $("#repairBtn").onclick=repairSchedule;
-$("#unlockAll").onclick=()=>{snapshot();currentDay().slots.forEach(s=>s.locked=false);saveState();};
 $("#saveOfficial").onclick=()=>{currentDay().official=true;currentDay().peopleQualifications={};state.people.forEach(p=>currentDay().peopleQualifications[p.name]=clone(p.qualifications||[]));saveState();alert("今日哨表與哨別資格已正式儲存；明日可自動沿用。");};
 $("#overridePrev").onchange=e=>{snapshot();state.prevOverride=e.target.checked;if(state.prevOverride&&!state.manualPrev[currentDate()])state.manualPrev[currentDate()]=clone((state.days[addDays(currentDate(),-1)]||{}).slots||baseSlots());saveState();};
 $("#addOuting").onclick=()=>{
@@ -908,7 +1010,7 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V5.1備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V5.3備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 $("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
@@ -921,6 +1023,35 @@ setInterval(()=>$("#clock").textContent=new Date().toLocaleString("zh-TW"),60000
 if("serviceWorker" in navigator){
  navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.unregister()))).catch(()=>{});
 }
+
+function exportDutyImage(){
+ const W=1600,H=1050,c=document.createElement("canvas");c.width=W;c.height=H;
+ const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);ctx.fillStyle="#111";
+ ctx.textAlign="center";ctx.font="bold 42px sans-serif";ctx.fillText("勤務哨表",W/2,60);
+ ctx.font="24px sans-serif";ctx.fillText("日期："+currentDate(),W/2,100);
+ const posts=["安官","管制","門禁"],cols=posts.map(p=>currentDay().slots.filter(s=>s.post===p));
+ const max=Math.max(...cols.map(x=>x.length)),left=70,top=140,tableW=W-140,colW=tableW/3,rowH=Math.min(72,(H-top-100)/(max+1));
+ ctx.lineWidth=2;ctx.strokeStyle="#222";
+ ctx.font="bold 25px sans-serif";
+ posts.forEach((p,i)=>{ctx.fillStyle="#f3f4f6";ctx.fillRect(left+i*colW,top,colW,rowH);ctx.strokeRect(left+i*colW,top,colW,rowH);ctx.fillStyle="#111";ctx.fillText(p,left+i*colW+colW/2,top+rowH*.65);});
+ ctx.font="22px sans-serif";
+ for(let r=0;r<max;r++){
+  for(let i=0;i<3;i++){
+   const x=left+i*colW,y=top+(r+1)*rowH,s=cols[i][r];
+   ctx.strokeRect(x,y,colW,rowH);
+   if(s){
+    ctx.fillStyle="#111";ctx.font="bold 20px sans-serif";ctx.fillText(s.time,x+colW*.28,y+rowH*.58);
+    ctx.font="22px sans-serif";ctx.fillText(s.person||"待安排",x+colW*.68,y+rowH*.58);
+   }
+  }
+ }
+ ctx.textAlign="right";ctx.font="16px sans-serif";ctx.fillStyle="#555";ctx.fillText("產生時間："+new Date().toLocaleString("zh-TW"),W-70,H-35);
+ c.toBlob(blob=>{
+  const a=document.createElement("a"),url=URL.createObjectURL(blob);a.href=url;a.download="勤務哨表_"+currentDate()+".png";a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);$("#exportStatus").textContent="✅ 正式哨表圖片已產生";
+ },"image/png");
+}
+$("#exportDutyImage").onclick=exportDutyImage;
 </script>
 </body>
 </html>
