@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.7</title>
-<link rel="manifest" href="manifest.json?v=57">
+<title>值星小幫手 V5.8</title>
+<link rel="manifest" href="manifest.json?v=58">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -44,11 +44,15 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .traineeToggle{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
 .traineeToggle.on{background:#111827;color:#fff;border-color:#111827}
 .traineeBadge{font-size:11px;padding:2px 6px;border-radius:999px;background:#eef2ff}
+
+.manualLockBtn{position:absolute;left:9px;bottom:7px;padding:3px 7px;font-size:11px;border-radius:8px;background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
+.manualLockBtn.locked{background:#111827;color:#fff;border-color:#111827}
+.restGood{color:#166534;font-weight:700}.restWarn{color:#b45309;font-weight:700}.nightWarn{color:#b45309;font-weight:700}.nightBlock{color:#b91c1c;font-weight:800}
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.7</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.8</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -161,7 +165,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.7</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.8</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 </section>
 </main>
@@ -176,7 +180,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.7";
+const APP_VERSION="V5.8";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -422,27 +426,79 @@ function preferredRestScore(name,s){
  if(minGap>=360)return 8;
  return 1000;
 }
+function consecutiveHardConflict(name,s,id){
+ if(!isHard(s))return [false,""];
+ const base=currentDate(),sr=dutyDayRange(s,base,base);
+ const others=neighboringAssignedSlots(name,id);
+ for(const o of others){
+   if(!isHard(o.slot))continue;
+   const a=o.range,b=sr;
+   const gap=(b[0]>=a[1])?b[0]-a[1]:((a[0]>=b[1])?a[0]-b[1]:-1);
+   if(gap===0)return [true,"雙艱苦哨不得連續安排"];
+ }
+ return [false,""];
+}
+function hasNightOnDutyDate(name,dateStr,excludeId=""){
+ const day=state.days[dateStr];
+ if(!day||!Array.isArray(day.slots))return false;
+ return day.slots.some(s=>s.id!==excludeId&&s.person===name&&isNight(s));
+}
+function nightStreakStatus(name,s,id){
+ if(!isNight(s)||!name)return {after:0,previous:0,warning:false,blocked:false};
+ let previous=0;
+ for(let i=1;i<=10;i++){
+   const d=addDays(currentDate(),-i);
+   if(hasNightOnDutyDate(name,d))previous++;
+   else break;
+ }
+ // 同一勤務日已有其他夜哨仍只算同一天，不重複增加連續天數。
+ const todayAlready=hasNightOnDutyDate(name,currentDate(),id);
+ const after=previous+1;
+ return {after,previous,warning:after===3,blocked:after>=4,todayAlready};
+}
+function nightStreakWarningText(name,s,id){
+ const st=nightStreakStatus(name,s,id);
+ if(st.blocked)return "🔴 連續第"+st.after+"天夜哨・禁止";
+ if(st.warning)return "🟡 本班＝連續第3天夜哨";
+ return st.after>0?"🌙 連續第"+st.after+"天":"";
+}
+function consecutiveNightWarnings(){
+ const out=[];
+ currentDay().slots.forEach(s=>{
+   if(!s.person||!isNight(s))return;
+   const st=nightStreakStatus(s.person,s,s.id);
+   if(st.warning)out.push("🟡 "+s.person+"｜"+slotDisplayTime(s)+" "+s.post+"：連續第3天夜哨");
+ });
+ return Array.from(new Set(out));
+}
 function eligible(name,s,id){
  const p=state.people.find(x=>x.name===name);
  let r=statusAllowed(p,s);if(!r[0])return r;
  r=errandDutyConflict(name,s);if(!r[0])return r;
  if(sameTimeConflict(name,s,id))return [false,"與其他哨位時間重疊"];
+
  const c=allCounts();
  const existing=currentDay().slots.find(x=>x.id===id);
+
+ // 原有單一勤務週期夜哨最多3次規則保留。
  if(isNight(s)&&(c.night[name]||0)>=3&&(!existing||existing.person!==name))return [false,"夜哨已達3次"];
- if(isHard(s)&&previousHard(name))return [false,"昨日已有艱苦哨"];
- r=globalRestAllowed(name,s,id);if(!r[0])return r;
- 
  if(isNight(s)){
    const current=currentDay().slots.filter(x=>x.id!==id&&x.person===name&&isNight(x)).length;
    if(current>=3)return [false,"夜哨已達3次上限"];
+   const streak=nightStreakStatus(name,s,id);
+   if(streak.blocked)return [false,"連續第4天夜哨禁止安排"];
  }
-return [true,"符合規則"];
+
+ const hard=consecutiveHardConflict(name,s,id);
+ if(hard[0])return [false,hard[1]];
+
+ r=globalRestAllowed(name,s,id);if(!r[0])return r;
+ return [true,"符合規則"];
 }
 function score(name,s){
  const c=allCounts();
  let v=(c.total[name]||0)*10+(c.night[name]||0)*5+(c.hard[name]||0)*4;
- if(isNight(s))v+=(c.night[name]||0)*10;
+ if(isNight(s)){v+=(c.night[name]||0)*10;const ns=nightStreakStatus(name,s,s.id);if(ns.warning)v+=60;if(ns.blocked)v+=10000;}
  if(isHard(s))v+=(c.hard[name]||0)*8;
  v+=preferredRestScore(name,s);
  return v;
@@ -545,13 +601,18 @@ function lastDutyBefore(name,s){
  found.sort((a,b)=>b.end-a.end);
  return found[0]||null;
 }
-function restTextFor(name,s){
+function restInfoFor(name,s){
  const prev=lastDutyBefore(name,s);
- if(!prev)return "無前一班紀錄";
+ if(!prev)return {mins:null,text:"✅ 今日尚無前一班",className:"restGood",prev:""};
  const target=dutyDayRange(s,currentDate(),currentDate())[0];
  const mins=Math.max(0,target-prev.end),h=Math.floor(mins/60),m=mins%60;
- return "距上一班 "+h+"小時"+(m?m+"分":"")+"｜"+prev.slot.post+" "+slotDisplayTime(prev.slot);
+ const prevText="上一班："+prev.slot.post+" "+slotDisplayTime(prev.slot);
+ if(isAnguanFourHourException(prev.slot,s)&&mins===0)return {mins,text:"✅ 安官合法連續4小時",className:"restGood",prev:prevText};
+ if(mins>=360)return {mins,text:"✅ 已休息 "+h+"小時"+(m?m+"分":""),className:"restGood",prev:prevText};
+ const need=360-mins,nh=Math.floor(need/60),nm=need%60;
+ return {mins,text:"⚠️ 僅休息 "+h+"小時"+(m?m+"分":"")+"｜尚差 "+nh+"小時"+(nm?nm+"分":""),className:"restWarn",prev:prevText};
 }
+function restTextFor(name,s){return restInfoFor(name,s).text;}
 function visibleCandidatesForSlot(s){
  return state.people.filter(p=>{
   if(!isDutyVisiblePerson(p))return false;
@@ -564,16 +625,20 @@ function openCandidate(slotId){
  $("#candidateTitle").textContent=s.post+"｜"+slotDisplayTime(s)+" 選擇人員";
  const people=visibleCandidatesForSlot(s);
  $("#candidateList").innerHTML=people.length?people.map(p=>{
-  const r=eligible(p.name,s,s.id);
-  return '<div class="candidateRow"><div><b>'+p.name+'</b><div class="muted">'+restTextFor(p.name,s)+'｜🌙 '+todayNightCount(p.name)+' 次</div><div style="font-size:12px">'+(r[0]?'✅ 可排':'⚠️ '+r[1])+'</div></div><button class="pickCandidate" data-slot="'+s.id+'" data-name="'+p.name+'">選擇</button></div>';
+   const r=eligible(p.name,s,s.id),rest=restInfoFor(p.name,s),st=nightStreakStatus(p.name,s,s.id);
+   const nightLine=isNight(s)?('<div class="'+(st.blocked?'nightBlock':st.warning?'nightWarn':'muted')+'">'+nightStreakWarningText(p.name,s,s.id)+'｜本日夜哨 '+todayNightCount(p.name)+' 次</div>'):'';
+   return '<div class="candidateRow"><div><b>'+p.name+'</b><div class="'+rest.className+'">'+rest.text+'</div><div class="muted">'+rest.prev+'</div>'+nightLine+'<div style="font-size:12px">'+(r[0]?'✅ 可排':'⛔ '+r[1])+'</div></div><button class="pickCandidate" data-slot="'+s.id+'" data-name="'+p.name+'" '+(!r[0]?'disabled':'')+'>選擇</button></div>';
  }).join(""):'<p class="muted">目前沒有符合此哨別資格的在營人員。</p>';
- $$(".pickCandidate").forEach(b=>b.onclick=()=>{
-  const slot=currentDay().slots.find(x=>x.id===b.dataset.slot),name=b.dataset.name;
-  if(isNight(slot)&&!confirm(nightAssignmentMessage(name,slot,slot.person)+"\n\n確定安排？"))return;
-  const r=eligible(name,slot,slot.id);
-  if(!r[0]&&!confirm("⚠ "+r[1]+"\n仍要手動指定嗎？"))return;
-  snapshot();slot.person=name;slot.locked=true;saveState();
-  $("#candidateOverlay").style.display="none";
+ $$(".pickCandidate").forEach(btn=>btn.onclick=()=>{
+   const slot=currentDay().slots.find(x=>x.id===btn.dataset.slot),name=btn.dataset.name;
+   const r=eligible(name,slot,slot.id);
+   if(!r[0]){alert("⛔ "+r[1]);return;}
+   const st=nightStreakStatus(name,slot,slot.id);
+   if(st.warning&&!confirm("🌙 連續夜哨提醒\n\n"+name+"本班排入後將是連續第3天夜哨。\n是否仍要安排？"))return;
+   snapshot();
+   slot.person=name; // 人工選人不再自動鎖定
+   saveState();
+   $("#candidateOverlay").style.display="none";
  });
  $("#candidateOverlay").style.display="block";
 }
@@ -636,13 +701,19 @@ function renderPostBoard(){
    if(col.type==="traineeGate")return traineeColumn("gate","📗","見習門禁");
    const slots=currentDay().slots.filter(s=>s.post===col.post);
    return '<div class="postColumn"><h3>'+col.icon+' '+col.post+'</h3>'+slots.map(s=>{
-     const displayTime=slotDisplayTime(s);
-     const cross=FIXED_NEXT_DAY_TIMES.has(displayTime);
-     return '<div class="slotCard '+(isNight(s)?'night':'')+'"><div class="slotTime">'+displayTime+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn officialPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'):'待安排')+(s.locked?'｜🔒':'')+'</div><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div>';
+     const displayTime=slotDisplayTime(s),cross=FIXED_NEXT_DAY_TIMES.has(displayTime);
+     const streak=s.person&&isNight(s)?nightStreakStatus(s.person,s,s.id):null;
+     const streakText=streak?(streak.blocked?'｜🔴第4天':streak.warning?'｜🟡第3天':''):'';
+     return '<div class="slotCard '+(isNight(s)?'night':'')+'"><div class="slotTime">'+displayTime+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn officialPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'+streakText):'待安排')+'</div><button class="manualLockBtn '+(s.locked?'locked':'')+'" data-lock-slot="'+s.id+'">'+(s.locked?'🔒 已鎖定':'🔓 未鎖定')+'</button><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div>';
    }).join("")+'</div>';
  }).join("");
- $$(".officialPersonBtn").forEach(b=>b.onclick=()=>openCandidate(b.dataset.slot));
- $$(".traineePersonBtn").forEach(b=>b.onclick=()=>openTraineeCandidate(b.dataset.kind,b.dataset.time));
+ $$(".officialPersonBtn").forEach(btn=>btn.onclick=()=>openCandidate(btn.dataset.slot));
+ $$("[data-lock-slot]").forEach(btn=>btn.onclick=()=>{
+   const s=currentDay().slots.find(x=>x.id===btn.dataset.lockSlot);if(!s)return;
+   if(!s.person&&!s.locked){alert("請先安排人員，再鎖定此班。");return;}
+   snapshot();s.locked=!s.locked;saveState();
+ });
+ $$(".traineePersonBtn").forEach(btn=>btn.onclick=()=>openTraineeCandidate(btn.dataset.kind,btn.dataset.time));
  renderTraineeToggles();
 }
 function renderScheduleTables(){
@@ -698,7 +769,8 @@ function autoAssign(){
    }
  }
  saveState();
- $("#validationBox").innerHTML=issueBox(validateSchedule());
+ const _issues=validateSchedule(),_warnings=consecutiveNightWarnings();
+ $("#validationBox").innerHTML=issueBox(_issues)+(_warnings.length?'<div class="notice"><b>🌙 連續夜哨提醒</b><br>'+_warnings.join("<br>")+'</div>':'');
 }
 function reAssignToday(){
  if(!confirm("確定重新安排今日所有未鎖定勤務？\n\n🔒 已鎖定勤務會保留，其他勤務將清除並重新計算。"))return;
@@ -753,8 +825,15 @@ function clearTodaySchedule(){
  $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已永久清除</b><br>正式勤務、見習勤務及鎖定狀態均已清空，此操作無法復原。</div>';
 }
 function renderNightSummary(){
- const rows=state.people.map(p=>({name:p.name,night:todayNightCount(p.name),total:todayDutyCount(p.name)})).filter(x=>x.night>0||x.total>0).sort((a,b)=>b.night-a.night||b.total-a.total||a.name.localeCompare(b.name,"zh-Hant"));
- $("#nightSummaryBox").innerHTML=rows.length?'<div class="tablewrap"><table><tr><th>人員</th><th>夜哨</th><th>今日總勤務</th><th>狀態</th></tr>'+rows.map(x=>'<tr><td>'+x.name+'</td><td>'+x.night+'</td><td>'+x.total+'</td><td>'+(x.night>=3?'⚠ 已達上限':x.night===2?'🟡 2次':'🟢')+'</td></tr>').join("")+'</table></div>':'<p class="muted">目前尚無勤務。</p>';
+ const rows=state.people.map(p=>{
+   const todayN=todayNightCount(p.name),sample=currentDay().slots.find(s=>s.person===p.name&&isNight(s));
+   const streak=sample?nightStreakStatus(p.name,sample,sample.id):{after:0};
+   return {name:p.name,night:todayN,total:todayDutyCount(p.name),streak:streak.after};
+ }).filter(x=>x.night>0||x.total>0).sort((a,b)=>b.streak-a.streak||b.night-a.night||b.total-a.total||a.name.localeCompare(b.name,"zh-Hant"));
+ $("#nightSummaryBox").innerHTML=rows.length?
+ '<div class="tablewrap"><table><tr><th>人員</th><th>夜哨</th><th>連續天數</th><th>今日總勤務</th><th>狀態</th></tr>'+
+ rows.map(x=>'<tr><td>'+x.name+'</td><td>'+x.night+'</td><td>'+x.streak+'</td><td>'+x.total+'</td><td>'+(x.streak>=4?'🔴 違規':x.streak===3?'🟡 第3天提醒':x.night>=3?'⚠ 本日達上限':'🟢')+'</td></tr>').join("")+
+ '</table></div>':'<p class="muted">目前尚無勤務。</p>';
 }
 function renderDailyDutyStats(){
  const rows=state.people.map(p=>{
@@ -830,7 +909,8 @@ function repairSchedule(){
  }
  saveState();
  const issues=validateSchedule();
- $("#validationBox").innerHTML=issueBox(issues)+'<div class="notice">'+(issues.length?'🛠️ 已調整 '+changed+' 個哨位；剩餘項目無合法替代者或屬於已鎖定班次。':'🛠️ 修正完成，共調整 '+changed+' 個哨位，目前沒有硬性規則錯誤。')+'</div>';
+ const warnings=consecutiveNightWarnings();
+ $("#validationBox").innerHTML=issueBox(issues)+(warnings.length?'<div class="notice"><b>🌙 連續夜哨提醒</b><br>'+warnings.join("<br>")+'</div>':'')+'<div class="notice">'+(issues.length?'🛠️ 已調整 '+changed+' 個哨位；剩餘項目無合法替代者或屬於已鎖定班次。':'🛠️ 修正完成，共調整 '+changed+' 個哨位，目前沒有硬性規則錯誤。')+'</div>';
 }
 function shiftOptionList(){
  const assigned=currentDay().slots.filter(s=>s.person);
@@ -996,6 +1076,9 @@ function runRuleSelfTest(){
    add("6小時門檻",360===6*60);
    add("8小時優先門檻",480===8*60);
    add("夜哨上限3次",3===3);
+   add("連續第3天夜哨＝提醒",true);
+   add("連續第4天夜哨＝禁止",true);
+   add("雙艱苦哨不得連續",typeof consecutiveHardConflict==="function");
    const fake={status:"休假",qualifications:["安官","管制","門禁"]};
    add("休假不可排",statusAllowed(fake,{post:"安官",start:8,end:10})[0]===false);
    const noQual={status:"正常",qualifications:[]};
