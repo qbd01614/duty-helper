@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.18.3</title>
-<link rel="manifest" href="manifest.json?v=5183">
+<title>值星小幫手 V5.18.4</title>
+<link rel="manifest" href="manifest.json?v=5184">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -82,13 +82,11 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .hardTag{display:inline-block;font-size:10px;padding:2px 5px;border-radius:999px;background:#6b7280;color:#fff;font-weight:800}
 
 .visitorMultiSelect{position:relative}
-.visitorSelectedChip{display:inline-flex;align-items:center;gap:4px;padding:4px 7px;border:1px solid #e5e7eb;border-radius:999px;margin:3px;font-size:12px}
-.visitorSelectedChip button{padding:1px 5px;font-size:10px}
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.18.3</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.18.4</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -144,11 +142,14 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div class="card">
  <h3>🏢 會客室勤務（手動）</h3>
  <p class="muted">只接受 08:00–17:00 內的時段，可複選人員。智慧排哨不會新增、修改或清除本區。當日被排會客室者，正式哨原則上只允許 22:00–04:00。</p>
- <div class="row"><input id="visitorStart" type="time" min="08:00" max="17:00" value="08:00"><span>～</span><input id="visitorEnd" type="time" min="08:00" max="17:00" value="17:00"><button id="addVisitorDuty">新增會客室勤務</button></div>
- <div class="visitorMultiSelect" style="margin-top:8px">
-   <div class="row"><select id="visitorPersonSelect"><option value="">選擇會客室人員</option></select><button id="visitorAddPerson" type="button">加入</button><button id="visitorClearPeople" type="button">清空</button></div>
-   <div id="visitorSelectedSummary" class="notice" style="margin-top:6px">尚未選擇人員</div>
+ <div class="row">
+   <input id="visitorStart" type="time" min="08:00" max="17:00" value="08:00">
+   <span>～</span>
+   <input id="visitorEnd" type="time" min="08:00" max="17:00" value="10:00">
+   <select id="visitorPersonSelect"><option value="">選擇會客室人員</option></select>
+   <button id="addVisitorDuty">新增會客室勤務</button>
  </div>
+ <p class="muted">每筆只安排 1 人；不同時段可新增不同人。同一時段需要多人時，建立多筆相同時段即可。</p>
  <div id="visitorDutyList" style="margin-top:8px"></div>
 </div>
 <div class="card"><h3>🧩 欄位／卡片式哨表</h3><div id="postBoard" class="postBoard"></div></div>
@@ -209,7 +210,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.18.3</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.18.4</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -245,7 +246,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.18.3";
+const APP_VERSION="V5.18.4";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -264,12 +265,14 @@ function normalizePeople(s){
  s.handovers=Array.isArray(s.handovers)?s.handovers:[]; s.errandTypes=Array.isArray(s.errandTypes)?s.errandTypes:[];
  s.errandTypes=s.errandTypes.map(x=>typeof x==="string"?{name:x,blocksDuty:false,start:"08:00",end:"17:00"}:Object.assign({blocksDuty:false,start:"08:00",end:"17:00"},x,{blocksDuty:false}));
  s.errandLogs=Array.isArray(s.errandLogs)?s.errandLogs:[];
- s.errandLogs=s.errandLogs.map(l=>{
-   const t=s.errandTypes.find(x=>x.name===l.type);
-   return Object.assign({},l,{start:l.start||(t?t.start:"08:00"),end:l.end||(t?t.end:"17:00")});
- });
+ s.errandLogs=s.errandLogs.map(l=>({id:l.id,type:l.type,person:l.person,date:l.date}));
  s.emtAssignments=Array.isArray(s.emtAssignments)?s.emtAssignments:[];
  s.visitorAssignments=Array.isArray(s.visitorAssignments)?s.visitorAssignments:[];
+ s.visitorAssignments=s.visitorAssignments.flatMap((x,i)=>{
+   if(x&&x.person)return [Object.assign({},x)];
+   const ps=Array.isArray(x&&x.people)?x.people.filter(Boolean):[];
+   return ps.map((name,j)=>({id:(x.id||("visitor-"+i))+"-"+j,date:x.date,start:x.start,end:x.end,person:name}));
+ });
  s.rulePasses=Array.isArray(s.rulePasses)?s.rulePasses:[];
  s.peopleSortMode=s.peopleSortMode==="rank"?"rank":"manual";
  s.people=(s.people||[]).map(p=>({
@@ -569,7 +572,7 @@ function visitorAssignmentsForDate(dateStr=currentDate()){
  return (state.visitorAssignments||[]).filter(x=>x.date===dateStr);
 }
 function visitorAssigned(name,dateStr=currentDate()){
- return visitorAssignmentsForDate(dateStr).some(x=>(x.people||[]).includes(name));
+ return visitorAssignmentsForDate(dateStr).some(x=>x.person===name);
 }
 function visitorDutyRestriction(name,s){
  if(!visitorAssigned(name,currentDate()))return [false,""];
@@ -1196,15 +1199,15 @@ function renderLivePeople(){
  const m=timeToMinutes(v);
  const dutyMap=getLiveDutyAssignments(selectedDate,v);
 
- // 公差：直接使用「該筆公差紀錄自己的日期、開始、結束時間」判斷。
- // 同時檢查查詢日與前一日，支援跨午夜公差。
+ // 公差：以「目前公差類型設定的開始/結束時間」作為唯一時間來源。
+ // 公差紀錄只決定日期、人員、類型；修改公差時間後，即時查詢立即套用新時間。
  const errands=[];
  const errandNames=new Set();
  [addDays(selectedDate,-1),selectedDate].forEach(recordDate=>{
    (state.errandLogs||[]).filter(l=>l.date===recordDate).forEach(l=>{
      const def=errandTypeByName(l.type);
-     const start=l.start||(def?def.start:"08:00");
-     const end=l.end||(def?def.end:"17:00");
+     if(!def)return;
+     const start=def.start,end=def.end;
      if(timedRecordActiveOnDate(recordDate,start,end,selectedDate,v)){
        const key=l.person+"｜"+l.type+"｜"+start+"–"+end;
        if(!errands.includes(key))errands.push(key);
@@ -1227,10 +1230,11 @@ function renderLivePeople(){
  const visitorNames=new Set();
  visitorAssignmentsForDate(selectedDate)
    .filter(x=>timedRecordActive(x.start,x.end,v))
-   .forEach(x=>(x.people||[]).forEach(n=>{
-     visitorRows.push(n+"｜會客室｜"+x.start+"–"+x.end);
-     visitorNames.add(n);
-   }));
+   .forEach(x=>{
+     if(!x.person)return;
+     visitorRows.push(x.person+"｜會客室｜"+x.start+"–"+x.end);
+     visitorNames.add(x.person);
+   });
 
  const g={expected:[],actual:[],duty:[],training:[],leave:[],rest:[],combat:[]};
  state.people.forEach(p=>{if((p.qualifications||[]).includes("戰鬥隊"))g.combat.push(p.name);});
@@ -1285,7 +1289,7 @@ function renderLivePeople(){
  ];
 
  $("#livePeopleBox").innerHTML=
-   '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜公差依每筆紀錄的日期＋起訖時間即時比對</div>'+
+   '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜公差依目前公差設定時間即時比對</div>'+
    '<div class="livePeopleGrid">'+cards.map(([title,names])=>
      '<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+
      (names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+
@@ -1415,7 +1419,7 @@ function renderErrands(){
  if(previousPerson&&eligiblePeople.some(p=>p.name===previousPerson))$("#errandPersonSelect").value=previousPerson;
  const d=$("#errandViewDate").value||$("#errandDate").value||currentDate();
  const today=state.errandLogs.filter(x=>x.date===d);
- $("#todayErrandBox").innerHTML='<h3>📅 '+d+' 今日公差（'+today.length+'）</h3>'+(today.length?today.map(x=>'<div class="item"><span><b>'+x.person+'</b>｜'+x.type+'｜'+(x.start||"")+"–"+(x.end||"")+'</span><button class="errandLogDel" data-id="'+x.id+'">🗑️刪除</button></div>').join(""):'<p class="muted">今日尚無公差。</p>');
+ $("#todayErrandBox").innerHTML='<h3>📅 '+d+' 今日公差（'+today.length+'）</h3>'+(today.length?today.map(x=>{const t=errandTypeByName(x.type);return '<div class="item"><span><b>'+x.person+'</b>｜'+x.type+'｜'+(t?t.start+"–"+t.end:"未設定時間")+'</span><button class="errandLogDel" data-id="'+x.id+'">🗑️刪除</button></div>';}).join(""):'<p class="muted">今日尚無公差。</p>');
  const typeRows=state.errandTypes.map(t=>{
    const people=state.people.map(p=>{
      const logs=state.errandLogs.filter(x=>x.type===t.name&&x.person===p.name);
@@ -1437,13 +1441,7 @@ function renderErrands(){
    const end=prompt("結束時間 HH:MM（可修改）",t.end);if(end===null)return;
    if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(start.trim())||!/^([01]\d|2[0-3]):[0-5]\d$/.test(end.trim()))return alert("時間格式請使用 HH:MM");
    const old=t.name;snapshot();t.name=name.trim()||t.name;t.start=start.trim()||t.start;t.end=end.trim()||t.end;
-   state.errandLogs.forEach(l=>{
-     if(l.type===old){
-       l.type=t.name;
-       l.start=t.start;
-       l.end=t.end;
-     }
-   });
+   state.errandLogs.forEach(l=>{if(l.type===old)l.type=t.name;});
    saveState();
  });
  $$(".errandTypeDel").forEach(x=>x.onclick=()=>{
@@ -1530,57 +1528,47 @@ function saveEmt(kind,pid,sid,eid){
  const allDay=kind==="緊急醫療小組 EMT";
  snapshot();state.emtAssignments.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),date:$("#emtDate").value||currentDate(),kind,person,start:allDay?"00:00":$("#"+sid).value,end:allDay?"24:00":$("#"+eid).value});saveState();
 }
-let visitorDraftPeople=[];
 function visitorEligiblePeople(){
  return state.people.filter(p=>!["休假","受訓","免哨"].includes(p.status));
 }
-function renderVisitorSelectedSummary(){
- if(!$("#visitorSelectedSummary"))return;
- $("#visitorSelectedSummary").innerHTML=visitorDraftPeople.length?
-   '<b>已選 '+visitorDraftPeople.length+' 人</b><br>'+visitorDraftPeople.map(n=>'<span class="visitorSelectedChip">'+n+' <button class="visitorRemovePerson" data-name="'+n+'">×</button></span>').join(""):
-   '尚未選擇人員';
- $$(".visitorRemovePerson").forEach(b=>b.onclick=()=>{
-   visitorDraftPeople=visitorDraftPeople.filter(n=>n!==b.dataset.name);
-   renderVisitorSelectedSummary();
- });
-}
 function renderVisitorDuty(){
  if(!$("#visitorPersonSelect"))return;
- const d=currentDate(),people=visitorEligiblePeople();
- const prev=$("#visitorPersonSelect").value;
+ const d=currentDate(),people=visitorEligiblePeople(),prev=$("#visitorPersonSelect").value;
  $("#visitorPersonSelect").innerHTML='<option value="">選擇會客室人員</option>'+people.map(p=>'<option value="'+p.name+'">'+p.name+'</option>').join("");
  if(people.some(p=>p.name===prev))$("#visitorPersonSelect").value=prev;
- // Remove no-longer-eligible names from current draft.
- visitorDraftPeople=visitorDraftPeople.filter(n=>people.some(p=>p.name===n));
- renderVisitorSelectedSummary();
 
  const rows=visitorAssignmentsForDate(d);
  $("#visitorDutyList").innerHTML=rows.length?rows.map(x=>
-   '<div class="item"><span><b>'+x.start+'–'+x.end+'</b>｜'+(x.people||[]).join("、")+'</span><span><button class="visitorEdit" data-id="'+x.id+'">✏️ 修正</button><button class="visitorDel" data-id="'+x.id+'">🗑️ 刪除</button></span></div>'
+   '<div class="item"><span><b>'+x.start+'–'+x.end+'</b>｜'+x.person+'</span><span><button class="visitorEdit" data-id="'+x.id+'">✏️ 修正</button><button class="visitorDel" data-id="'+x.id+'">🗑️ 刪除</button></span></div>'
  ).join(""):'<div class="muted">本日尚未安排會客室勤務。</div>';
 
- $$(".visitorDel").forEach(b=>b.onclick=()=>{snapshot();state.visitorAssignments=state.visitorAssignments.filter(x=>x.id!==b.dataset.id);saveState();});
+ $$(".visitorDel").forEach(b=>b.onclick=()=>{
+   snapshot();state.visitorAssignments=state.visitorAssignments.filter(x=>x.id!==b.dataset.id);saveState();
+ });
  $$(".visitorEdit").forEach(b=>b.onclick=()=>{
    const x=state.visitorAssignments.find(v=>v.id===b.dataset.id);if(!x)return;
    const start=prompt("開始時間（08:00–17:00）",x.start);if(start===null)return;
    const end=prompt("結束時間（08:00–17:00）",x.end);if(end===null)return;
    if(!validVisitorTime(start,end))return alert("會客室勤務必須完整落在 08:00–17:00，且結束時間需晚於開始時間。");
-   const peopleText=prompt("人員（多人請用、或逗號分隔）",(x.people||[]).join("、"));if(peopleText===null)return;
-   const arr=peopleText.split(/[、,，]/).map(v=>v.trim()).filter(Boolean).filter(n=>state.people.some(p=>p.name===n));
-   if(!arr.length)return alert("至少需要一位有效人員");
-   snapshot();x.start=start;x.end=end;x.people=Array.from(new Set(arr));saveState();
+   const person=prompt("會客室勤務人員",x.person);if(person===null)return;
+   const name=person.trim();
+   if(!state.people.some(p=>p.name===name))return alert("找不到此人員");
+   snapshot();x.start=start;x.end=end;x.person=name;saveState();
  });
 }
 function validVisitorTime(start,end){
- const a=timeToMinutes(start),b=timeToMinutes(end);return a>=480&&b<=1020&&b>a;
+ const a=timeToMinutes(start),b=timeToMinutes(end);
+ return a>=480&&b<=1020&&b>a;
 }
 function addVisitorAssignment(){
- const start=$("#visitorStart").value,end=$("#visitorEnd").value;
+ const start=$("#visitorStart").value,end=$("#visitorEnd").value,person=$("#visitorPersonSelect").value;
  if(!validVisitorTime(start,end))return alert("會客室勤務時間只能設定在 08:00–17:00 之間。");
- if(!visitorDraftPeople.length)return alert("請至少選擇一位會客室勤務人員");
+ if(!person)return alert("請選擇會客室勤務人員");
  snapshot();
- state.visitorAssignments.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),date:currentDate(),start,end,people:Array.from(new Set(visitorDraftPeople))});
- visitorDraftPeople=[];
+ state.visitorAssignments.push({
+   id:Date.now().toString(36)+Math.random().toString(36).slice(2),
+   date:currentDate(),start,end,person
+ });
  saveState();
 }
 function renderAll(){
@@ -1593,13 +1581,6 @@ function currentWeekRange(d){
 
 
 $("#addVisitorDuty").onclick=addVisitorAssignment;
-$("#visitorAddPerson").onclick=()=>{
- const n=$("#visitorPersonSelect").value;
- if(!n)return alert("請先選擇人員");
- if(!visitorDraftPeople.includes(n))visitorDraftPeople.push(n);
- renderVisitorSelectedSummary();
-};
-$("#visitorClearPeople").onclick=()=>{visitorDraftPeople=[];renderVisitorSelectedSummary();};
 
 $("#closePrevCandidate").onclick=()=>$("#prevCandidateOverlay").style.display="none";
 $("#prevCandidateOverlay").onclick=e=>{if(e.target.id==="prevCandidateOverlay")$("#prevCandidateOverlay").style.display="none";};
@@ -1669,7 +1650,7 @@ $("#addErrandLog").onclick=()=>{
  if(!type||!person||!date)return alert("請選擇公差、人員與日期");
  const pp=state.people.find(p=>p.name===person);if(!pp||!isInCampForErrand(pp))return alert("此人目前非在營可運用人力");
  const def=errandTypeByName(type);if(!def)return alert("找不到公差時間設定");
- snapshot();state.errandLogs.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),type,person,date,start:def.start,end:def.end});saveState();
+ snapshot();state.errandLogs.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),type,person,date});saveState();
 };
 $("#errandDate").onchange=()=>renderErrands();
 $("#errandViewDate").onchange=()=>renderErrands();
@@ -1825,7 +1806,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=5183&refresh="+Date.now()+hash);
+  location.replace(base+"?v=5184&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
