@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.9</title>
-<link rel="manifest" href="manifest.json?v=59">
+<title>值星小幫手 V5.10</title>
+<link rel="manifest" href="manifest.json?v=510">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -52,7 +52,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.9</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.10</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -139,27 +139,20 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </section>
 
 <section id="stats" class="page">
- <div class="card"><h2>🧰 公差專區</h2>
- <div class="row"><input id="newErrandType" placeholder="輸入公差名稱"><button id="addErrandType">新增公差</button></div>
-    <div class="row" style="margin-top:8px">
-      <label><input id="newErrandBlocksDuty" type="checkbox"> 公差期間不可排哨</label>
-      <input id="newErrandStart" type="time" value="08:00">
-      <input id="newErrandEnd" type="time" value="17:00">
-    </div>
- <div id="errandTypeList" style="margin-top:8px"></div><div id="errandAvailableBox" class="notice" style="margin-top:8px"></div>
- <hr style="border:0;border-top:1px solid #eee;margin:14px 0">
- <div class="row"><select id="errandTypeSelect"></select><select id="errandPersonSelect"></select><input id="errandDate" type="date"><button id="suggestErrand">⭐ 建議人員</button><button id="addErrandLog">登記公差</button></div>
-    <div id="errandSuggestBox" class="notice"></div>
- <div id="todayErrandBox" style="margin-top:10px"></div>
- </div>
- <div class="card"><h3>📊 公差統計</h3><div id="errandStats"></div></div>
-<div class="card"><h2>📊 勤務統計</h2><div id="statsBox"></div></div>
- <div class="card"><h3>🚶 今日可外散（手動設定）</h3>
-<div class="row"><select id="todayOutingPerson"></select><button id="addTodayOuting">加入今日名單</button></div><div id="todayOutingBox"></div></div>
-<div class="card"><h3>✅ 已外散登記（每週最多 1 次）</h3><div class="row"><select id="outingPerson"></select><input id="outingDate" type="date"><button id="addOuting">登記</button></div><div id="outingBox"></div></div>
+ <div class="card"><h2>📊 勤務統計</h2><div id="statsBox"></div></div>
 </section>
 
 <section id="more" class="page">
+ <div class="card"><h2>☰ 更多</h2><p class="muted">選擇要進入的獨立專區。</p>
+ <div class="grid2">
+  <button class="moreLaunch" data-subpage="settingsPage">⚙️ 設定專區</button>
+  <button class="moreLaunch" data-subpage="errandPage">🧰 公差專區</button>
+  <button class="moreLaunch" data-subpage="outingPage">🚶 外散專區</button>
+ </div>
+ </div>
+</section><section id="settingsPage" class="page">
+ <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">⚙️ 設定專區</h2></div></div>
+ 
  <div class="card"><h2>✅ 待辦事項</h2><input id="todoText" placeholder="待辦事項"><input id="todoTime" type="datetime-local"><button id="addTodo">新增</button><div id="todoList"></div></div>
  <div class="card"><h2>📝 自動交接摘要</h2><button id="makeSummary">產生今日摘要</button><textarea id="summaryBox" readonly placeholder="按上方按鈕產生摘要"></textarea></div><div class="card"><h2>📝 電子交接簿</h2><input id="handoverFrom" placeholder="交班人"><input id="handoverTo" placeholder="接班人"><textarea id="handoverNote" placeholder="交接事項"></textarea><button id="saveHandover">儲存交接</button><div id="handoverList"></div></div>
  <div class="card"><h2>🧪 排班引擎自我測試</h2><button id="runSelfTest">執行規則測試</button><div id="selfTestBox" class="notice">尚未執行。</div></div>
@@ -171,22 +164,36 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.9</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.10</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
+
+</section><section id="errandPage" class="page">
+ <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">🧰 公差專區</h2></div>
+ <div class="row"><input id="newErrandType" placeholder="輸入公差名稱"><button id="addErrandType">新增公差</button></div>
+ <div class="row" style="margin-top:8px"><label><input id="newErrandBlocksDuty" type="checkbox"> 公差期間不可排哨</label><input id="newErrandStart" type="time" value="08:00"><input id="newErrandEnd" type="time" value="17:00"></div>
+ <div id="errandTypeList" style="margin-top:8px"></div><div id="errandAvailableBox" class="notice" style="margin-top:8px"></div>
+ <hr style="border:0;border-top:1px solid #eee;margin:14px 0">
+ <div class="row"><select id="errandTypeSelect"></select><select id="errandPersonSelect"></select><input id="errandDate" type="date"><button id="suggestErrand">⭐ 建議人員</button><button id="addErrandLog">登記公差</button></div>
+ <div id="errandSuggestBox" class="notice"></div><div id="todayErrandBox" style="margin-top:10px"></div></div>
+ <div class="card"><h3>📊 公差統計</h3><div id="errandStats"></div></div>
+</section><section id="outingPage" class="page">
+ <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">🚶 外散專區</h2></div></div>
+ <div class="card"><h3>🚶 今日可外散（手動設定）</h3><div class="row"><select id="todayOutingPerson"></select><button id="addTodayOuting">加入今日名單</button></div><div id="todayOutingBox"></div></div>
+ <div class="card"><h3>✅ 已外散登記（每週最多 1 次）</h3><div class="row"><select id="outingPerson"></select><input id="outingDate" type="date"><button id="addOuting">登記</button></div><div id="outingBox"></div></div>
 </section>
 </main>
 
 <nav class="bottom">
  <button data-page="home" class="active">🏠<span>首頁</span></button>
- <button data-page="peoplePage">👥<span>人員</span></button>
  <button data-page="schedule">📋<span>排哨</span></button>
  <button data-page="stats">📊<span>統計</span></button>
+ <button data-page="peoplePage">👥<span>人員</span></button>
  <button data-page="more">☰<span>更多</span></button>
 </nav>
 
 <script>
 "use strict";
-const APP_VERSION="V5.9";
+const APP_VERSION="V5.10";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -264,8 +271,12 @@ function isNight(s){
  return overlap(r[0],r[1],1440,1680)||overlap(r[0],r[1],0,240);
 }
 function isHard(s){
- const r=slotRange(s);
- return overlap(r[0],r[1],720,840)||overlap(r[0],r[1],1440,1680)||overlap(r[0],r[1],0,240);
+ // 艱苦哨採指定完整班次判定，避免僅部分時間重疊就被誤算。
+ // 門禁 13-15 明確不是艱苦哨。
+ const time=slotDisplayTime(s);
+ if(time==="13-15")return false;
+ const hardTimes=new Set(["12-14","00-02","02-04","23-01","01-03","03-05"]);
+ return hardTimes.has(time);
 }
 function hhmmToMin(v){
  const p=String(v||"00:00").split(":").map(Number);return (p[0]||0)*60+(p[1]||0);
@@ -989,9 +1000,9 @@ function dashboard(){
  const inCamp=state.people.filter(p=>!["休假","受訓"].includes(p.status)).length;
  const filled=currentDay().slots.filter(s=>s.person).length,issues=validateSchedule();
  const outing=validTodayOutingNames().length; const todayErrands=state.errandLogs.filter(x=>x.date===currentDate()).length;
- const items=[["總人數",total,""],["今日在營",inCamp,""],["📋 排哨完成",filled+"/36","schedule"],["🚨 今日異常",issues.length,"schedule"],["🚶 今日可外散",outing,"stats"],["🧰 今日公差",todayErrands,"stats"],["休假",count("休假"),""],["受訓",count("受訓"),""],["會客室",count("會客室"),""],["當日18休假",count("當日18休假"),""],["隔日08休假",count("隔日08休假"),""]];
+ const items=[["總人數",total,""],["今日在營",inCamp,""],["📋 排哨完成",filled+"/36","schedule"],["🚨 今日異常",issues.length,"schedule"],["🚶 今日可外散",outing,"outingPage"],["🧰 今日公差",todayErrands,"errandPage"],["休假",count("休假"),""],["受訓",count("受訓"),""],["會客室",count("會客室"),""],["當日18休假",count("當日18休假"),""],["隔日08休假",count("隔日08休假"),""]];
  $("#dashboard").innerHTML=items.map(x=>'<div class="tile '+(x[2]?'dashLink':'')+'" data-page="'+x[2]+'"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>').join("");
- $$(".dashLink").forEach(x=>x.onclick=()=>document.querySelector('[data-page="'+x.dataset.page+'"]').click());
+ $$(".dashLink").forEach(x=>x.onclick=()=>openPage(x.dataset.page));
  const status=issues.length?"🔴 有違規":filled<36?"🟡 待完成":"🟢 正常";
  const pct=Math.round(filled/36*100);
  $("#health").innerHTML='<p><b>'+status+'</b></p><p>'+filled+'/36 哨位完成｜空哨 '+(36-filled)+'｜異常 '+issues.length+' 項</p><div style="height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:#111827"></div></div><small>'+pct+'%</small>';
@@ -1177,10 +1188,14 @@ $("#scheduleDate").value=todayISO();
 $("#outingDate").value=todayISO();
 $("#errandDate").value=todayISO();
 
-$$(".bottom button").forEach(b=>b.onclick=()=>{
- $$(".bottom button").forEach(x=>x.classList.remove("active"));b.classList.add("active");
- $$(".page").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.page).classList.add("active");
-});
+function openPage(id){
+ $$(".page").forEach(x=>x.classList.remove("active"));
+ const target=$("#"+id);if(target)target.classList.add("active");
+ $$(".bottom button").forEach(x=>x.classList.toggle("active",x.dataset.page===id||(id.endsWith("Page")&&["settingsPage","errandPage","outingPage"].includes(id)&&x.dataset.page==="more")));
+}
+$$(".moreLaunch").forEach(b=>b.onclick=()=>openPage(b.dataset.subpage));
+$$(".backMore").forEach(b=>b.onclick=()=>openPage("more"));
+$$(".bottom button").forEach(b=>b.onclick=()=>openPage(b.dataset.page));
 $("#scheduleDate").onchange=renderAll;
 $("#personSearch").oninput=()=>renderPeople();
 $("#statusFilter").onchange=()=>renderPeople();
@@ -1349,7 +1364,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=57&refresh="+Date.now()+hash);
+  location.replace(base+"?v=510&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
