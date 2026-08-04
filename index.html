@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.10</title>
-<link rel="manifest" href="manifest.json?v=510">
+<title>值星小幫手 V5.11</title>
+<link rel="manifest" href="manifest.json?v=511">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -52,7 +52,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.10</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.11</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -67,21 +67,16 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <section id="peoplePage" class="page">
  <div class="card">
   <h2>👥 今日人員與狀態</h2>
-  <p class="muted">每天主要維護這裡。可用 ↑↓ 調整永久輪序；此輪序只影響人員名單顯示，不參與任何排哨計算。</p>
-  <div class="row"><input id="newPerson" placeholder="新增人員姓名"><button id="addPerson">新增</button></div>
-  <div class="row" style="margin-top:8px"><button id="allQual">☑ 全員三哨全選</button><button id="clearAllQual">☐ 全員三哨取消</button><button id="copyPrevQual">📋 套用昨日資格</button></div>
+  <p class="muted">階級只供人員管理排序，不顯示於排哨、公差、外散或輸出哨表；手動排序永久保留，且不參與排哨計算。</p>
+  <div class="row"><input id="newPerson" placeholder="新增人員姓名"><select id="newPersonRank"><option value="">選擇階級</option><option>少校</option><option>上尉</option><option>中尉</option><option>少尉</option><option>士官長</option><option>上士</option><option>中士</option><option>下士</option><option>上等兵</option><option>一等兵</option><option>二等兵</option></select><button id="addPerson">新增</button></div>
+  <div class="row" style="margin-top:8px"><button id="allQual">☑ 全員三哨全選</button><button id="clearAllQual">☐ 全員三哨取消</button></div>
+  <div class="row" style="margin-top:8px"><label>人員排序：</label><select id="peopleSortMode"><option value="manual">手動排序</option><option value="rank">階級排序</option></select></div>
   <div class="card" style="margin-top:10px;background:#f9fafb;box-shadow:none;border:1px solid #eee">
     <h3 style="margin-bottom:8px">🔎 人員搜尋 / 篩選</h3>
     <input id="personSearch" placeholder="輸入姓名搜尋">
     <div class="row" style="margin-top:8px">
-      <select id="statusFilter">
-        <option value="">全部狀態</option>
-        <option>正常</option><option>受訓</option><option>休假</option><option>會客室</option><option>當日18休假</option><option>隔日08休假</option><option>不可排哨</option>
-      </select>
-      <select id="qualFilter">
-        <option value="">全部哨別</option>
-        <option>安官</option><option>管制</option><option>門禁</option>
-      </select>
+      <select id="statusFilter"><option value="">全部狀態</option><option>正常</option><option>受訓</option><option>休假</option><option>會客室</option><option>當日18休假</option><option>隔日08休假</option><option>免哨</option></select>
+      <select id="qualFilter"><option value="">全部資格</option><option>安官</option><option>管制</option><option>門禁</option><option>EMT</option></select>
       <button id="clearPeopleFilter">清除條件</button>
     </div>
     <div id="filterCount" class="muted" style="margin-top:6px"></div>
@@ -164,7 +159,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.10</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.11</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -193,7 +188,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.10";
+const APP_VERSION="V5.11";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -212,9 +207,12 @@ function normalizePeople(s){
  s.handovers=Array.isArray(s.handovers)?s.handovers:[]; s.errandTypes=Array.isArray(s.errandTypes)?s.errandTypes:[];
  s.errandTypes=s.errandTypes.map(x=>typeof x==="string"?{name:x,blocksDuty:false,start:"08:00",end:"17:00"}:Object.assign({blocksDuty:false,start:"08:00",end:"17:00"},x));
  s.errandLogs=Array.isArray(s.errandLogs)?s.errandLogs:[];
+ s.peopleSortMode=s.peopleSortMode==="rank"?"rank":"manual";
  s.people=(s.people||[]).map(p=>({
    name:p.name,
-   status:p.status||"正常",
+   rank:p.rank||"",
+   status:p.status==="免哨"?"免哨":(p.status||"正常"),
+   exemptReason:p.exemptReason||p.noDutyReason||"",
    qualifications:Array.isArray(p.qualifications)?p.qualifications:["安官","管制","門禁"]
  })).filter(p=>p.name);
  return s;
@@ -299,7 +297,7 @@ function statusAllowed(person,s){
  if(!person)return [false,"未指定"];
  const st=person.status;
  if(!Array.isArray(person.qualifications)||!person.qualifications.includes(s.post))return [false,"未具備"+s.post+"資格"];
- if(["休假","受訓","不可排哨"].includes(st))return [false,st+"不可排哨"];
+ if(["休假","受訓","免哨"].includes(st))return [false,st==="免哨"?("免哨："+(person.exemptReason||"未填原因")):(st+"免哨")];
  const r=slotRange(s);
  if(st==="會客室"){
    let x=r[0],y=r[1];
@@ -575,7 +573,7 @@ function renderCell(s){
 }
 
 function isDutyVisiblePerson(p){
- return p && !["休假","受訓","不可排哨"].includes(p.status);
+ return p && !["休假","受訓","免哨"].includes(p.status);
 }
 function slotDisplayTime(s){
  if(s&&s.time){
@@ -964,36 +962,36 @@ function movePerson(index,delta){
  const temp=state.people[index];state.people[index]=state.people[to];state.people[to]=temp;
  saveState();
 }
+const RANK_ORDER=["少校","上尉","中尉","少尉","士官長","上士","中士","下士","上等兵","一等兵","二等兵"];
 function renderPeople(){
- const search=($("#personSearch")?.value||"").trim().toLowerCase();
- const stf=$("#statusFilter")?.value||"";
- const qf=$("#qualFilter")?.value||"";
- const indexed=state.people.map((p,i)=>({p,i}));
+ const search=($("#personSearch")?.value||"").trim().toLowerCase(),stf=$("#statusFilter")?.value||"",qf=$("#qualFilter")?.value||"";
+ if($("#peopleSortMode"))$("#peopleSortMode").value=state.peopleSortMode||"manual";
+ let indexed=state.people.map((p,i)=>({p,i}));
+ if((state.peopleSortMode||"manual")==="rank")indexed=indexed.slice().sort((a,b)=>{
+   const ai=RANK_ORDER.indexOf(a.p.rank),bi=RANK_ORDER.indexOf(b.p.rank);
+   return (ai<0?999:ai)-(bi<0?999:bi)||a.i-b.i;
+ });
  const filtered=indexed.filter(({p})=>{
-   const nameOk=!search||String(p.name||"").toLowerCase().includes(search);
-   const stOk=!stf||p.status===stf;
    const q=Array.isArray(p.qualifications)?p.qualifications:[];
-   const qOk=!qf||q.includes(qf);
-   return nameOk&&stOk&&qOk;
+   return (!search||String(p.name||"").toLowerCase().includes(search))&&(!stf||p.status===stf)&&(!qf||q.includes(qf));
  });
  if($("#filterCount"))$("#filterCount").textContent="顯示 "+filtered.length+" / "+state.people.length+" 人";
- $("#peopleList").innerHTML=filtered.map(({p,i})=>{
+ $("#peopleList").innerHTML=filtered.map(({p,i},displayIndex)=>{
   const q=Array.isArray(p.qualifications)?p.qualifications:[];
-  const checks=["安官","管制","門禁"].map(post=>'<label style="font-size:12px;margin-right:6px"><input type="checkbox" class="qualCheck" data-i="'+i+'" data-post="'+post+'" '+(q.includes(post)?"checked":"")+'> '+post+'</label>').join("");
-  return '<div style="padding:10px 0;border-bottom:1px solid #eee"><div class="person"><div class="moveBtns"><button class="moveUp" data-i="'+i+'">↑</button><button class="moveDown" data-i="'+i+'">↓</button></div><b>'+(i+1)+'. '+p.name+'</b><select class="personStatus" data-i="'+i+'">'+["正常","受訓","休假","會客室","當日18休假","隔日08休假","不可排哨"].map(x=>'<option '+(p.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select><button class="personDel" data-i="'+i+'">刪</button></div><div style="padding:4px 0 2px"><span class="muted">可排哨別：</span>'+checks+' <button class="qualAll" data-i="'+i+'" style="padding:5px 8px">三哨全選</button> <button class="qualNone" data-i="'+i+'" style="padding:5px 8px">三哨取消</button></div></div>';
+  const checks=["安官","管制","門禁","EMT"].map(post=>'<label style="font-size:12px;margin-right:6px"><input type="checkbox" class="qualCheck" data-i="'+i+'" data-post="'+post+'" '+(q.includes(post)?"checked":"")+'> '+post+'</label>').join("");
+  const rankOptions='<option value="">未設定階級</option>'+RANK_ORDER.map(x=>'<option '+(p.rank===x?'selected':'')+'>'+x+'</option>').join("");
+  const move=(state.peopleSortMode||"manual")==="manual"?'<div class="moveBtns"><button class="moveUp" data-i="'+i+'">↑</button><button class="moveDown" data-i="'+i+'">↓</button></div>':'';
+  const reason=p.status==="免哨"?'<div style="margin-top:6px"><label class="muted">免哨原因：</label><input class="exemptReason" data-i="'+i+'" value="'+String(p.exemptReason||"").replace(/"/g,"&quot;")+'" placeholder="請註明免哨原因"></div>':'';
+  return '<div style="padding:10px 0;border-bottom:1px solid #eee"><div class="person">'+move+'<b>'+(displayIndex+1)+'. '+p.name+'</b><select class="personRank" data-i="'+i+'">'+rankOptions+'</select><select class="personStatus" data-i="'+i+'">'+["正常","受訓","休假","會客室","當日18休假","隔日08休假","免哨"].map(x=>'<option '+(p.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select><button class="personDel" data-i="'+i+'">刪</button></div><div style="padding:4px 0 2px"><span class="muted">可排哨別／資格：</span>'+checks+' <button class="qualAll" data-i="'+i+'" style="padding:5px 8px">三哨全選</button> <button class="qualNone" data-i="'+i+'" style="padding:5px 8px">三哨取消</button></div>'+reason+'</div>';
  }).join("");
- $$(".personStatus").forEach(x=>x.onchange=()=>{snapshot();state.people[Number(x.dataset.i)].status=x.value;saveState();});
- $$(".personDel").forEach(x=>x.onclick=()=>{snapshot();state.people.splice(Number(x.dataset.i),1);saveState();});
- $$(".moveUp").forEach(x=>x.onclick=()=>movePerson(Number(x.dataset.i),-1));
- $$(".moveDown").forEach(x=>x.onclick=()=>movePerson(Number(x.dataset.i),1));
- $$(".qualCheck").forEach(x=>x.onchange=()=>{
-   snapshot();const p=state.people[Number(x.dataset.i)];p.qualifications=p.qualifications||[];
-   if(x.checked&&!p.qualifications.includes(x.dataset.post))p.qualifications.push(x.dataset.post);
-   if(!x.checked)p.qualifications=p.qualifications.filter(q=>q!==x.dataset.post);
-   saveState();
- });
- $$(".qualAll").forEach(x=>x.onclick=()=>{snapshot();state.people[Number(x.dataset.i)].qualifications=["安官","管制","門禁"];saveState();});
- $$(".qualNone").forEach(x=>x.onclick=()=>{snapshot();state.people[Number(x.dataset.i)].qualifications=[];saveState();});
+ $$(".personRank").forEach(x=>x.onchange=()=>{snapshot();state.people[+x.dataset.i].rank=x.value;saveState();});
+ $$(".personStatus").forEach(x=>x.onchange=()=>{snapshot();const p=state.people[+x.dataset.i];p.status=x.value;if(x.value!=="免哨")p.exemptReason="";saveState();});
+ $$(".exemptReason").forEach(x=>x.onchange=()=>{snapshot();state.people[+x.dataset.i].exemptReason=x.value.trim();saveState();});
+ $$(".personDel").forEach(x=>x.onclick=()=>{snapshot();state.people.splice(+x.dataset.i,1);saveState();});
+ $$(".moveUp").forEach(x=>x.onclick=()=>movePerson(+x.dataset.i,-1));$$(".moveDown").forEach(x=>x.onclick=()=>movePerson(+x.dataset.i,1));
+ $$(".qualCheck").forEach(x=>x.onchange=()=>{snapshot();const p=state.people[+x.dataset.i];p.qualifications=p.qualifications||[];if(x.checked&&!p.qualifications.includes(x.dataset.post))p.qualifications.push(x.dataset.post);if(!x.checked)p.qualifications=p.qualifications.filter(q=>q!==x.dataset.post);saveState();});
+ $$(".qualAll").forEach(x=>x.onclick=()=>{snapshot();const p=state.people[+x.dataset.i],emt=(p.qualifications||[]).includes("EMT");p.qualifications=["安官","管制","門禁"].concat(emt?["EMT"]:[]);saveState();});
+ $$(".qualNone").forEach(x=>x.onclick=()=>{snapshot();const p=state.people[+x.dataset.i],emt=(p.qualifications||[]).includes("EMT");p.qualifications=emt?["EMT"]:[];saveState();});
 }
 function dashboard(){
  const count=s=>state.people.filter(p=>p.status===s).length,total=state.people.length;
@@ -1073,21 +1071,24 @@ function isInCampForErrand(p){
  // 公差專區只顯示真正可運用的在營人員
  return !["休假","受訓"].includes(p.status);
 }
-function getErrandAvailablePeople(){
- return state.people.filter(isInCampForErrand);
+function getErrandAvailablePeople(typeName=""){
+ const people=state.people.filter(isInCampForErrand);
+ if(String(typeName||"").trim().toUpperCase()==="EMT")return people.filter(p=>(p.qualifications||[]).includes("EMT"));
+ return people;
 }
 function errandCountFor(person,typeName){
  return state.errandLogs.filter(x=>x.person===person&&x.type===typeName).length;
 }
 function suggestErrandPeople(typeName){
- return getErrandAvailablePeople().map(p=>({name:p.name,count:errandCountFor(p.name,typeName)})).sort((a,b)=>a.count-b.count||a.name.localeCompare(b.name,"zh-Hant"));
+ return getErrandAvailablePeople(typeName).map(p=>({name:p.name,count:errandCountFor(p.name,typeName)})).sort((a,b)=>a.count-b.count||a.name.localeCompare(b.name,"zh-Hant"));
 }
 function renderErrands(){
  const availablePeople=getErrandAvailablePeople();
  $("#errandAvailableBox").innerHTML='<b>目前可運用人力：'+availablePeople.length+' 人</b><br>'+(availablePeople.length?availablePeople.map(p=>p.name).join("、"):'目前沒有可運用人力');
  $("#errandTypeList").innerHTML=state.errandTypes.length?state.errandTypes.map((t,i)=>'<div class="item"><span><b>'+t.name+'</b>｜'+(t.blocksDuty?('不可排哨 '+t.start+'–'+t.end):'不影響排哨')+'</span><button class="errandTypeDel" data-i="'+i+'">刪除</button></div>').join(""):'<p class="muted">尚未建立公差名稱。</p>';
  $("#errandTypeSelect").innerHTML='<option value="">選擇公差</option>'+state.errandTypes.map(t=>'<option>'+t.name+'</option>').join("");
- $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+getErrandAvailablePeople().map(p=>'<option>'+p.name+'</option>').join("");
+ const selectedErrandType=$("#errandTypeSelect").value||"";
+ $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+getErrandAvailablePeople(selectedErrandType).map(p=>'<option>'+p.name+'</option>').join("");
  const d=$("#errandDate").value||currentDate();
  const today=state.errandLogs.filter(x=>x.date===d);
  $("#todayErrandBox").innerHTML='<h3>📅 '+d+' 今日公差（'+today.length+'）</h3>'+(today.length?today.map(x=>'<div class="item"><span><b>'+x.person+'</b>｜'+x.type+'</span><button class="errandLogDel" data-id="'+x.id+'">🗑️刪除</button></div>').join(""):'<p class="muted">今日尚無公差。</p>');
@@ -1200,18 +1201,12 @@ $("#scheduleDate").onchange=renderAll;
 $("#personSearch").oninput=()=>renderPeople();
 $("#statusFilter").onchange=()=>renderPeople();
 $("#qualFilter").onchange=()=>renderPeople();
+$("#peopleSortMode").onchange=()=>{state.peopleSortMode=$("#peopleSortMode").value;saveState();};
 $("#clearPeopleFilter").onclick=()=>{$("#personSearch").value="";$("#statusFilter").value="";$("#qualFilter").value="";renderPeople();};
-$("#allQual").onclick=()=>{snapshot();state.people.forEach(p=>p.qualifications=["安官","管制","門禁"]);saveState();};
+$("#allQual").onclick=()=>{snapshot();state.people.forEach(p=>{const emt=(p.qualifications||[]).includes("EMT");p.qualifications=["安官","管制","門禁"].concat(emt?["EMT"]:[]);});saveState();};
 $("#clearAllQual").onclick=()=>{
  if(!confirm("確定取消全部人員的安官、管制、門禁資格？"))return;
- snapshot();state.people.forEach(p=>p.qualifications=[]);saveState();
-};
-$("#copyPrevQual").onclick=()=>{
- const prev=state.days[addDays(currentDate(),-1)];
- if(!prev||!prev.peopleQualifications)return alert("昨日沒有已儲存的哨別資格資料");
- snapshot();
- state.people.forEach(p=>{if(prev.peopleQualifications[p.name])p.qualifications=clone(prev.peopleQualifications[p.name]);});
- saveState();
+ snapshot();state.people.forEach(p=>{const emt=(p.qualifications||[]).includes("EMT");p.qualifications=emt?["EMT"]:[];});saveState();
 };
 $("#addErrandType").onclick=()=>{
  const n=$("#newErrandType").value.trim();if(!n)return;
@@ -1233,7 +1228,8 @@ $("#addErrandLog").onclick=()=>{
  snapshot();state.errandLogs.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),type,person,date});saveState();
 };
 $("#errandDate").onchange=()=>renderErrands();
-$("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,status:"正常",qualifications:[]});$("#newPerson").value="";saveState();};
+$("#errandTypeSelect").onchange=()=>renderErrands();
+$("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,rank:$("#newPersonRank").value||"",status:"正常",exemptReason:"",qualifications:[]});$("#newPerson").value="";$("#newPersonRank").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
 $("#clearToday").onclick=clearTodaySchedule;
 $("#homeAuto").onclick=()=>{autoAssign();document.querySelector('[data-page="schedule"]').click();};
@@ -1364,7 +1360,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=510&refresh="+Date.now()+hash);
+  location.replace(base+"?v=511&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
