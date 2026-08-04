@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.11</title>
-<link rel="manifest" href="manifest.json?v=511">
+<title>值星小幫手 V5.12</title>
+<link rel="manifest" href="manifest.json?v=512">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -52,7 +52,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.11</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.12</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -68,9 +68,9 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div class="card">
   <h2>👥 今日人員與狀態</h2>
   <p class="muted">階級只供人員管理排序，不顯示於排哨、公差、外散或輸出哨表；手動排序永久保留，且不參與排哨計算。</p>
-  <div class="row"><input id="newPerson" placeholder="新增人員姓名"><select id="newPersonRank"><option value="">選擇階級</option><option>少校</option><option>上尉</option><option>中尉</option><option>少尉</option><option>士官長</option><option>上士</option><option>中士</option><option>下士</option><option>上等兵</option><option>一等兵</option><option>二等兵</option></select><button id="addPerson">新增</button></div>
+  <div class="row"><input id="newPerson" placeholder="新增人員姓名"><select id="newPersonRank"><option value="">選擇階級</option><option>少校</option><option>上尉</option><option>中尉</option><option>少尉</option><option>士官長</option><option>上士</option><option>中士</option><option>下士</option><option>上等兵</option><option>一等兵</option><option>二等兵</option></select><select id="newPersonGender"><option value="">性別</option><option>男</option><option>女</option></select><button id="addPerson">新增</button></div>
   <div class="row" style="margin-top:8px"><button id="allQual">☑ 全員三哨全選</button><button id="clearAllQual">☐ 全員三哨取消</button></div>
-  <div class="row" style="margin-top:8px"><label>人員排序：</label><select id="peopleSortMode"><option value="manual">手動排序</option><option value="rank">階級排序</option></select></div>
+  <div class="row" style="margin-top:8px"><label>人員排序：</label><select id="peopleSortMode"><option value="manual">手動排序</option><option value="rank">階級排序</option></select><button id="refreshPeopleSort">🔄 重新整理排序</button></div>
   <div class="card" style="margin-top:10px;background:#f9fafb;box-shadow:none;border:1px solid #eee">
     <h3 style="margin-bottom:8px">🔎 人員搜尋 / 篩選</h3>
     <input id="personSearch" placeholder="輸入姓名搜尋">
@@ -159,7 +159,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.11</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.12</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -188,7 +188,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.11";
+const APP_VERSION="V5.12";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -211,6 +211,7 @@ function normalizePeople(s){
  s.people=(s.people||[]).map(p=>({
    name:p.name,
    rank:p.rank||"",
+   gender:p.gender||"",
    status:p.status==="免哨"?"免哨":(p.status||"正常"),
    exemptReason:p.exemptReason||p.noDutyReason||"",
    qualifications:Array.isArray(p.qualifications)?p.qualifications:["安官","管制","門禁"]
@@ -486,6 +487,21 @@ function consecutiveNightWarnings(){
  });
  return Array.from(new Set(out));
 }
+function femaleNightControlGateConflict(name,s,id){
+ if(!isNight(s)||!["管制","門禁"].includes(s.post))return [false,""];
+ const p=state.people.find(x=>x.name===name);
+ if(!p||p.gender!=="女")return [false,""];
+ const otherPost=s.post==="管制"?"門禁":"管制";
+ const targetRange=dutyDayRange(s,currentDate(),currentDate());
+ const conflict=currentDay().slots.some(x=>{
+   if(x.id===id||x.post!==otherPost||!x.person||!isNight(x))return false;
+   const op=state.people.find(p=>p.name===x.person);
+   if(!op||op.gender!=="女")return false;
+   const xr=dutyDayRange(x,currentDate(),currentDate());
+   return overlap(targetRange[0],targetRange[1],xr[0],xr[1]);
+ });
+ return conflict?[true,"夜哨門禁／管制不得同時兩位女性"]:[false,""];
+}
 function eligible(name,s,id){
  const p=state.people.find(x=>x.name===name);
  let r=statusAllowed(p,s);if(!r[0])return r;
@@ -506,6 +522,9 @@ function eligible(name,s,id){
 
  const hard=consecutiveHardConflict(name,s,id);
  if(hard[0])return [false,hard[1]];
+
+ const femalePair=femaleNightControlGateConflict(name,s,id);
+ if(femalePair[0])return [false,femalePair[1]];
 
  r=globalRestAllowed(name,s,id);if(!r[0])return r;
  return [true,"符合規則"];
@@ -982,9 +1001,10 @@ function renderPeople(){
   const rankOptions='<option value="">未設定階級</option>'+RANK_ORDER.map(x=>'<option '+(p.rank===x?'selected':'')+'>'+x+'</option>').join("");
   const move=(state.peopleSortMode||"manual")==="manual"?'<div class="moveBtns"><button class="moveUp" data-i="'+i+'">↑</button><button class="moveDown" data-i="'+i+'">↓</button></div>':'';
   const reason=p.status==="免哨"?'<div style="margin-top:6px"><label class="muted">免哨原因：</label><input class="exemptReason" data-i="'+i+'" value="'+String(p.exemptReason||"").replace(/"/g,"&quot;")+'" placeholder="請註明免哨原因"></div>':'';
-  return '<div style="padding:10px 0;border-bottom:1px solid #eee"><div class="person">'+move+'<b>'+(displayIndex+1)+'. '+p.name+'</b><select class="personRank" data-i="'+i+'">'+rankOptions+'</select><select class="personStatus" data-i="'+i+'">'+["正常","受訓","休假","會客室","當日18休假","隔日08休假","免哨"].map(x=>'<option '+(p.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select><button class="personDel" data-i="'+i+'">刪</button></div><div style="padding:4px 0 2px"><span class="muted">可排哨別／資格：</span>'+checks+' <button class="qualAll" data-i="'+i+'" style="padding:5px 8px">三哨全選</button> <button class="qualNone" data-i="'+i+'" style="padding:5px 8px">三哨取消</button></div>'+reason+'</div>';
+  return '<div style="padding:10px 0;border-bottom:1px solid #eee"><div class="person">'+move+'<b>'+(displayIndex+1)+'. '+p.name+'</b><select class="personRank" data-i="'+i+'">'+rankOptions+'</select><select class="personGender" data-i="'+i+'"><option value="">性別</option><option '+(p.gender==="男"?"selected":"")+' >男</option><option '+(p.gender==="女"?"selected":"")+' >女</option></select><select class="personStatus" data-i="'+i+'">'+["正常","受訓","休假","會客室","當日18休假","隔日08休假","免哨"].map(x=>'<option '+(p.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select><button class="personDel" data-i="'+i+'">刪</button></div><div style="padding:4px 0 2px"><span class="muted">可排哨別／資格：</span>'+checks+' <button class="qualAll" data-i="'+i+'" style="padding:5px 8px">三哨全選</button> <button class="qualNone" data-i="'+i+'" style="padding:5px 8px">三哨取消</button></div>'+reason+'</div>';
  }).join("");
  $$(".personRank").forEach(x=>x.onchange=()=>{snapshot();state.people[+x.dataset.i].rank=x.value;saveState();});
+ $$(".personGender").forEach(x=>x.onchange=()=>{snapshot();state.people[+x.dataset.i].gender=x.value;saveState();});
  $$(".personStatus").forEach(x=>x.onchange=()=>{snapshot();const p=state.people[+x.dataset.i];p.status=x.value;if(x.value!=="免哨")p.exemptReason="";saveState();});
  $$(".exemptReason").forEach(x=>x.onchange=()=>{snapshot();state.people[+x.dataset.i].exemptReason=x.value.trim();saveState();});
  $$(".personDel").forEach(x=>x.onclick=()=>{snapshot();state.people.splice(+x.dataset.i,1);saveState();});
@@ -1202,6 +1222,7 @@ $("#personSearch").oninput=()=>renderPeople();
 $("#statusFilter").onchange=()=>renderPeople();
 $("#qualFilter").onchange=()=>renderPeople();
 $("#peopleSortMode").onchange=()=>{state.peopleSortMode=$("#peopleSortMode").value;saveState();};
+$("#refreshPeopleSort").onclick=()=>renderPeople();
 $("#clearPeopleFilter").onclick=()=>{$("#personSearch").value="";$("#statusFilter").value="";$("#qualFilter").value="";renderPeople();};
 $("#allQual").onclick=()=>{snapshot();state.people.forEach(p=>{const emt=(p.qualifications||[]).includes("EMT");p.qualifications=["安官","管制","門禁"].concat(emt?["EMT"]:[]);});saveState();};
 $("#clearAllQual").onclick=()=>{
@@ -1229,7 +1250,7 @@ $("#addErrandLog").onclick=()=>{
 };
 $("#errandDate").onchange=()=>renderErrands();
 $("#errandTypeSelect").onchange=()=>renderErrands();
-$("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,rank:$("#newPersonRank").value||"",status:"正常",exemptReason:"",qualifications:[]});$("#newPerson").value="";$("#newPersonRank").value="";saveState();};
+$("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,rank:$("#newPersonRank").value||"",gender:$("#newPersonGender").value||"",status:"正常",exemptReason:"",qualifications:[]});$("#newPerson").value="";$("#newPersonRank").value="";$("#newPersonGender").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
 $("#clearToday").onclick=clearTodaySchedule;
 $("#homeAuto").onclick=()=>{autoAssign();document.querySelector('[data-page="schedule"]').click();};
@@ -1360,7 +1381,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=511&refresh="+Date.now()+hash);
+  location.replace(base+"?v=512&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
