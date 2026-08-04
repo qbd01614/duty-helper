@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.13.2</title>
-<link rel="manifest" href="manifest.json?v=5132">
+<title>值星小幫手 V5.13.3</title>
+<link rel="manifest" href="manifest.json?v=5133">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -79,7 +79,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.13.2</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.13.3</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -189,7 +189,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.13.2</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.13.3</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -218,7 +218,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.13.2";
+const APP_VERSION="V5.13.3";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -1066,11 +1066,18 @@ function dashboard(){
  renderLivePeople();
 }
 function timeToMinutes(v){const p=String(v||"00:00").split(":").map(Number);return (p[0]||0)*60+(p[1]||0);}
+function liveQueryMinute(v){
+ const m=timeToMinutes(v);
+ // 本系統勤務日：00:00～07:59 視為前一勤務日的 +1 日區段。
+ return m<480?m+1440:m;
+}
 function slotActiveAtMinute(s,m){
- let a=s.start*60,b=s.end*60;if(b<=a)b+=1440;
- let x=m;
- // 00:00-08:00 on the selected duty date is treated as the post-midnight portion of the duty day.
- if(x<480)x+=1440;
+ const key=slotDisplayTime(s);
+ let a=s.start*60,b=s.end*60;
+ if(b<=a)b+=1440;
+ // 與排哨跨日規則一致：這些班次放到勤務日 +1 日時間軸。
+ if(FIXED_NEXT_DAY_TIMES.has(key)){a+=1440;b+=1440;}
+ const x=m<480?m+1440:m;
  return a<=x&&x<b;
 }
 function liveRestInfo(name,m){
@@ -1089,11 +1096,27 @@ function liveRestInfo(name,m){
 }
 function renderLivePeople(){
  if(!$("#livePeopleBox"))return;
- const v=$("#liveTime").value||new Date().toTimeString().slice(0,5),m=timeToMinutes(v),d=currentDate();
+ const v=$("#liveTime").value||new Date().toTimeString().slice(0,5);
+ const m=timeToMinutes(v),d=currentDate();
  const dutyMap=new Map();
- currentDay().slots.forEach(s=>{if(s.person&&slotActiveAtMinute(s,m)){const arr=dutyMap.get(s.person)||[];arr.push(s.post+" "+slotDisplayTime(s));dutyMap.set(s.person,arr);}});
+
+ currentDay().slots.forEach(s=>{
+   if(!s.person||!slotActiveAtMinute(s,m))return;
+   const arr=dutyMap.get(s.person)||[];
+   arr.push(s.post+" "+slotDisplayTime(s));
+   dutyMap.set(s.person,arr);
+ });
+
  const errandMap=new Map();
- (state.errandLogs||[]).filter(l=>l.date===d).forEach(l=>{const t=errandTypeByName(l.type);if(!t)return;let a=timeToMinutes(t.start),b=timeToMinutes(t.end),x=m;if(b<=a)b+=1440;if(x<480)x+=1440;if(a<=x&&x<b)errandMap.set(l.person,l.type);});
+ (state.errandLogs||[]).filter(l=>l.date===d).forEach(l=>{
+   const t=errandTypeByName(l.type);if(!t)return;
+   let a=timeToMinutes(t.start),b=timeToMinutes(t.end),x=liveQueryMinute(v);
+   if(b<=a)b+=1440;
+   // 若公差起始本身在凌晨，也放到 +1 日。
+   if(a<480){a+=1440;b+=1440;}
+   if(a<=x&&x<b)errandMap.set(l.person,l.type);
+ });
+
  const groups={present:[],duty:[],errand:[],training:[],leave:[],rest:[]};
  state.people.forEach(p=>{
    if(p.status==="休假"){groups.leave.push(p.name);return;}
@@ -1104,11 +1127,22 @@ function renderLivePeople(){
    if(rest){groups.rest.push(p.name+"｜"+rest);return;}
    groups.present.push(p.name);
  });
+
  const cards=[
-  ["👤 應到",groups.present],["🛡️ 勤務",groups.duty],["🧰 公差",groups.errand],
-  ["📘 受訓",groups.training],["🏠 休假",groups.leave],["😴 補休",groups.rest]
+  ["👤 應到",groups.present],
+  ["🛡️ 勤務",groups.duty],
+  ["🧰 公差",groups.errand],
+  ["📘 受訓",groups.training],
+  ["🏠 休假",groups.leave],
+  ["😴 補休",groups.rest]
  ];
- $("#livePeopleBox").innerHTML='<div class="muted" style="margin-bottom:7px"><b>查詢時間：'+v+'</b></div><div class="livePeopleGrid">'+cards.map(([title,names])=>'<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+(names.length?names.join("、"):'—')+'</div></div>').join("")+'</div>';
+ $("#livePeopleBox").innerHTML=
+   '<div class="muted" style="margin-bottom:7px"><b>查詢時間：'+v+'</b>｜勤務人員會依班次時間自動切換</div>'+
+   '<div class="livePeopleGrid">'+cards.map(([title,names])=>
+     '<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+
+     (names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+
+     '</div></div>'
+   ).join("")+'</div>';
 }
 function ensureManualPrevSlots(){
  const d=currentDate();
@@ -1472,7 +1506,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=5132&refresh="+Date.now()+hash);
+  location.replace(base+"?v=5133&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
