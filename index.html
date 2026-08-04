@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.13.1</title>
-<link rel="manifest" href="manifest.json?v=5131">
+<title>值星小幫手 V5.13.2</title>
+<link rel="manifest" href="manifest.json?v=5132">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -79,7 +79,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.13.1</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.13.2</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -89,7 +89,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div class="card hero"><h2>👥 今日人力儀表板</h2><div id="dashboard" class="dash"></div></div>
  <div class="card"><h3>🎛️ 勤務控制台</h3><div id="health"></div><div id="fairnessBox" class="notice"></div></div>
  <div class="card"><h3>⏱️ 即時人員統計</h3>
-   <div class="row"><input id="liveTime" type="time"><button id="liveNowBtn">現在</button></div>
+   <div class="row"><input id="liveTime" type="time"><button id="applyLiveTime">套用時間</button><button id="liveNowBtn">現在</button></div>
    <div id="livePeopleBox" style="margin-top:9px"></div>
  </div>
 </section>
@@ -189,7 +189,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.13.1</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.13.2</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -218,7 +218,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.13.1";
+const APP_VERSION="V5.13.2";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -1108,7 +1108,7 @@ function renderLivePeople(){
   ["👤 應到",groups.present],["🛡️ 勤務",groups.duty],["🧰 公差",groups.errand],
   ["📘 受訓",groups.training],["🏠 休假",groups.leave],["😴 補休",groups.rest]
  ];
- $("#livePeopleBox").innerHTML='<div class="livePeopleGrid">'+cards.map(([title,names])=>'<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+(names.length?names.join("、"):'—')+'</div></div>').join("")+'</div>';
+ $("#livePeopleBox").innerHTML='<div class="muted" style="margin-bottom:7px"><b>查詢時間：'+v+'</b></div><div class="livePeopleGrid">'+cards.map(([title,names])=>'<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+(names.length?names.join("、"):'—')+'</div></div>').join("")+'</div>';
 }
 function ensureManualPrevSlots(){
  const d=currentDate();
@@ -1311,7 +1311,8 @@ $("#statusFilter").onchange=()=>renderPeople();
 $("#qualFilter").onchange=()=>renderPeople();
 $("#peopleSortMode").onchange=()=>{state.peopleSortMode=$("#peopleSortMode").value;saveState();};
 $("#refreshPeopleSort").onclick=()=>renderPeople();
-$("#liveTime").onchange=()=>renderLivePeople();
+["input","change"].forEach(evt=>$("#liveTime").addEventListener(evt,()=>renderLivePeople()));
+$("#applyLiveTime").onclick=()=>renderLivePeople();
 $("#liveNowBtn").onclick=()=>{$("#liveTime").value=new Date().toTimeString().slice(0,5);renderLivePeople();};
 
 $("#clearPeopleFilter").onclick=()=>{$("#personSearch").value="";$("#statusFilter").value="";$("#qualFilter").value="";renderPeople();};
@@ -1471,7 +1472,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=5131&refresh="+Date.now()+hash);
+  location.replace(base+"?v=5132&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
