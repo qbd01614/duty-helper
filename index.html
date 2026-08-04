@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.15</title>
-<link rel="manifest" href="manifest.json?v=515">
+<title>值星小幫手 V5.16</title>
+<link rel="manifest" href="manifest.json?v=516">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -84,7 +84,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.15</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.16</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -194,7 +194,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.15</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.16</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 
 </section><section id="errandPage" class="page">
@@ -206,6 +206,10 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div class="row"><select id="errandTypeSelect"></select><select id="errandPersonSelect"></select><input id="errandDate" type="date"><button id="suggestErrand">⭐ 建議人員</button><button id="addErrandLog">登記公差</button></div>
  <div id="errandSuggestBox" class="notice"></div><div id="todayErrandBox" style="margin-top:10px"></div></div>
  <div class="card"><h3>📊 公差統計</h3><div id="errandStats"></div></div>
+ <div class="card"><h3>🩺 EMT 專區</h3><p class="muted">僅列出當日在營且具 EMT 資格的人員；只供紀錄與即時查詢，不限制排哨。</p><div class="row"><input id="emtDate" type="date"></div>
+ <div class="liveGroup"><h4>上午 EMT</h4><div class="row"><input id="emtAmStart" type="time" value="08:00"><span>～</span><input id="emtAmEnd" type="time" value="12:00"><select id="emtAmPerson"></select><button id="saveEmtAm">儲存</button></div></div>
+ <div class="liveGroup"><h4>下午 EMT</h4><div class="row"><input id="emtPmStart" type="time" value="13:00"><span>～</span><input id="emtPmEnd" type="time" value="17:00"><select id="emtPmPerson"></select><button id="saveEmtPm">儲存</button></div></div>
+ <div class="liveGroup"><h4>緊急醫療小組 EMT</h4><div class="row"><input id="emtEmergencyStart" type="time" value="08:00"><span>～</span><input id="emtEmergencyEnd" type="time" value="17:00"><select id="emtEmergencyPerson"></select><button id="saveEmtEmergency">儲存</button></div></div><div id="emtAssignmentList"></div></div>
 </section><section id="outingPage" class="page">
  <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">🚶 外散專區</h2></div></div>
  <div class="card"><h3>🚶 今日可外散（手動設定）</h3><div class="row"><select id="todayOutingPerson"></select><button id="addTodayOuting">加入今日名單</button></div><div id="todayOutingBox"></div></div>
@@ -223,12 +227,12 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.15";
+const APP_VERSION="V5.16";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
 const GATE_TIMES=["07-09","09-11","11-13","13-15","15-17","17-19","19-21","21-23","23-01","01-03","03-05","05-07"];
-const EMPTY={people:[],days:{},manualPrev:{},prevOverride:false,outings:[],todayOuting:[],errandTypes:[],errandLogs:[],todos:[],handovers:[],undo:[],redo:[]};
+const EMPTY={people:[],days:{},manualPrev:{},prevOverride:false,outings:[],todayOuting:[],errandTypes:[],errandLogs:[],emtAssignments:[],todos:[],handovers:[],undo:[],redo:[]};
 
 let state=loadState();
 const $=s=>document.querySelector(s);
@@ -240,8 +244,8 @@ function normalizePeople(s){
  s.outings=Array.isArray(s.outings)?s.outings:[]; s.outings=s.outings.map((o,i)=>Object.assign({id:"legacy-"+i+"-"+(o.date||"")},o));
  s.todos=Array.isArray(s.todos)?s.todos:[];
  s.handovers=Array.isArray(s.handovers)?s.handovers:[]; s.errandTypes=Array.isArray(s.errandTypes)?s.errandTypes:[];
- s.errandTypes=s.errandTypes.map(x=>typeof x==="string"?{name:x,blocksDuty:true,start:"08:00",end:"17:00"}:Object.assign({blocksDuty:true,start:"08:00",end:"17:00"},x,{blocksDuty:true}));
- s.errandLogs=Array.isArray(s.errandLogs)?s.errandLogs:[];
+ s.errandTypes=s.errandTypes.map(x=>typeof x==="string"?{name:x,blocksDuty:false,start:"08:00",end:"17:00"}:Object.assign({blocksDuty:false,start:"08:00",end:"17:00"},x,{blocksDuty:false}));
+ s.errandLogs=Array.isArray(s.errandLogs)?s.errandLogs:[]; s.emtAssignments=Array.isArray(s.emtAssignments)?s.emtAssignments:[];
  s.peopleSortMode=s.peopleSortMode==="rank"?"rank":"manual";
  s.people=(s.people||[]).map(p=>({
    name:p.name,
@@ -316,19 +320,8 @@ function hhmmToMin(v){
  const p=String(v||"00:00").split(":").map(Number);return (p[0]||0)*60+(p[1]||0);
 }
 function errandTypeByName(name){return state.errandTypes.find(x=>x.name===name);}
-function activeBlockingErrands(personName,dateStr){
- return state.errandLogs.filter(l=>l.person===personName&&l.date===dateStr).map(l=>({log:l,type:errandTypeByName(l.type)})).filter(x=>x.type);
-}
-function errandDutyConflict(personName,s){
- const dateStr=currentDate(),sr=dutyDayRange(s,dateStr,dateStr);
- const blocks=activeBlockingErrands(personName,dateStr);
- for(const x of blocks){
-   let a=hhmmToMin(x.type.start),b=hhmmToMin(x.type.end);
-   if(b<=a)b+=1440;
-   if(overlap(sr[0],sr[1],a,b))return [false,"與公差「"+x.type.name+"」 "+x.type.start+"–"+x.type.end+" 衝突"];
- }
- return [true,""];
-}
+function activeBlockingErrands(){return [];}
+function errandDutyConflict(){return [true,""];}
 function statusAllowed(person,s){
  if(!person)return [false,"未指定"];
  const st=person.status;
@@ -1118,77 +1111,20 @@ function liveRestInfo(name,m){
  }
  return "";
 }
-function liveDutySource(dateStr,timeValue){
- const m=timeToMinutes(timeValue);
- // 00:00-07:59 belongs to the previous duty day's +1 section.
- const dutyDate=m<480?addDays(dateStr,-1):dateStr;
- const day=state.days[dutyDate];
- return {dutyDate,day:day&&Array.isArray(day.slots)?day:null};
-}
-function liveDutySource(dateStr,timeValue){
- const m=timeToMinutes(timeValue);
- const dutyDate=m<480?addDays(dateStr,-1):dateStr;
- const day=state.days[dutyDate];
- return {dutyDate,day:day&&Array.isArray(day.slots)?day:null};
-}
+function dateAtMinutes(dateStr,mins){const d=new Date(dateStr+"T00:00:00");d.setMinutes(mins);return d.getTime();}
+function slotAbsoluteRange(slot,dutyDate){let a=Number(slot.start)*60,b=Number(slot.end)*60;if(b<=a)b+=1440;if(FIXED_NEXT_DAY_TIMES.has(slotDisplayTime(slot))){a+=1440;b+=1440;}return [dateAtMinutes(dutyDate,a),dateAtMinutes(dutyDate,b)];}
+function getLiveDutyAssignments(selectedDate,timeValue){const q=dateAtMinutes(selectedDate,timeToMinutes(timeValue)),map=new Map();[addDays(selectedDate,-1),selectedDate].forEach(dutyDate=>{const day=state.days[dutyDate];if(!day||!Array.isArray(day.slots))return;day.slots.forEach(s=>{if(!s.person)return;const [a,b]=slotAbsoluteRange(s,dutyDate);if(a<=q&&q<b){const arr=map.get(s.person)||[];arr.push(s.post+"｜"+slotDisplayTime(s));map.set(s.person,arr);}});});return map;}
+function timedRecordActive(start,end,q){let a=timeToMinutes(start),b=timeToMinutes(end),x=timeToMinutes(q);if(b<=a)b+=1440;if(x<a&&x<480)x+=1440;return a<=x&&x<b;}
 function renderLivePeople(){
- if(!$("#livePeopleBox"))return;
- const v=$("#liveTime").value||new Date().toTimeString().slice(0,5);
- const selectedDate=$("#liveDate").value||todayISO();
- const m=timeToMinutes(v);
- const src=liveDutySource(selectedDate,v);
- const dutyMap=new Map();
-
- if(src.day)src.day.slots.forEach(s=>{
-   if(!s.person||!slotActiveAtMinute(s,m))return;
-   const arr=dutyMap.get(s.person)||[];
-   arr.push(s.post+"｜"+slotDisplayTime(s));
-   dutyMap.set(s.person,arr);
- });
-
- const errandMap=new Map();
- (state.errandLogs||[]).filter(l=>l.date===selectedDate).forEach(l=>{
-   const t=errandTypeByName(l.type);if(!t)return;
-   let a=timeToMinutes(t.start),b=timeToMinutes(t.end),x=m;
-   if(b<=a)b+=1440;
-   if(x<a&&x<480)x+=1440;
-   if(a<=x&&x<b)errandMap.set(l.person,{name:l.type,start:t.start,end:t.end});
- });
-
- const groups={present:[],duty:[],errand:[],training:[],leave:[],rest:[],combat:[]};
-
- state.people.forEach(p=>{
-   if((p.qualifications||[]).includes("戰鬥隊"))groups.combat.push(p.name);
- });
-
- state.people.forEach(p=>{
-   if(p.status==="休假"){groups.leave.push(p.name);return;}
-   if(p.status==="受訓"){groups.training.push(p.name);return;}
-   if(p.status==="會客室"){groups.duty.push(p.name+"｜會客室");return;}
-   if(dutyMap.has(p.name)){groups.duty.push(p.name+"｜"+dutyMap.get(p.name).join("、"));return;}
-   if(errandMap.has(p.name)){
-     const e=errandMap.get(p.name);
-     groups.errand.push(p.name+"｜"+e.name+"｜"+e.start+"–"+e.end);
-     return;
-   }
-   let rest="";
-   if(selectedDate===currentDate())rest=liveRestInfo(p.name,m);
-   if(rest){groups.rest.push(p.name+"｜"+rest);return;}
-   groups.present.push(p.name);
- });
-
- const cards=[
-  ["👤 應到",groups.present],["🛡️ 勤務",groups.duty],["🧰 公差",groups.errand],
-  ["📘 受訓",groups.training],["🏠 休假",groups.leave],["😴 補休",groups.rest],
-  ["⚔️ 戰鬥隊",groups.combat]
- ];
- $("#livePeopleBox").innerHTML=
-   '<div class="muted" style="margin-bottom:7px"><b>查詢：'+selectedDate+' '+v+'</b></div>'+
-   '<div class="livePeopleGrid">'+cards.map(([title,names])=>
-     '<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+
-     (names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+'</div></div>'
-   ).join("")+'</div>';
-}function ensureManualPrevSlots(){
+ if(!$("#livePeopleBox"))return;const v=$("#liveTime").value||new Date().toTimeString().slice(0,5),selectedDate=$("#liveDate").value||todayISO(),m=timeToMinutes(v),dutyMap=getLiveDutyAssignments(selectedDate,v);
+ const errands=[];(state.errandLogs||[]).filter(l=>l.date===selectedDate).forEach(l=>{const t=errandTypeByName(l.type);if(t&&timedRecordActive(t.start,t.end,v))errands.push(l.person+"｜"+l.type+"｜"+t.start+"–"+t.end);});
+ const emt=state.emtAssignments.filter(x=>x.date===selectedDate&&timedRecordActive(x.start,x.end,v)).map(x=>x.person+"｜"+x.kind+"｜"+x.start+"–"+x.end);
+ const g={present:[],duty:[],training:[],leave:[],rest:[],combat:[]};state.people.forEach(p=>{if((p.qualifications||[]).includes("戰鬥隊"))g.combat.push(p.name);});
+ state.people.forEach(p=>{if(p.status==="休假"){g.leave.push(p.name);return;}if(p.status==="受訓"){g.training.push(p.name);return;}if(dutyMap.has(p.name)){g.duty.push(p.name+"｜"+dutyMap.get(p.name).join("、"));return;}if(p.status==="會客室"&&m>=480&&m<1020){g.duty.push(p.name+"｜會客室｜08:00–17:00");return;}let rest="";if(selectedDate===currentDate())rest=liveRestInfo(p.name,m);if(rest){g.rest.push(p.name+"｜"+rest);return;}g.present.push(p.name);});
+ const cards=[["👤 應到",g.present],["🛡️ 勤務",g.duty],["🧰 公差",errands],["🩺 EMT",emt],["📘 受訓",g.training],["🏠 休假",g.leave],["😴 補休",g.rest],["⚔️ 戰鬥隊",g.combat]];
+ $("#livePeopleBox").innerHTML='<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜勤務直接連結已儲存哨表</div><div class="livePeopleGrid">'+cards.map(([title,names])=>'<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+(names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+'</div></div>').join("")+'</div>';
+}
+function ensureManualPrevSlots(){
  const d=currentDate();
  if(!Array.isArray(state.manualPrev[d]))state.manualPrev[d]=baseSlots();
  if(state.manualPrev[d].length!==36){
@@ -1265,7 +1201,7 @@ function suggestErrandPeople(typeName){
 function renderErrands(){
  const availablePeople=getErrandAvailablePeople();
  $("#errandAvailableBox").innerHTML='<b>目前可運用人力：'+availablePeople.length+' 人</b><br>'+(availablePeople.length?availablePeople.map(p=>p.name).join("、"):'目前沒有可運用人力');
- $("#errandTypeList").innerHTML=state.errandTypes.length?state.errandTypes.map((t,i)=>'<div class="item"><span><b>'+t.name+'</b>｜不可排哨 '+t.start+'–'+t.end+'</span><button class="errandTypeDel" data-i="'+i+'">刪除</button></div>').join(""):'<p class="muted">尚未建立公差名稱。</p>';
+ $("#errandTypeList").innerHTML=state.errandTypes.length?state.errandTypes.map((t,i)=>'<div class="item"><span><b>'+t.name+'</b>｜'+t.start+'–'+t.end+'</span><span><button class="errandTypeEdit" data-i="'+i+'">✏️ 修正</button><button class="errandTypeDel" data-i="'+i+'">🗑️ 刪除</button></span></div>').join(""):'<p class="muted">尚未建立公差名稱。</p>';
  $("#errandTypeSelect").innerHTML='<option value="">選擇公差</option>'+state.errandTypes.map(t=>'<option>'+t.name+'</option>').join("");
  const selectedErrandType=$("#errandTypeSelect").value||"";
  $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+getErrandAvailablePeople(selectedErrandType).map(p=>'<option>'+p.name+'</option>').join("");
@@ -1286,6 +1222,14 @@ function renderErrands(){
    return '<div class="notice"><b>'+p.name+'</b><br>'+Object.entries(grouped).map(([t,ds])=>t+'：'+ds.length+' 次（'+ds.join("、")+'）').join("<br>")+'</div>';
  }).join("");
  $("#errandStats").innerHTML='<h4>依公差看人員</h4>'+(typeRows||'<p class="muted">尚無資料</p>')+'<h4>依人員看公差</h4>'+(personRows||'<p class="muted">尚無資料</p>');
+ $$(".errandTypeEdit").forEach(x=>x.onclick=()=>{
+   const t=state.errandTypes[Number(x.dataset.i)];if(!t)return;
+   const name=prompt("公差名稱",t.name);if(name===null)return;
+   const start=prompt("開始時間 HH:MM",t.start);if(start===null)return;
+   const end=prompt("結束時間 HH:MM",t.end);if(end===null)return;
+   const old=t.name;snapshot();t.name=name.trim()||t.name;t.start=start.trim()||t.start;t.end=end.trim()||t.end;
+   if(t.name!==old)state.errandLogs.forEach(l=>{if(l.type===old)l.type=t.name;});saveState();
+ });
  $$(".errandTypeDel").forEach(x=>x.onclick=()=>{
    const i=Number(x.dataset.i),type=state.errandTypes[i].name;
    if(state.errandLogs.some(l=>l.type===type))return alert("此公差已有歷史紀錄，請先刪除相關紀錄後再刪除公差名稱。");
@@ -1346,9 +1290,13 @@ function updateHomeClock(){
  if($("#homeNowTime"))$("#homeNowTime").textContent=String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0")+":"+String(n.getSeconds()).padStart(2,"0");
  if($("#clock"))$("#clock").textContent=n.toLocaleString("zh-TW");
 }
+function emtEligiblePeople(){return state.people.filter(p=>(p.qualifications||[]).includes("EMT")&&!["休假","受訓","免哨"].includes(p.status));}
+function fillEmtSelect(id){const e=$("#"+id);if(!e)return;const cur=e.value,ps=emtEligiblePeople();e.innerHTML='<option value="">選擇 EMT 人員</option>'+ps.map(p=>'<option>'+p.name+'</option>').join("");if(ps.some(p=>p.name===cur))e.value=cur;}
+function renderEmtSection(){if(!$("#emtDate"))return;["emtAmPerson","emtPmPerson","emtEmergencyPerson"].forEach(fillEmtSelect);const d=$("#emtDate").value||currentDate(),rows=state.emtAssignments.filter(x=>x.date===d);$("#emtAssignmentList").innerHTML=rows.length?rows.map(x=>'<div class="item"><span><b>'+x.kind+'</b>｜'+x.person+'｜'+x.start+'–'+x.end+'</span><span><button class="emtEdit" data-id="'+x.id+'">✏️ 修正</button><button class="emtDel" data-id="'+x.id+'">🗑️ 刪除</button></span></div>').join(""):'<div class="muted">此日期尚未安排 EMT</div>';$$(".emtDel").forEach(b=>b.onclick=()=>{snapshot();state.emtAssignments=state.emtAssignments.filter(x=>x.id!==b.dataset.id);saveState();});$$(".emtEdit").forEach(b=>b.onclick=()=>{const x=state.emtAssignments.find(v=>v.id===b.dataset.id);if(!x)return;const person=prompt("EMT 人員",x.person);if(person===null)return;const start=prompt("開始時間 HH:MM",x.start);if(start===null)return;const end=prompt("結束時間 HH:MM",x.end);if(end===null)return;snapshot();x.person=person.trim()||x.person;x.start=start.trim()||x.start;x.end=end.trim()||x.end;saveState();});}
+function saveEmt(kind,pid,sid,eid){const person=$("#"+pid).value;if(!person)return alert("請選擇 EMT 人員");snapshot();state.emtAssignments.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),date:$("#emtDate").value||currentDate(),kind,person,start:$("#"+sid).value,end:$("#"+eid).value});saveState();}
 function renderAll(){
  updateHomeClock();
- renderPeople();renderScheduleTables();renderPostBoard();dashboard();renderPrevious();renderStats();renderErrands();renderMore();renderDailyDutyStats();renderNightSummary();
+ renderPeople();renderScheduleTables();renderPostBoard();dashboard();renderPrevious();renderStats();renderErrands();renderEmtSection();renderMore();renderDailyDutyStats();renderNightSummary();
 }
 function currentWeekRange(d){
  const x=new Date(d+"T00:00:00"),offset=(x.getDay()+6)%7,mon=new Date(x);mon.setDate(x.getDate()-offset);const sun=new Date(mon);sun.setDate(mon.getDate()+6);return [todayISO(mon),todayISO(sun)];
@@ -1374,6 +1322,7 @@ $("#toggleTraineeGate").onclick=()=>{
 $("#scheduleDate").value=todayISO();
 $("#outingDate").value=todayISO();
 $("#errandDate").value=todayISO();
+$("#emtDate").value=todayISO();
 
 function openPage(id){
  $$(".page").forEach(x=>x.classList.remove("active"));
@@ -1400,11 +1349,15 @@ $("#clearAllQual").onclick=()=>{
  if(!confirm("確定取消全部人員的安官、管制、門禁資格？"))return;
  snapshot();state.people.forEach(p=>{const keep=(p.qualifications||[]).filter(q=>["EMT","戰鬥隊"].includes(q));p.qualifications=keep;});saveState();
 };
+$("#emtDate").onchange=()=>renderEmtSection();
+$("#saveEmtAm").onclick=()=>saveEmt("上午 EMT","emtAmPerson","emtAmStart","emtAmEnd");
+$("#saveEmtPm").onclick=()=>saveEmt("下午 EMT","emtPmPerson","emtPmStart","emtPmEnd");
+$("#saveEmtEmergency").onclick=()=>saveEmt("緊急醫療小組 EMT","emtEmergencyPerson","emtEmergencyStart","emtEmergencyEnd");
 $("#addErrandType").onclick=()=>{
  const n=$("#newErrandType").value.trim();if(!n)return;
  if(state.errandTypes.some(t=>t.name===n))return alert("公差名稱已存在");
  const start=$("#newErrandStart").value||"08:00",end=$("#newErrandEnd").value||"17:00";
- snapshot();state.errandTypes.push({name:n,blocksDuty:true,start,end});$("#newErrandType").value="";saveState();
+ snapshot();state.errandTypes.push({name:n,blocksDuty:false,start,end});$("#newErrandType").value="";saveState();
 };
 $("#suggestErrand").onclick=()=>{
  const type=$("#errandTypeSelect").value;if(!type)return alert("請先選擇公差");
@@ -1551,7 +1504,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=515&refresh="+Date.now()+hash);
+  location.replace(base+"?v=516&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
