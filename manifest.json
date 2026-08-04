@@ -1,7 +1,7 @@
 {
-  "name": "值星小幫手 V5.13.3",
+  "name": "值星小幫手 V5.15",
   "short_name": "值星小幫手",
-  "start_url": "./?v=5133",
+  "start_url": "./?v=515",
   "display": "standalone",
   "background_color": "#f3f4f6",
   "theme_color": "#111827"
