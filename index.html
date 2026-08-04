@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.8</title>
-<link rel="manifest" href="manifest.json?v=58">
+<title>值星小幫手 V5.9</title>
+<link rel="manifest" href="manifest.json?v=59">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -52,7 +52,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.8</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.9</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -119,12 +119,18 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
  <div class="card">
   <h3>昨日勤務</h3>
-  <p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。</p>
+  <p class="muted">正常情況自動帶入昨日正式哨表；收假接值星時可手動覆寫。手動覆寫改為與今日勤務相同的欄位／卡片格式。</p>
   <label><input id="overridePrev" type="checkbox"> 手動覆寫昨日勤務</label>
-  <div id="prevBox"></div>
+  <div id="prevBoard" class="postBoard" style="margin-top:10px"></div>
  </div>
 
- <div id="candidateOverlay" class="candidateOverlay">
+ <div id="prevCandidateOverlay" class="candidateOverlay">
+  <div class="candidatePanel">
+   <div class="row"><h3 id="prevCandidateTitle" style="margin:0">選擇昨日勤務人員</h3><button id="closePrevCandidate">關閉</button></div>
+   <div id="prevCandidateList"></div>
+  </div>
+ </div>
+<div id="candidateOverlay" class="candidateOverlay">
   <div class="candidatePanel">
    <div class="row"><h3 id="candidateTitle" style="margin:0">選擇人員</h3><button id="closeCandidate">關閉</button></div>
    <div id="candidateList"></div>
@@ -165,7 +171,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <div class="card"><h2>🔄 版本更新</h2>
 <p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
 <button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.8</div></div>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.9</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 </section>
 </main>
@@ -180,7 +186,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.8";
+const APP_VERSION="V5.9";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -294,7 +300,7 @@ function statusAllowed(person,s){
  return [true,"可排"];
 }
 function previousSlots(){
- if(state.prevOverride)return state.manualPrev[currentDate()]||[];
+ if(state.prevOverride)return ensureManualPrevSlots();
  return (state.days[addDays(currentDate(),-1)]||{}).slots||[];
 }
 function allCounts(){
@@ -993,12 +999,56 @@ function dashboard(){
  const avg=vals.length?vals.reduce((s,x)=>s+x.v,0)/vals.length:0,heavy=vals.filter(x=>x.v>avg+4).map(x=>x.n);
  $("#fairnessBox").innerHTML='<b>⚖️ 勤務公平度：</b>'+(heavy.length?'⚠ 勤務偏重：'+heavy.join("、"):'目前未發現明顯偏重');
 }
-function renderPrevious(){
- $("#overridePrev").checked=state.prevOverride;
- const p=previousSlots();
- $("#prevBox").innerHTML=p.length?'<div class="tablewrap"><table><tr><th>時間</th><th>哨位</th><th>人員</th><th>標記</th></tr>'+p.map(s=>'<tr><td>'+label(s)+'</td><td>'+s.post+'</td><td>'+(state.prevOverride?'<select class="prevSelect" data-id="'+s.id+'">'+personOptions(s.person,s)+'</select>':(s.person||"—"))+'</td><td>'+tags(s)+'</td></tr>').join("")+'</table></div>':'<p class="muted">沒有昨日正式資料。</p>';
- $$(".prevSelect").forEach(sel=>sel.onchange=()=>{const arr=state.manualPrev[currentDate()]||[];const s=arr.find(x=>x.id===sel.dataset.id);if(s){s.person=sel.value;saveState();}});
+function ensureManualPrevSlots(){
+ const d=currentDate();
+ if(!Array.isArray(state.manualPrev[d]))state.manualPrev[d]=baseSlots();
+ if(state.manualPrev[d].length!==36){
+   const old=state.manualPrev[d]||[];
+   const fresh=baseSlots();
+   fresh.forEach(s=>{
+     const x=old.find(o=>o.id===s.id|| (o.post===s.post&&slotDisplayTime(o)===slotDisplayTime(s)));
+     if(x&&x.person)s.person=x.person;
+   });
+   state.manualPrev[d]=fresh;
+ }
+ return state.manualPrev[d];
 }
+function previousSourceSlots(){
+ if(state.prevOverride)return ensureManualPrevSlots();
+ const prevDay=state.days[addDays(currentDate(),-1)];
+ return prevDay&&Array.isArray(prevDay.slots)?prevDay.slots:baseSlots();
+}
+function openPrevCandidate(slotId){
+ const slots=ensureManualPrevSlots();
+ const s=slots.find(x=>x.id===slotId);if(!s)return;
+ $("#prevCandidateTitle").textContent="昨日 "+s.post+"｜"+slotDisplayTime(s)+" 選擇人員";
+ // 昨日手動填寫只記錄實際勤務，不套用今日排哨限制。
+ $("#prevCandidateList").innerHTML='<div class="candidateRow"><div><b>清空此班</b><div class="muted">移除昨日此班人員</div></div><button class="pickPrevCandidate" data-slot="'+s.id+'" data-name="">清空</button></div>'+
+ state.people.map(p=>'<div class="candidateRow"><div><b>'+p.name+'</b><div class="muted">昨日實際勤務紀錄</div></div><button class="pickPrevCandidate" data-slot="'+s.id+'" data-name="'+p.name+'">選擇</button></div>').join("");
+ $$(".pickPrevCandidate").forEach(btn=>btn.onclick=()=>{
+   const slot=ensureManualPrevSlots().find(x=>x.id===btn.dataset.slot);
+   snapshot();slot.person=btn.dataset.name;saveState();
+   $("#prevCandidateOverlay").style.display="none";
+ });
+ $("#prevCandidateOverlay").style.display="block";
+}
+function renderPrevious(){
+ const board=$("#prevBoard");if(!board)return;
+ const slots=previousSourceSlots();
+ const editable=!!state.prevOverride;
+ const posts=[["安官","🛡️"],["管制","🎛️"],["門禁","🚪"]];
+ board.innerHTML=posts.map(([post,icon])=>{
+   const arr=slots.filter(s=>s.post===post);
+   return '<div class="postColumn"><h3>'+icon+' '+post+'</h3>'+arr.map(s=>{
+     const time=slotDisplayTime(s),cross=FIXED_NEXT_DAY_TIMES.has(time);
+     return '<div class="slotCard"><div class="slotTime">'+time+(cross?' <span class="tag">+1日</span>':'')+'</div>'+
+       (editable?'<button class="prevPersonBtn slotPersonBtn" data-prev-slot="'+s.id+'">'+(s.person||'＋ 選擇昨日人員')+'</button>':'<div class="slotPersonBtn" style="cursor:default">'+(s.person||'—')+'</div>')+
+       '<div class="slotMeta">'+(editable?'手動覆寫模式':'自動帶入昨日正式哨表')+'</div></div>';
+   }).join("")+'</div>';
+ }).join("");
+ $$(".prevPersonBtn").forEach(btn=>btn.onclick=()=>openPrevCandidate(btn.dataset.prevSlot));
+}
+
 function outingExcluded(p){return ["休假","受訓","當日18休假"].includes(p.status);}
 function validTodayOutingNames(){
  state.todayOuting=(state.todayOuting||[]).filter(n=>{const p=state.people.find(x=>x.name===n);return p&&!outingExcluded(p);});
@@ -1107,6 +1157,8 @@ function currentWeekRange(d){
 }
 
 
+$("#closePrevCandidate").onclick=()=>$("#prevCandidateOverlay").style.display="none";
+$("#prevCandidateOverlay").onclick=e=>{if(e.target.id==="prevCandidateOverlay")$("#prevCandidateOverlay").style.display="none";};
 $("#closeCandidate").onclick=()=>$("#candidateOverlay").style.display="none";
 $("#candidateOverlay").onclick=e=>{if(e.target.id==="candidateOverlay")$("#candidateOverlay").style.display="none";};
 $("#toggleTraineeControl").onclick=()=>{
@@ -1181,7 +1233,7 @@ $("#makeSummary").onclick=makeHandoverSummary;
 
 $("#repairBtn").onclick=repairSchedule;
 $("#saveOfficial").onclick=()=>{currentDay().official=true;currentDay().peopleQualifications={};state.people.forEach(p=>currentDay().peopleQualifications[p.name]=clone(p.qualifications||[]));saveState();alert("今日哨表與哨別資格已正式儲存；明日可自動沿用。");};
-$("#overridePrev").onchange=e=>{snapshot();state.prevOverride=e.target.checked;if(state.prevOverride&&!state.manualPrev[currentDate()])state.manualPrev[currentDate()]=clone((state.days[addDays(currentDate(),-1)]||{}).slots||baseSlots());saveState();};
+$("#overridePrev").onchange=()=>{snapshot();state.prevOverride=$("#overridePrev").checked;if(state.prevOverride)ensureManualPrevSlots();saveState();};
 $("#addOuting").onclick=()=>{
  const name=$("#outingPerson").value,d=$("#outingDate").value;if(!name)return;
  if(!validTodayOutingNames().includes(name))return alert("請先把此人加入今日可外散名單");
