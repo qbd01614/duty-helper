@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.4</title>
-<link rel="manifest" href="manifest.json?v=54">
+<title>值星小幫手 V5.7</title>
+<link rel="manifest" href="manifest.json?v=57">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -39,11 +39,16 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .candidatePanel{max-width:620px;margin:4vh auto;background:#fff;border-radius:18px;padding:14px;max-height:88vh;overflow:auto}
 .candidateRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 2px;border-bottom:1px solid #eee}
 @media(max-width:760px){.postBoard{grid-template-columns:1fr}.postColumn{padding:9px}}
+
+.traineeToggleRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.traineeToggle{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
+.traineeToggle.on{background:#111827;color:#fff;border-color:#111827}
+.traineeBadge{font-size:11px;padding:2px 6px;border-radius:999px;background:#eef2ff}
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.4</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.7</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -90,6 +95,10 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
    <button id="repairBtn">🛠️ 一鍵檢查除錯</button>
    <button id="clearToday">🧹 全部清除</button>
    <button id="saveOfficial">💾 儲存</button>
+  </div>
+  <div class="traineeToggleRow">
+   <button id="toggleTraineeControl" class="traineeToggle">📘 見習管制：關閉</button>
+   <button id="toggleTraineeGate" class="traineeToggle">📗 見習門禁：關閉</button>
   </div>
   <div id="validationBox"></div>
  </div>
@@ -145,7 +154,14 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div class="card"><h2>📝 自動交接摘要</h2><button id="makeSummary">產生今日摘要</button><textarea id="summaryBox" readonly placeholder="按上方按鈕產生摘要"></textarea></div><div class="card"><h2>📝 電子交接簿</h2><input id="handoverFrom" placeholder="交班人"><input id="handoverTo" placeholder="接班人"><textarea id="handoverNote" placeholder="交接事項"></textarea><button id="saveHandover">儲存交接</button><div id="handoverList"></div></div>
  <div class="card"><h2>🧪 排班引擎自我測試</h2><button id="runSelfTest">執行規則測試</button><div id="selfTestBox" class="notice">尚未執行。</div></div>
  <div class="card"><h2>🤖 值星助手</h2><button id="aiCheck">檢查目前哨表</button><button id="aiNight">夜哨統計</button><div id="aiBox" class="notice">規則式助手，資料不會送到外部 AI。</div></div>
- <div class="card"><h2>💾 備份／還原</h2><button id="backupBtn">下載備份</button><input id="restoreFile" type="file" accept=".json,application/json"></div>
+ <div class="card"><h2>🗄️ 備份與還原</h2>
+<p class="muted">完整備份人員、哨表、公差、外散、見習設定與其他永久資料。備份檔儲存在裝置中，不會被「全部清除」刪除。</p>
+<div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div>
+<div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
+<div class="card"><h2>🔄 版本更新</h2>
+<p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
+<button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
+<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.7</div></div>
  <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
 </section>
 </main>
@@ -160,7 +176,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
 <script>
 "use strict";
-const APP_VERSION="V5.4";
+const APP_VERSION="V5.7";
 const STORAGE_KEY="dutyHelperPermanent";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
@@ -221,6 +237,9 @@ function currentDay(){
  const d=currentDate();
  if(!state.days[d])state.days[d]={slots:baseSlots(),official:false};
  if(!Array.isArray(state.days[d].slots)||state.days[d].slots.length!==36)state.days[d].slots=baseSlots();
+ if(!state.days[d].trainee)state.days[d].trainee={control:false,gate:false,controlAssignments:{},gateAssignments:{}};
+ state.days[d].trainee.controlAssignments=state.days[d].trainee.controlAssignments||{};
+ state.days[d].trainee.gateAssignments=state.days[d].trainee.gateAssignments||{};
  return state.days[d];
 }
 function slotRange(s){
@@ -558,18 +577,73 @@ function openCandidate(slotId){
  });
  $("#candidateOverlay").style.display="block";
 }
+function traineeConfig(){return currentDay().trainee;}
+function traineeTimes(kind){
+ return kind==="control"?DOUBLE_TIMES:GATE_TIMES;
+}
+function traineeAssignment(kind,time){
+ const t=traineeConfig();
+ return kind==="control"?(t.controlAssignments[time]||""):(t.gateAssignments[time]||"");
+}
+function setTraineeAssignment(kind,time,name){
+ const t=traineeConfig();
+ if(kind==="control")t.controlAssignments[time]=name;
+ else t.gateAssignments[time]=name;
+}
+function clearHiddenTrainee(kind){
+ const t=traineeConfig();
+ if(kind==="control")t.controlAssignments={};
+ else t.gateAssignments={};
+}
+function openTraineeCandidate(kind,time){
+ const title=kind==="control"?"見習管制":"見習門禁";
+ $("#candidateTitle").textContent=title+"｜"+time+" 選擇見習人員";
+ const people=state.people.filter(isDutyVisiblePerson);
+ $("#candidateList").innerHTML=people.length?people.map(p=>{
+   return '<div class="candidateRow"><div><b>'+p.name+'</b><div class="muted">今日在營｜見習勤務不計入正式哨次、夜哨與休息規則</div></div><button class="pickTrainee" data-kind="'+kind+'" data-time="'+time+'" data-name="'+p.name+'">選擇</button></div>';
+ }).join(""):'<p class="muted">目前沒有可選擇的在營人員。</p>';
+ $$(".pickTrainee").forEach(b=>b.onclick=()=>{
+   snapshot();setTraineeAssignment(b.dataset.kind,b.dataset.time,b.dataset.name);saveState();
+   $("#candidateOverlay").style.display="none";
+ });
+ $("#candidateOverlay").style.display="block";
+}
+function renderTraineeToggles(){
+ const t=traineeConfig();
+ const c=$("#toggleTraineeControl"),g=$("#toggleTraineeGate");
+ if(c){c.textContent="📘 見習管制："+(t.control?"開啟 ✓":"關閉");c.classList.toggle("on",!!t.control);}
+ if(g){g.textContent="📗 見習門禁："+(t.gate?"開啟 ✓":"關閉");g.classList.toggle("on",!!t.gate);}
+}
+function traineeColumn(kind,icon,label){
+ const times=traineeTimes(kind);
+ return '<div class="postColumn"><h3>'+icon+' '+label+'</h3>'+times.map(time=>{
+   const name=traineeAssignment(kind,time);
+   const cross=FIXED_NEXT_DAY_TIMES.has(time);
+   return '<div class="slotCard"><div class="slotTime">'+time+(cross?' <span class="tag">+1日</span>':'')+'</div><button class="traineePersonBtn slotPersonBtn" data-kind="'+kind+'" data-time="'+time+'">'+(name||'＋ 選擇見習人員')+'</button><div class="slotMeta"><span class="traineeBadge">見習</span>｜不計正式勤務</div></div>';
+ }).join("")+'</div>';
+}
 function renderPostBoard(){
  const el=$("#postBoard");if(!el)return;
- const posts=[["安官","🛡️"],["管制","🎛️"],["門禁","🚪"]];
- el.innerHTML=posts.map(([post,icon])=>{
-  const slots=currentDay().slots.filter(s=>s.post===post);
-  return '<div class="postColumn"><h3>'+icon+' '+post+'</h3>'+slots.map(s=>{
-   const displayTime=slotDisplayTime(s);
-   const cross=FIXED_NEXT_DAY_TIMES.has(displayTime);
-   return '<div class="slotCard '+(isNight(s)?'night':'')+'"><div class="slotTime">'+displayTime+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'):'待安排')+(s.locked?'｜🔒':'')+'</div><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div>';
-  }).join("")+'</div>';
+ const t=traineeConfig();
+ const cols=[];
+ cols.push({type:"official",post:"安官",icon:"🛡️"});
+ cols.push({type:"official",post:"管制",icon:"🎛️"});
+ if(t.control)cols.push({type:"traineeControl"});
+ cols.push({type:"official",post:"門禁",icon:"🚪"});
+ if(t.gate)cols.push({type:"traineeGate"});
+ el.innerHTML=cols.map(col=>{
+   if(col.type==="traineeControl")return traineeColumn("control","📘","見習管制");
+   if(col.type==="traineeGate")return traineeColumn("gate","📗","見習門禁");
+   const slots=currentDay().slots.filter(s=>s.post===col.post);
+   return '<div class="postColumn"><h3>'+col.icon+' '+col.post+'</h3>'+slots.map(s=>{
+     const displayTime=slotDisplayTime(s);
+     const cross=FIXED_NEXT_DAY_TIMES.has(displayTime);
+     return '<div class="slotCard '+(isNight(s)?'night':'')+'"><div class="slotTime">'+displayTime+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn officialPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'):'待安排')+(s.locked?'｜🔒':'')+'</div><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div>';
+   }).join("")+'</div>';
  }).join("");
- $$(".slotPersonBtn").forEach(b=>b.onclick=()=>openCandidate(b.dataset.slot));
+ $$(".officialPersonBtn").forEach(b=>b.onclick=()=>openCandidate(b.dataset.slot));
+ $$(".traineePersonBtn").forEach(b=>b.onclick=()=>openTraineeCandidate(b.dataset.kind,b.dataset.time));
+ renderTraineeToggles();
 }
 function renderScheduleTables(){
  if(!$("#doubleTable")||!$("#gateTable"))return;
@@ -668,20 +742,15 @@ function reAssignToday(){
    '<br>若不滿意本次結果，可使用 ↩️ 復原。</div>';
 }
 function clearTodaySchedule(){
- const typed=prompt("⚠️ 這項操作無法復原。\n\n將完全清除今日所有勤務人員與鎖定狀態，且不建立復原點。\n\n請輸入「清除」兩個字以確認：","");
+ const typed=prompt("⚠️ 這項操作無法復原。\n\n將完全清除今日所有正式勤務、見習勤務與鎖定狀態，且不建立復原點。\n\n請輸入「清除」兩個字以確認：","");
  if(typed===null)return;
- if(typed!=="清除"){
-   alert("輸入內容不正確，已取消一鍵清理。");
-   return;
- }
- // 特殊高風險清理：刻意不呼叫 snapshot()，因此不建立 Undo 復原點。
- const slots=currentDay().slots;
- slots.forEach(s=>{s.person="";s.locked=false;});
- // 同時清掉既有 Undo/Redo，避免透過舊復原紀錄把清理前哨表救回。
- state.undo=[];
- state.redo=[];
+ if(typed!=="清除"){alert("輸入內容不正確，已取消一鍵清理。");return;}
+ const d=currentDay();
+ d.slots.forEach(s=>{s.person="";s.locked=false;});
+ d.trainee={control:false,gate:false,controlAssignments:{},gateAssignments:{}};
+ state.undo=[];state.redo=[];
  saveState();
- $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已永久清除</b><br>共清除 '+slots.length+' 個哨位的人員安排與鎖定狀態。此操作沒有建立復原點，無法使用 ↩️ 復原。</div>';
+ $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已永久清除</b><br>正式勤務、見習勤務及鎖定狀態均已清空，此操作無法復原。</div>';
 }
 function renderNightSummary(){
  const rows=state.people.map(p=>({name:p.name,night:todayNightCount(p.name),total:todayDutyCount(p.name)})).filter(x=>x.night>0||x.total>0).sort((a,b)=>b.night-a.night||b.total-a.total||a.name.localeCompare(b.name,"zh-Hant"));
@@ -957,6 +1026,18 @@ function currentWeekRange(d){
 
 $("#closeCandidate").onclick=()=>$("#candidateOverlay").style.display="none";
 $("#candidateOverlay").onclick=e=>{if(e.target.id==="candidateOverlay")$("#candidateOverlay").style.display="none";};
+$("#toggleTraineeControl").onclick=()=>{
+ snapshot();
+ const t=traineeConfig();t.control=!t.control;
+ if(!t.control&&Object.keys(t.controlAssignments).length&&confirm("關閉見習管制欄位。是否一併清除已排的見習管制人員？"))t.controlAssignments={};
+ saveState();
+};
+$("#toggleTraineeGate").onclick=()=>{
+ snapshot();
+ const t=traineeConfig();t.gate=!t.gate;
+ if(!t.gate&&Object.keys(t.gateAssignments).length&&confirm("關閉見習門禁欄位。是否一併清除已排的見習門禁人員？"))t.gateAssignments={};
+ saveState();
+};
 $("#scheduleDate").value=todayISO();
 $("#outingDate").value=todayISO();
 $("#errandDate").value=todayISO();
@@ -1029,8 +1110,42 @@ $("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snap
 $("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
 $("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
 $("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
-$("#backupBtn").onclick=()=>{const blob=new Blob([JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]}),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="值星小幫手V5.4備份_"+todayISO()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
-$("#restoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("確定還原備份？")){state=Object.assign(clone(EMPTY),x,{undo:[],redo:[]});saveState();}}catch(err){alert("備份檔錯誤");}};r.readAsText(f);};
+$("#backupBtn").onclick=()=>{
+ try{
+  saveState();
+  const payload={app:"值星小幫手",backupVersion:1,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),state:state};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="值星小幫手_"+APP_VERSION+"_完整備份_"+currentDate()+".json";a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  $("#backupStatus").textContent="✅ 完整備份已匯出。";
+ }catch(err){$("#backupStatus").textContent="❌ 備份失敗："+err.message;}
+};
+$("#restoreBtn").onclick=()=>$("#restoreFile").click();
+$("#restoreFile").onchange=e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const data=JSON.parse(reader.result);
+   let restored=null,version="舊版",when="未知";
+   if(data&&data.app==="值星小幫手"&&data.state){
+    restored=data.state;version=data.appVersion||"舊版";when=data.exportedAt?new Date(data.exportedAt).toLocaleString("zh-TW"):"未知";
+   }else if(data&&Array.isArray(data.people)&&data.days){
+    restored=data;version="舊版相容備份";
+   }else throw new Error("不是有效的值星小幫手備份檔");
+   if(!Array.isArray(restored.people)||!restored.days||typeof restored.days!=="object")throw new Error("備份檔缺少人員或哨表核心資料");
+   if(!confirm("⚠️ 確定還原這份完整備份？\n\n版本："+version+"\n備份時間："+when+"\n\n目前資料將被備份內容取代。"))return;
+   state=restored;state.undo=[];state.redo=[];
+   localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+   $("#backupStatus").textContent="✅ 還原完成，正在重新載入…";
+   setTimeout(()=>location.reload(),300);
+  }catch(err){$("#backupStatus").textContent="❌ 還原失敗："+err.message;alert("還原失敗：\n"+err.message);}
+  finally{$("#restoreFile").value="";}
+ };
+ reader.onerror=()=>{$("#backupStatus").textContent="❌ 無法讀取備份檔";};
+ reader.readAsText(file,"utf-8");
+};
 $("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
 $("#redoBtn").onclick=()=>{if(!state.redo.length)return alert("沒有可重做");state.undo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.redo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
@@ -1044,33 +1159,71 @@ if("serviceWorker" in navigator){
 }
 
 function exportDutyImage(){
- const W=1600,H=1050,c=document.createElement("canvas");c.width=W;c.height=H;
+ const W=1800,H=1150,c=document.createElement("canvas");c.width=W;c.height=H;
  const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);ctx.fillStyle="#111";
  ctx.textAlign="center";ctx.font="bold 42px sans-serif";ctx.fillText("勤務哨表",W/2,60);
  ctx.font="24px sans-serif";ctx.fillText("日期："+currentDate(),W/2,100);
- const posts=["安官","管制","門禁"],cols=posts.map(p=>currentDay().slots.filter(s=>s.post===p));
- const max=Math.max(...cols.map(x=>x.length)),left=70,top=140,tableW=W-140,colW=tableW/3,rowH=Math.min(72,(H-top-100)/(max+1));
- ctx.lineWidth=2;ctx.strokeStyle="#222";
- ctx.font="bold 25px sans-serif";
- posts.forEach((p,i)=>{ctx.fillStyle="#f3f4f6";ctx.fillRect(left+i*colW,top,colW,rowH);ctx.strokeRect(left+i*colW,top,colW,rowH);ctx.fillStyle="#111";ctx.fillText(p,left+i*colW+colW/2,top+rowH*.65);});
- ctx.font="22px sans-serif";
+
+ const t=traineeConfig();
+ const columns=[
+  {name:"安官",rows:currentDay().slots.filter(s=>s.post==="安官").map(s=>({time:slotDisplayTime(s),person:s.person||"待安排"}))},
+  {name:"管制",rows:currentDay().slots.filter(s=>s.post==="管制").map(s=>({time:slotDisplayTime(s),person:s.person||"待安排"}))}
+ ];
+ if(t.control)columns.push({name:"見習管制",rows:DOUBLE_TIMES.map(time=>({time,person:t.controlAssignments[time]||""}))});
+ columns.push({name:"門禁",rows:currentDay().slots.filter(s=>s.post==="門禁").map(s=>({time:slotDisplayTime(s),person:s.person||"待安排"}))});
+ if(t.gate)columns.push({name:"見習門禁",rows:GATE_TIMES.map(time=>({time,person:t.gateAssignments[time]||""}))});
+
+ const max=Math.max(...columns.map(x=>x.rows.length)),left=50,top=140,tableW=W-100,colW=tableW/columns.length,rowH=Math.min(72,(H-top-100)/(max+1));
+ ctx.lineWidth=2;ctx.strokeStyle="#222";ctx.font="bold 24px sans-serif";
+ columns.forEach((col,i)=>{ctx.fillStyle="#f3f4f6";ctx.fillRect(left+i*colW,top,colW,rowH);ctx.strokeRect(left+i*colW,top,colW,rowH);ctx.fillStyle="#111";ctx.fillText(col.name,left+i*colW+colW/2,top+rowH*.65);});
  for(let r=0;r<max;r++){
-  for(let i=0;i<3;i++){
-   const x=left+i*colW,y=top+(r+1)*rowH,s=cols[i][r];
+  columns.forEach((col,i)=>{
+   const x=left+i*colW,y=top+(r+1)*rowH,item=col.rows[r];
    ctx.strokeRect(x,y,colW,rowH);
-   if(s){
-    ctx.fillStyle="#111";ctx.font="bold 20px sans-serif";ctx.fillText(slotDisplayTime(s),x+colW*.28,y+rowH*.58);
-    ctx.font="22px sans-serif";ctx.fillText(s.person||"待安排",x+colW*.68,y+rowH*.58);
+   if(item){
+    ctx.fillStyle="#111";ctx.font="bold 18px sans-serif";ctx.fillText(item.time,x+colW*.28,y+rowH*.58);
+    ctx.font="20px sans-serif";ctx.fillText(item.person||"",x+colW*.68,y+rowH*.58);
    }
-  }
+  });
  }
- ctx.textAlign="right";ctx.font="16px sans-serif";ctx.fillStyle="#555";ctx.fillText("產生時間："+new Date().toLocaleString("zh-TW"),W-70,H-35);
+ ctx.textAlign="right";ctx.font="16px sans-serif";ctx.fillStyle="#555";ctx.fillText("產生時間："+new Date().toLocaleString("zh-TW"),W-50,H-35);
  c.toBlob(blob=>{
   const a=document.createElement("a"),url=URL.createObjectURL(blob);a.href=url;a.download="勤務哨表_"+currentDate()+".png";a.click();
   setTimeout(()=>URL.revokeObjectURL(url),1500);$("#exportStatus").textContent="✅ 正式哨表圖片已產生";
  },"image/png");
 }
 $("#exportDutyImage").onclick=exportDutyImage;
+
+async function refreshForUpdate(){
+ try{
+  saveState();
+  $("#refreshStatus").textContent="🔄 正在儲存資料並檢查新版…";
+
+  // 清除 Cache Storage，避免 GitHub Pages / PWA 持續載入舊版檔案。
+  if("caches" in window){
+   const keys=await caches.keys();
+   await Promise.all(keys.map(k=>caches.delete(k)));
+  }
+
+  // 解除舊 service worker，下一次載入重新取得新檔。
+  if("serviceWorker" in navigator){
+   const regs=await navigator.serviceWorker.getRegistrations();
+   await Promise.all(regs.map(r=>r.unregister()));
+  }
+
+  const base=location.pathname;
+  const hash=location.hash||"";
+  // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
+  location.replace(base+"?v=57&refresh="+Date.now()+hash);
+ }catch(err){
+  $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
+  // 即使快取 API 失敗，仍保底做一般強制重新整理。
+  setTimeout(()=>location.reload(),500);
+ }
+}
+$("#refreshForUpdate").onclick=()=>{
+ if(confirm("確定重新整理並檢查最新版本？\n\n目前資料會先儲存，不會執行清除。"))refreshForUpdate();
+};
 </script>
 </body>
 </html>
