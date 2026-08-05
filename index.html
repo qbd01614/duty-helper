@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.23</title>
-<link rel="manifest" href="manifest.json?v=523">
+<title>值星小幫手 V5.24</title>
+<link rel="manifest" href="manifest.json?v=524">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -99,11 +99,28 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .nextDutyCard .time{font-size:18px;font-weight:800}
 #dailyOverviewPreview img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #d1d5db;background:#fff}
 @media(max-width:520px){.nextDutyGrid{grid-template-columns:1fr}}
+
+.candidatePanel>.row:first-child{position:sticky;top:0;background:#fff;z-index:2;padding-bottom:8px;flex:0 0 auto}
+#candidateList,#prevCandidateList{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1 1 auto;min-height:0;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.candidateRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 6px;border-bottom:1px solid #eee}
+.candidateRow>div:first-child{min-width:0}
+.candidateRow b{font-size:16px}
+.candidateRow .muted{font-size:11px;line-height:1.35}
+.candidateRow button{white-space:nowrap;padding:7px 10px}
+.candidateRow span{display:flex;gap:5px;align-items:center}
+@media(max-width:520px){
+ .candidateOverlay{align-items:flex-end;padding:0}
+ .candidatePanel{width:100%;max-width:none;border-radius:16px 16px 0 0;max-height:76dvh;padding:10px 10px calc(8px + env(safe-area-inset-bottom))}
+ .candidatePanel h3{font-size:17px}
+ .candidateRow{padding:7px 4px}
+ .candidateRow b{font-size:15px}
+ .candidateRow button{font-size:13px;padding:7px 9px}
+}
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.23</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.24</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -253,9 +270,9 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.23</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.23</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.24</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.24</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.23</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
+  <b>V5.24</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
   <b>V5.18.6.1</b><br>修正底部選單與設定頁版面；昨日勤務改為收合。<br><br>
@@ -314,7 +331,7 @@ v>
 
 <script>
 "use strict";
-const APP_VERSION="V5.23";
+const APP_VERSION="V5.24";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -885,6 +902,11 @@ function visibleCandidatesForSlot(s){
   return q.includes(s.post);
  });
 }
+function resetCandidateScroll(){
+ const a=$("#candidateList"),b=$("#prevCandidateList");
+ if(a)a.scrollTop=0;
+ if(b)b.scrollTop=0;
+}
 function openCandidate(slotId){
  const s=currentDay().slots.find(x=>x.id===slotId);if(!s)return;
  $("#candidateTitle").textContent=s.post+"｜"+slotDisplayTime(s)+" 選擇人員";
@@ -893,7 +915,7 @@ function openCandidate(slotId){
    const r=eligible(p.name,s,s.id),rest=restInfoFor(p.name,s),st=nightStreakStatus(p.name,s,s.id);
    const nightLine=isNight(s)?('<div class="'+(st.blocked?'nightBlock':st.warning?'nightWarn':'muted')+'">'+nightStreakWarningText(p.name,s,s.id)+'｜本日夜哨 '+todayNightCount(p.name)+' 次</div>'):'';
    const raw=eligibleRaw(p.name,s,s.id),passable=!raw[0]&&!isHardBlockReason(raw[1]);
-   return '<div class="candidateRow"><div><b>'+p.name+'</b><div class="'+rest.className+'">'+rest.text+'</div><div class="muted">'+rest.prev+'</div>'+nightLine+'<div style="font-size:12px">'+(r[0]?'✅ 可排':'⛔ '+r[1])+'</div></div><span><button class="pickCandidate" data-slot="'+s.id+'" data-name="'+p.name+'" '+(!r[0]?'disabled':'')+'>選擇</button>'+(passable?'<button class="passCandidate" data-slot="'+s.id+'" data-name="'+p.name+'" data-reason="'+encodeURIComponent(raw[1])+'">PASS</button>':'')+'</span></div>';
+   return '<div class="candidateRow"><div><b>'+p.name+'</b><div style="font-size:12px">'+(r[0]?'✅ 可排':'⛔ '+r[1])+'</div>'+nightLine+'</div><span><button class="pickCandidate" data-slot="'+s.id+'" data-name="'+p.name+'" '+(!r[0]?'disabled':'')+'>選擇</button>'+(passable?'<button class="passCandidate" data-slot="'+s.id+'" data-name="'+p.name+'" data-reason="'+encodeURIComponent(raw[1])+'">PASS</button>':'')+'</span></div>';
  }).join(""):'<p class="muted">目前沒有符合此哨別資格的在營人員。</p>';
  $$(".passCandidate").forEach(btn=>btn.onclick=()=>{
    const slot=currentDay().slots.find(x=>x.id===btn.dataset.slot),name=btn.dataset.name,reason=decodeURIComponent(btn.dataset.reason||"");
@@ -911,7 +933,7 @@ function openCandidate(slotId){
    saveState();
    $("#candidateOverlay").style.display="none";
  });
- $("#candidateOverlay").style.display="block";
+ $("#candidateOverlay").style.display="block";resetCandidateScroll();
 }
 function traineeConfig(){return currentDay().trainee;}
 function traineeTimes(kind){
@@ -942,7 +964,7 @@ function openTraineeCandidate(kind,time){
    snapshot();setTraineeAssignment(b.dataset.kind,b.dataset.time,b.dataset.name);saveState();
    $("#candidateOverlay").style.display="none";
  });
- $("#candidateOverlay").style.display="block";
+ $("#candidateOverlay").style.display="block";resetCandidateScroll();
 }
 function renderTraineeToggles(){
  const t=traineeConfig();
@@ -1547,7 +1569,7 @@ function openPrevCandidate(slotId){
    if($("#prevSyncStatus"))$("#prevSyncStatus").textContent="已同步至 "+pd+" 當日哨表";
    $("#prevCandidateOverlay").style.display="none";
  });
- $("#prevCandidateOverlay").style.display="block";
+ $("#prevCandidateOverlay").style.display="block";resetCandidateScroll();
 }
 function renderPrevious(){
  const board=$("#prevBoard");if(!board)return;
@@ -2134,7 +2156,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=523&refresh="+Date.now()+hash);
+  location.replace(base+"?v=524&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
