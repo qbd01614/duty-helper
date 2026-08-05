@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.20</title>
-<link rel="manifest" href="manifest.json?v=520">
+<title>值星小幫手 V5.21</title>
+<link rel="manifest" href="manifest.json?v=521">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -92,11 +92,18 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .hardTag{display:inline-block;font-size:10px;padding:2px 5px;border-radius:999px;background:#6b7280;color:#fff;font-weight:800}
 
 .visitorMultiSelect{position:relative}
+
+.nextDutyGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.nextDutyCard{border:1px solid #dbe3ea;border-radius:12px;padding:10px;background:#fff}
+.nextDutyCard b{display:block;margin-bottom:5px}
+.nextDutyCard .time{font-size:18px;font-weight:800}
+#dailyOverviewPreview img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #d1d5db;background:#fff}
+@media(max-width:520px){.nextDutyGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.20</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.21</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -108,6 +115,10 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
  <div class="card"><h3>⏱️ 即時人員統計</h3>
    <div class="row"><input id="liveDate" type="date"><input id="liveTime" type="time"><button id="applyLiveTime">套用</button><button id="liveNowBtn">今天現在</button></div>
    <div id="livePeopleBox" style="margin-top:9px"></div>
+   <div class="card" style="margin-top:10px;background:#f8fafc;box-shadow:none;border:1px solid #e5e7eb">
+    <div class="row"><button id="generateDailyOverviewImage" class="primary">🖼️ 產生／分享當日勤務圖</button><span id="dailyOverviewImageStatus" class="muted"></span></div>
+    <div id="dailyOverviewPreview" style="display:none;margin-top:10px"></div>
+   </div>
  </div>
 </section>
 
@@ -216,9 +227,9 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </section><section id="settingsPage" class="page">
  <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">⚙️ 設定專區</h2></div></div>
  <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.20</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.20</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.21</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.21</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.20</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
+  <b>V5.21</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
   <b>V5.18.6.1</b><br>修正底部選單與設定頁版面；昨日勤務改為收合。<br><br>
@@ -277,7 +288,7 @@ v>
 
 <script>
 "use strict";
-const APP_VERSION="V5.20";
+const APP_VERSION="V5.21";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -1238,6 +1249,37 @@ function timedRecordActiveOnDate(recordDate,start,end,queryDate,queryTime){
  const queryTs=dateAtMinutes(queryDate,queryMin);
  return startTs<=queryTs&&queryTs<endTs;
 }
+function nextFormalDutyByPost(selectedDate,timeValue){
+ const queryTs=dateAtMinutes(selectedDate,timeToMinutes(timeValue));
+ const result={};
+ ["安官","管制","門禁"].forEach(post=>{
+   const candidates=[];
+   [addDays(selectedDate,-1),selectedDate,addDays(selectedDate,1)].forEach(dutyDate=>{
+     const day=state.days[dutyDate];
+     if(!day||!Array.isArray(day.slots))return;
+     day.slots.filter(s=>s.post===post).forEach(s=>{
+       const [startTs,endTs]=slotAbsoluteRange(s,dutyDate);
+       if(startTs>=queryTs){
+         candidates.push({startTs,endTs,dutyDate,slot:s});
+       }
+     });
+   });
+   candidates.sort((a,b)=>a.startTs-b.startTs);
+   result[post]=candidates[0]||null;
+ });
+ return result;
+}
+function nextDutyDisplayRow(post,item,queryDate){
+ if(!item)return '<div class="nextDutyCard"><b>'+post+'</b><div class="muted">查無後續班次</div></div>';
+ const s=item.slot;
+ const startDate=new Date(item.startTs);
+ const queryDay=new Date(queryDate+"T00:00:00");
+ const startDay=new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate());
+ const qDay=new Date(queryDay.getFullYear(),queryDay.getMonth(),queryDay.getDate());
+ const diff=Math.round((startDay-qDay)/86400000);
+ const dayTag=diff===0?"":(diff===1?"｜隔日":("｜"+diff+"日後"));
+ return '<div class="nextDutyCard"><b>'+post+' 下一班</b><div class="time">'+slotDisplayTime(s)+dayTag+'</div><div>'+(s.person||'待安排')+'</div></div>';
+}
 function renderLivePeople(){
  if(!$("#livePeopleBox"))return;
  const v=$("#liveTime").value||new Date().toTimeString().slice(0,5);
@@ -1334,13 +1376,17 @@ function renderLivePeople(){
   ["⚔️ 戰鬥隊",g.combat]
  ];
 
+ const nextDuty=nextFormalDutyByPost(selectedDate,v);
  $("#livePeopleBox").innerHTML=
    '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜公差依目前公差設定時間即時比對</div>'+
    '<div class="livePeopleGrid">'+cards.map(([title,names])=>
      '<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+
      (names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+
      '</div></div>'
-   ).join("")+'</div>';
+   ).join("")+'</div>'+
+   '<div class="liveGroup" style="margin-top:10px"><h4>⏭️ 各哨點下一班</h4><div class="muted">依查詢時間分別顯示安官、管制、門禁下一班；不含會客室、公差、EMT、見習勤務。</div><div class="nextDutyGrid">'+
+     ["安官","管制","門禁"].map(post=>nextDutyDisplayRow(post,nextDuty[post],selectedDate)).join("")+
+   '</div></div>';
 }
 function ensureManualPrevSlots(){
  const d=currentDate();
@@ -1819,6 +1865,112 @@ if("serviceWorker" in navigator){
  navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.unregister()))).catch(()=>{});
 }
 
+function roundRect(ctx,x,y,w,h,r,fill,stroke){
+ ctx.beginPath();ctx.roundRect(x,y,w,h,r);
+ if(fill){ctx.fillStyle=fill;ctx.fill();}
+ if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}
+}
+function dailyOverviewData(dateStr){
+ const day=state.days[dateStr]&&Array.isArray(state.days[dateStr].slots)?state.days[dateStr]:{slots:baseSlots()};
+ const posts=["安官","管制","門禁"].map(post=>({
+   post,
+   rows:day.slots.filter(s=>s.post===post).map(s=>({time:slotDisplayTime(s),person:s.person||"待安排",night:isNight(s),hard:isHard(s)}))
+ }));
+ const visitors=visitorAssignmentsForDate(dateStr).slice().sort((a,b)=>timeToMinutes(a.start)-timeToMinutes(b.start));
+ const errands=(state.errandLogs||[]).filter(x=>x.date===dateStr).map(x=>{
+   const def=errandTypeByName(x.type);
+   return {person:x.person,type:x.type,start:def?def.start:"",end:def?def.end:""};
+ }).sort((a,b)=>timeToMinutes(a.start)-timeToMinutes(b.start));
+ return {posts,visitors,errands};
+}
+function createDailyOverviewCanvas(dateStr){
+ const data=dailyOverviewData(dateStr);
+ const W=1500,margin=50,headerH=125,colGap=18,colW=(W-margin*2-colGap*2)/3;
+ const maxRows=Math.max(...data.posts.map(p=>p.rows.length),1);
+ const rowH=54,postSectionH=70+maxRows*rowH;
+ const extraRows=Math.max(data.visitors.length,data.errands.length,1);
+ const extraSectionH=95+extraRows*48;
+ const H=headerH+postSectionH+extraSectionH+120;
+ const c=document.createElement("canvas");c.width=W;c.height=H;
+ const ctx=c.getContext("2d");
+ ctx.fillStyle="#f3f4f6";ctx.fillRect(0,0,W,H);
+
+ // Header
+ ctx.fillStyle="#111827";ctx.fillRect(0,0,W,headerH);
+ ctx.fillStyle="#fff";ctx.textAlign="left";ctx.font="bold 38px sans-serif";ctx.fillText("當日勤務總覽",margin,55);
+ ctx.font="24px sans-serif";ctx.fillText("日期："+dateStr,margin,94);
+ ctx.textAlign="right";ctx.font="18px sans-serif";ctx.fillText("產生時間："+new Date().toLocaleString("zh-TW"),W-margin,92);
+
+ const labels={"安官":"🛡 安官","管制":"🎛 管制","門禁":"🚪 門禁"};
+ data.posts.forEach((p,i)=>{
+   const x=margin+i*(colW+colGap),y=headerH+25;
+   roundRect(ctx,x,y,colW,postSectionH,18,"#fff","#d1d5db");
+   ctx.fillStyle="#e5e7eb";ctx.fillRect(x,y,colW,58);
+   ctx.fillStyle="#111827";ctx.textAlign="center";ctx.font="bold 25px sans-serif";ctx.fillText(labels[p.post],x+colW/2,y+37);
+   p.rows.forEach((r,j)=>{
+     const ry=y+65+j*rowH;
+     if(r.hard){ctx.fillStyle="#e5e7eb";ctx.fillRect(x+10,ry,colW-20,rowH-4);}
+     else if(r.night){ctx.fillStyle="#f8fafc";ctx.fillRect(x+10,ry,colW-20,rowH-4);}
+     ctx.fillStyle="#111827";ctx.textAlign="left";ctx.font="bold 18px sans-serif";ctx.fillText(r.time,x+20,ry+31);
+     ctx.textAlign="right";ctx.font="20px sans-serif";ctx.fillText(r.person,x+colW-20,ry+31);
+     if(r.night){ctx.textAlign="right";ctx.font="16px sans-serif";ctx.fillText("🌙",x+colW-8,ry+17);}
+   });
+ });
+
+ const sy=headerH+25+postSectionH+25;
+ // Visitor box
+ const half=(W-margin*2-colGap)/2;
+ roundRect(ctx,margin,sy,half,extraSectionH,18,"#fff","#d1d5db");
+ ctx.fillStyle="#ede9fe";ctx.fillRect(margin,sy,half,55);
+ ctx.fillStyle="#5b21b6";ctx.textAlign="left";ctx.font="bold 24px sans-serif";ctx.fillText("🏢 會客室勤務",margin+20,sy+35);
+ if(data.visitors.length){
+   data.visitors.forEach((x,i)=>{const yy=sy+70+i*48;ctx.fillStyle="#111827";ctx.font="19px sans-serif";ctx.fillText(x.start+"–"+x.end,margin+20,yy+25);ctx.textAlign="right";ctx.fillText(x.person,margin+half-20,yy+25);ctx.textAlign="left";});
+ }else{ctx.fillStyle="#6b7280";ctx.font="18px sans-serif";ctx.fillText("今日無會客室勤務",margin+20,sy+88);}
+
+ // Errand box
+ const ex=margin+half+colGap;
+ roundRect(ctx,ex,sy,half,extraSectionH,18,"#fff","#d1d5db");
+ ctx.fillStyle="#dbeafe";ctx.fillRect(ex,sy,half,55);
+ ctx.fillStyle="#1d4ed8";ctx.font="bold 24px sans-serif";ctx.fillText("🧰 當日公差",ex+20,sy+35);
+ if(data.errands.length){
+   data.errands.forEach((x,i)=>{
+     const yy=sy+70+i*48,tm=x.start===x.end?x.start:(x.start+"–"+x.end);
+     ctx.fillStyle="#111827";ctx.textAlign="left";ctx.font="18px sans-serif";ctx.fillText(tm,ex+20,yy+25);
+     ctx.fillText(x.type,ex+170,yy+25);
+     ctx.textAlign="right";ctx.fillText(x.person,ex+half-20,yy+25);
+   });
+ }else{ctx.fillStyle="#6b7280";ctx.textAlign="left";ctx.font="18px sans-serif";ctx.fillText("今日無公差",ex+20,sy+88);}
+
+ ctx.fillStyle="#6b7280";ctx.textAlign="left";ctx.font="16px sans-serif";ctx.fillText("🌙 夜哨　灰底＝艱苦哨",margin,H-30);
+ return c;
+}
+async function generateDailyOverviewImage(){
+ const dateStr=$("#liveDate").value||todayISO();
+ const c=createDailyOverviewCanvas(dateStr);
+ const blob=await new Promise(resolve=>c.toBlob(resolve,"image/png"));
+ if(!blob)return alert("圖片產生失敗");
+ const file=new File([blob],"當日勤務總覽_"+dateStr+".png",{type:"image/png"});
+ const preview=$("#dailyOverviewPreview");
+ const old=preview.dataset.url;if(old)URL.revokeObjectURL(old);
+ const url=URL.createObjectURL(blob);preview.dataset.url=url;
+ preview.innerHTML='<img src="'+url+'" alt="當日勤務總覽"><div class="muted" style="margin-top:6px">已產生 '+dateStr+' 的勤務總覽圖片。</div>';
+ preview.style.display="block";
+ $("#dailyOverviewImageStatus").textContent="✅ 圖片已產生";
+
+ // iPhone/iOS 支援檔案分享時，直接叫出系統分享選單。
+ try{
+   if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+     await navigator.share({files:[file],title:"當日勤務總覽 "+dateStr});
+     $("#dailyOverviewImageStatus").textContent="✅ 已開啟分享";
+     return;
+   }
+ }catch(e){
+   if(e&&e.name==="AbortError")return;
+ }
+
+ // 無 Web Share 時提供 PNG 儲存/下載。
+ const a=document.createElement("a");a.href=url;a.download=file.name;a.click();
+}
 function exportDutyImage(){
  const W=1800,H=1150,c=document.createElement("canvas");c.width=W;c.height=H;
  const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);ctx.fillStyle="#111";
@@ -1854,6 +2006,7 @@ function exportDutyImage(){
  },"image/png");
 }
 $("#exportDutyImage").onclick=exportDutyImage;
+$("#generateDailyOverviewImage").onclick=generateDailyOverviewImage;
 
 async function refreshForUpdate(){
  try{
@@ -1875,7 +2028,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=520&refresh="+Date.now()+hash);
+  location.replace(base+"?v=521&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
