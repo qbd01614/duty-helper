@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.18.7</title>
-<link rel="manifest" href="manifest.json?v=5187">
+<title>值星小幫手 V5.20</title>
+<link rel="manifest" href="manifest.json?v=520">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -96,7 +96,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.18.7</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.20</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -209,26 +209,36 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <button class="moreLaunch" data-subpage="settingsPage">⚙️ 設定專區</button>
   <button class="moreLaunch" data-subpage="errandPage">🧰 公差專區</button>
   <button class="moreLaunch" data-subpage="outingPage">🚶 外散專區</button>
+  <button class="moreLaunch" data-subpage="todoPage">✅ 待辦事項</button>
+  <button class="moreLaunch" data-subpage="handoverPage">📝 自動交接事項摘要</button>
  </div>
  </div>
 </section><section id="settingsPage" class="page">
  <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">⚙️ 設定專區</h2></div></div>
- 
- <div class="card"><h2>✅ 待辦事項</h2><input id="todoText" placeholder="待辦事項"><input id="todoTime" type="datetime-local"><button id="addTodo">新增</button><div id="todoList"></div></div>
- <div class="card"><h2>📝 自動交接摘要</h2><button id="makeSummary">產生今日摘要</button><textarea id="summaryBox" readonly placeholder="按上方按鈕產生摘要"></textarea></div><div class="card"><h2>📝 電子交接簿</h2><input id="handoverFrom" placeholder="交班人"><input id="handoverTo" placeholder="接班人"><textarea id="handoverNote" placeholder="交接事項"></textarea><button id="saveHandover">儲存交接</button><div id="handoverList"></div></div>
- <div class="card"><h2>🧪 排班引擎自我測試</h2><button id="runSelfTest">執行規則測試</button><div id="selfTestBox" class="notice">尚未執行。</div></div>
- <div class="card"><h2>🤖 值星助手</h2><button id="aiCheck">檢查目前哨表</button><button id="aiNight">夜哨統計</button><div id="aiBox" class="notice">規則式助手，資料不會送到外部 AI。</div></div>
- <div class="card"><h2>🗄️ 備份與還原</h2>
-<p class="muted">完整備份人員、哨表、公差、外散、見習設定與其他永久資料。備份檔儲存在裝置中，不會被「全部清除」刪除。</p>
-<div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div>
-<div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
-<div class="card"><h2>🔄 版本更新</h2>
-<p class="muted">更新 GitHub Pages 檔案後，可按此按鍵強制重新載入最新版本。執行前會先儲存目前資料，不會刪除人員、哨表、公差、外散或見習資料。</p>
-<button id="refreshForUpdate">🔄 重新整理／檢查更新</button>
-<div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.18.7</div></div>
- <div class="card"><h2>🧹 交接後清除</h2><button id="clearSession" class="danger">清除本次值星暫存</button></div>
-
-</section><section id="errandPage" class="page">
+ <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.20</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.20</div>
+  <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
+  <b>V5.20</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
+  <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
+  <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
+  <b>V5.18.6.1</b><br>修正底部選單與設定頁版面；昨日勤務改為收合。<br><br>
+  <b>V5.18.5</b><br>修正公差相同起訖時間誤判 24 小時。<br><br>
+  <b>V5.18.4</b><br>簡化會客室勤務並修正公差時間來源。<br><br>
+  <b>V5.18.3</b><br>修正會客室人員選擇與即時公差判斷。<br><br>
+  <b>V5.18.2</b><br>會客室複選與跨午夜公差查詢修正。</div></div>
+ <div class="card"><h2>🧹 交接後清除</h2><p class="muted">清除本次值星暫存，不刪除人員與正式哨表；未完成待辦保留。</p><button id="clearSession" class="danger">清除本次值星暫存</button></div>
+</section>
+<section id="todoPage" class="page">
+ <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">✅ 待辦事項</h2></div></div>
+ <div class="card"><h3>新增待辦</h3><input id="todoTitle" placeholder="事項名稱"><div class="row" style="margin-top:8px"><select id="todoPriority"><option>一般</option><option>重要</option></select><input id="todoNote" placeholder="備註（選填）"><button id="addTodoNew">新增</button></div></div>
+ <div class="card"><h3>未完成</h3><div id="todoPendingList"></div></div><div class="card"><h3>已完成</h3><div id="todoDoneList"></div></div>
+</section>
+<section id="handoverPage" class="page">
+ <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">📝 自動交接事項摘要</h2></div></div>
+ <div class="card"><div class="row"><button id="generateHandover">重新產生摘要</button><button id="copyHandover">📋 一鍵複製</button><span id="copyHandoverStatus" class="muted"></span></div><textarea id="handoverNote" rows="4" placeholder="交接備註（可手動補充）" style="margin-top:10px"></textarea></div>
+ <div class="card"><h3>交接摘要</h3><pre id="handoverSummary" style="white-space:pre-wrap;font-family:inherit;margin:0"></pre></div>
+</section>
+<section id="errandPage" class="page">
  <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">🧰 公差專區</h2></div>
  <div class="row"><input id="newErrandType" placeholder="輸入公差名稱"><button id="addErrandType">新增公差</button></div>
  <div class="row" style="margin-top:8px"><label>公差時間</label><input id="newErrandStart" type="time" value="08:00"><span>～</span><input id="newErrandEnd" type="time" value="17:00"></div>
@@ -267,8 +277,9 @@ v>
 
 <script>
 "use strict";
-const APP_VERSION="V5.18.7";
+const APP_VERSION="V5.20";
 const STORAGE_KEY="dutyHelperPermanent";
+const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
 const DOUBLE_TIMES=["08-10","10-12","12-14","14-16","16-18","18-20","20-22","22-24","00-02","02-04","04-06","06-08"];
 const GATE_TIMES=["07-09","09-11","11-13","13-15","15-17","17-19","19-21","21-23","23-01","01-03","03-05","05-07"];
@@ -283,6 +294,8 @@ function normalizePeople(s){
  s.todayOuting=Array.isArray(s.todayOuting)?s.todayOuting:[];
  s.outings=Array.isArray(s.outings)?s.outings:[]; s.outings=s.outings.map((o,i)=>Object.assign({id:"legacy-"+i+"-"+(o.date||"")},o));
  s.todos=Array.isArray(s.todos)?s.todos:[];
+ s.todos=s.todos.map((t,i)=>({id:t.id||("todo-"+i),title:t.title||t.text||"",priority:t.priority||"一般",note:t.note||"",done:!!t.done,createdAt:t.createdAt||Date.now()+i}));
+ s.handoverNote=typeof s.handoverNote==="string"?s.handoverNote:"";
  s.handovers=Array.isArray(s.handovers)?s.handovers:[]; s.errandTypes=Array.isArray(s.errandTypes)?s.errandTypes:[];
  s.errandTypes=s.errandTypes.map(x=>typeof x==="string"?{name:x,blocksDuty:false,start:"08:00",end:"17:00"}:Object.assign({blocksDuty:false,start:"08:00",end:"17:00"},x,{blocksDuty:false}));
  s.errandLogs=Array.isArray(s.errandLogs)?s.errandLogs:[];
@@ -1524,12 +1537,32 @@ function runRuleSelfTest(){
  $("#selfTestBox").innerHTML='<b>'+(pass===tests.length?'✅':'⚠️')+' '+pass+'/'+tests.length+' 規則測試通過</b><br>'+tests.map(t=>(t.ok?'✅ ':'❌ ')+t.name+(t.detail?'｜'+t.detail:'')).join("<br>");
 }
 function renderMore(){
- $("#todoList").innerHTML=state.todos.map((t,i)=>'<div class="item"><label><input type="checkbox" class="todoCheck" data-i="'+i+'" '+(t.done?'checked':'')+'> '+t.text+'<br><small>'+(t.time||"")+'</small></label><button class="todoDel" data-i="'+i+'">刪</button></div>').join("");
- $$(".todoCheck").forEach(x=>x.onchange=()=>{state.todos[Number(x.dataset.i)].done=x.checked;saveState();});
- $$(".todoDel").forEach(x=>x.onclick=()=>{snapshot();state.todos.splice(Number(x.dataset.i),1);saveState();});
- $("#handoverList").innerHTML=state.handovers.slice().reverse().map(h=>'<div class="item"><div><b>'+h.date+'｜'+h.from+'→'+h.to+'</b><br><small>'+h.note+'</small></div></div>').join("");
+ if($("#lastBackupTime")){const t=localStorage.getItem(LAST_BACKUP_KEY);$("#lastBackupTime").textContent=t?("最近備份："+new Date(t).toLocaleString("zh-TW")):"最近備份：尚無紀錄";}
+ renderTodos();renderHandoverSummary();
 }
-
+function renderTodos(){
+ if(!$("#todoPendingList"))return;
+ const items=(state.todos||[]).slice().sort((a,b)=>(a.done-b.done)||((a.priority==="重要"?0:1)-(b.priority==="重要"?0:1))||((a.createdAt||0)-(b.createdAt||0)));
+ const row=t=>'<div class="item"><span><label><input class="todoToggle" data-id="'+t.id+'" type="checkbox" '+(t.done?'checked':'')+'> <b>'+(t.priority==="重要"?'❗ ':'')+t.title+'</b></label>'+(t.note?'<div class="muted">'+t.note+'</div>':'')+'</span><span><button class="todoEdit" data-id="'+t.id+'">✏️ 修改</button><button class="todoDel" data-id="'+t.id+'">🗑️</button></span></div>';
+ const p=items.filter(t=>!t.done),d=items.filter(t=>t.done);
+ $("#todoPendingList").innerHTML=p.length?p.map(row).join(""):'<div class="muted">目前沒有未完成待辦。</div>';
+ $("#todoDoneList").innerHTML=d.length?d.map(row).join(""):'<div class="muted">目前沒有已完成待辦。</div>';
+ $$(".todoToggle").forEach(x=>x.onchange=()=>{const t=state.todos.find(v=>v.id===x.dataset.id);if(t){snapshot();t.done=x.checked;saveState();}});
+ $$(".todoDel").forEach(x=>x.onclick=()=>{snapshot();state.todos=state.todos.filter(v=>v.id!==x.dataset.id);saveState();});
+ $$(".todoEdit").forEach(x=>x.onclick=()=>{const t=state.todos.find(v=>v.id===x.dataset.id);if(!t)return;const title=prompt("事項名稱",t.title);if(title===null)return;const priority=prompt("重要程度：一般／重要",t.priority);if(priority===null)return;const note=prompt("備註",t.note||"");if(note===null)return;snapshot();t.title=title.trim()||t.title;t.priority=priority.trim()==="重要"?"重要":"一般";t.note=note.trim();saveState();});
+}
+function handoverText(){
+ const date=currentDate(),people=state.people||[];
+ const leave=people.filter(p=>p.status==="休假").map(p=>p.name),training=people.filter(p=>p.status==="受訓").map(p=>p.name),exempt=people.filter(p=>p.status==="免哨").map(p=>p.name);
+ const inCamp=people.filter(p=>!["休假","受訓"].includes(p.status)).map(p=>p.name);
+ const leave18=people.filter(p=>p.leave18).map(p=>p.name);
+ const outings=(state.outings||[]).filter(x=>x.date===date).map(x=>x.person);
+ const pending=(state.todos||[]).filter(t=>!t.done).sort((a,b)=>(a.priority==="重要"?0:1)-(b.priority==="重要"?0:1));
+ const L=["【值星交接事項摘要】","日期："+date,"","一、人力狀況","總人數："+people.length+" 人","在營："+inCamp.length+" 人"+(inCamp.length?"｜"+inCamp.join("、"):""),"休假："+leave.length+" 人"+(leave.length?"｜"+leave.join("、"):""),"受訓："+training.length+" 人"+(training.length?"｜"+training.join("、"):""),"免哨："+exempt.length+" 人"+(exempt.length?"｜"+exempt.join("、"):""),"18休假："+leave18.length+" 人"+(leave18.length?"｜"+leave18.join("、"):""),"","二、外散狀況",outings.length?outings.join("、"):"今日無外散人員","","三、未完成待辦事項"];
+ if(pending.length)pending.forEach((t,i)=>L.push((i+1)+". "+(t.priority==="重要"?"【重要】":"")+t.title+(t.note?"｜"+t.note:"")));else L.push("無");
+ L.push("","四、交接備註",state.handoverNote||"無");return L.join("\n");
+}
+function renderHandoverSummary(){if(!$("#handoverSummary"))return;if($("#handoverNote")&&document.activeElement!==$("#handoverNote"))$("#handoverNote").value=state.handoverNote||"";$("#handoverSummary").textContent=handoverText();}
 function updateHomeClock(){
  const n=new Date(),week=["日","一","二","三","四","五","六"];
  if($("#homeNowDate"))$("#homeNowDate").textContent=n.getFullYear()+"年"+(n.getMonth()+1)+"月"+n.getDate()+"日　星期"+week[n.getDay()];
@@ -1679,7 +1712,6 @@ $("#suggestErrand").onclick=()=>{
  const arr=suggestErrandPeople(type);
  $("#errandSuggestBox").innerHTML=arr.length?arr.slice(0,8).map((x,i)=>(i===0?'⭐ ':'')+x.name+'｜'+x.count+' 次').join("<br>"):"無可建議人員";
 };
-$("#runSelfTest").onclick=runRuleSelfTest;
 $("#addErrandLog").onclick=()=>{
  const type=$("#errandTypeSelect").value,person=$("#errandPersonSelect").value,date=$("#errandDate").value;
  if(!type||!person||!date)return alert("請選擇公差、人員與日期");
@@ -1704,7 +1736,6 @@ $("#addTodayOuting").onclick=()=>{
  if(!p||outingExcluded(p))return alert("此人目前狀態不可加入今日外散");
  snapshot();if(!state.todayOuting.includes(n))state.todayOuting.push(n);saveState();
 };
-$("#makeSummary").onclick=makeHandoverSummary;
 
 $("#repairBtn").onclick=repairSchedule;
 $("#saveOfficial").onclick=()=>{currentDay().official=true;currentDay().peopleQualifications={};state.people.forEach(p=>currentDay().peopleQualifications[p.name]=clone(p.qualifications||[]));saveState();alert("今日哨表與哨別資格已正式儲存；明日可自動沿用。");};
@@ -1730,10 +1761,6 @@ $("#addOuting").onclick=()=>{
  if(state.outings.some(o=>o.person===name&&o.date>=w[0]&&o.date<=w[1]))return alert("此人本週已外散1次");
  snapshot();state.outings.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),person:name,date:d});saveState();
 };
-$("#addTodo").onclick=()=>{const t=$("#todoText").value.trim();if(!t)return;snapshot();state.todos.push({text:t,time:$("#todoTime").value,done:false});$("#todoText").value="";saveState();};
-$("#saveHandover").onclick=()=>{snapshot();state.handovers.push({date:new Date().toLocaleString("zh-TW"),from:$("#handoverFrom").value,to:$("#handoverTo").value,note:$("#handoverNote").value});$("#handoverNote").value="";saveState();};
-$("#aiCheck").onclick=()=>{const e=validateSchedule();$("#aiBox").innerHTML=e.length?e.join("<br>"):"✅ 目前哨表通過檢查";};
-$("#aiNight").onclick=()=>{const c=allCounts();$("#aiBox").innerHTML=state.people.map(p=>p.name+"："+(c.night[p.name]||0)+" 次").join("<br>")||"尚無資料";};
 $("#backupBtn").onclick=()=>{
  try{
   saveState();
@@ -1742,7 +1769,10 @@ $("#backupBtn").onclick=()=>{
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download="值星小幫手_"+APP_VERSION+"_完整備份_"+currentDate()+".json";a.click();
   setTimeout(()=>URL.revokeObjectURL(url),1500);
+  const backupAt=new Date().toISOString();
+  localStorage.setItem(LAST_BACKUP_KEY,backupAt);
   $("#backupStatus").textContent="✅ 完整備份已匯出。";
+  $("#lastBackupTime").textContent="最近備份："+new Date(backupAt).toLocaleString("zh-TW");
  }catch(err){$("#backupStatus").textContent="❌ 備份失敗："+err.message;}
 };
 $("#restoreBtn").onclick=()=>$("#restoreFile").click();
@@ -1770,7 +1800,11 @@ $("#restoreFile").onchange=e=>{
  reader.onerror=()=>{$("#backupStatus").textContent="❌ 無法讀取備份檔";};
  reader.readAsText(file,"utf-8");
 };
-$("#clearSession").onclick=()=>{if(confirm("確定已交接並清除待辦、手動昨日資料與外散暫存？")&&confirm("再次確認？")){snapshot();state.todos=[];state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();}};
+$("#addTodoNew").onclick=()=>{const title=$("#todoTitle").value.trim();if(!title)return alert("請輸入待辦事項");snapshot();state.todos.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),title,priority:$("#todoPriority").value,note:$("#todoNote").value.trim(),done:false,createdAt:Date.now()});$("#todoTitle").value="";$("#todoNote").value="";$("#todoPriority").value="一般";saveState();};
+$("#handoverNote").oninput=()=>{state.handoverNote=$("#handoverNote").value;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderHandoverSummary();};
+$("#generateHandover").onclick=()=>renderHandoverSummary();
+$("#copyHandover").onclick=async()=>{const text=handoverText();try{await navigator.clipboard.writeText(text);}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}$("#copyHandoverStatus").textContent="✅ 已複製";setTimeout(()=>{if($("#copyHandoverStatus"))$("#copyHandoverStatus").textContent="";},1800);};
+$("#clearSession").onclick=()=>{if(confirm("確定清除本次值星暫存？正式人員與已儲存哨表不會刪除。")&&confirm("再次確認？")){snapshot();state.todos=(state.todos||[]).filter(t=>!t.done);state.handoverNote="";state.manualPrev={};state.prevOverride=false;state.outings=[];saveState();alert("本次值星暫存已清除；未完成待辦已保留。");}};
 $("#undoBtn").onclick=()=>{if(!state.undo.length)return alert("沒有可復原");state.redo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.undo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
 $("#redoBtn").onclick=()=>{if(!state.redo.length)return alert("沒有可重做");state.undo.push(JSON.stringify(Object.assign(clone(state),{undo:[],redo:[]})));const old=state.redo.pop(),u=state.undo,r=state.redo;state=Object.assign(clone(EMPTY),JSON.parse(old),{undo:u,redo:r});saveState();};
 
@@ -1841,7 +1875,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=5187&refresh="+Date.now()+hash);
+  location.replace(base+"?v=520&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
