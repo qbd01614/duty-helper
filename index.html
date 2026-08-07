@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.42</title>
-<link rel="manifest" href="manifest.json?v=542">
+<title>值星小幫手 V5.43</title>
+<link rel="manifest" href="manifest.json?v=543">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.42 display recovery ===== */
+/* ===== V5.43 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.42 restore dashboard + bottom navigation ===== */
+/* ===== V5.43 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.42 incremental features on stable V5.34 ===== */
+/* ===== V5.43 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.42 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.43 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.42 人員勤務選擇修正版 ===== */
+/* ===== V5.43 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.42 修正版 ===== */
+/* ===== V5.43 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.42 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.43 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.42 彈窗穩定修正 ===== */
+/* ===== V5.43 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,7 +694,7 @@ main{
 }
 
 
-/* ===== V5.42 iPhone 打靶／洽公彈窗修正版 ===== */
+/* ===== V5.43 iPhone 打靶／洽公彈窗修正版 ===== */
 body.personActivityOpen{overflow:hidden!important}
 body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!important}
 
@@ -758,11 +758,90 @@ body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!
   #personActivityOverlay .candidatePanel{width:100%!important;max-width:none!important;border-radius:16px!important}
 }
 
+
+/* ===== V5.43 iPhone 鍵盤可正常彈出版 ===== */
+
+/* 不鎖 body、不監聽 visualViewport，避免 Safari 取消鍵盤焦點 */
+body.personActivityOpen{overflow:visible!important}
+
+/* 彈窗開啟時仍隱藏底部導覽，避免被鍵盤夾住 */
+body.personActivityOpen .bottom{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+#personActivityOverlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:10000!important;
+  display:none;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:max(10px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom))!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  background:rgba(15,23,42,.42)!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+#personActivityOverlay.open{
+  display:flex!important;
+}
+
+/* 面板靠上顯示，避免 Safari 鍵盤出現時把整張面板推離畫面 */
+#personActivityOverlay .candidatePanel{
+  position:relative!important;
+  width:min(100%,430px)!important;
+  max-width:430px!important;
+  height:auto!important;
+  max-height:min(68dvh,560px)!important;
+  margin:0 auto!important;
+  padding:14px!important;
+  border-radius:18px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  scroll-behavior:auto!important;
+}
+
+/* 不使用 sticky，減少 iOS 鍵盤出現時重新排版 */
+#personActivityOverlay .candidatePanel>.row:first-child,
+#personActivityOverlay .candidatePanel>.row:last-child{
+  position:static!important;
+  top:auto!important;
+  bottom:auto!important;
+  background:#fff!important;
+  z-index:auto!important;
+}
+
+/* 保持輸入欄位原生可聚焦 */
+#personActivityOverlay input,
+#personActivityOverlay textarea{
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+}
+
+@media(max-width:520px){
+  #personActivityOverlay{
+    padding-left:6px!important;
+    padding-right:6px!important;
+  }
+  #personActivityOverlay .candidatePanel{
+    width:100%!important;
+    max-width:none!important;
+    max-height:66dvh!important;
+    border-radius:16px!important;
+  }
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.42</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.43</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -951,9 +1030,9 @@ body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.42</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.42</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.43</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.43</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.42</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.43</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1019,7 +1098,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.42";
+const APP_VERSION="V5.43";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2001,7 +2080,7 @@ function openPersonActivity(i,type,dateStr){
  $("#personActivityEnd").value=a.end||(type==="range"?"12:00":"17:00");
  $("#personActivityReason").value=a.reason||"";
  $("#deletePersonActivity").style.display=a.start?"inline-block":"none";
- $("#personActivityOverlay").classList.add("open");$("#personActivityOverlay").style.display="flex";if(window.v542PersonActivityOpen)window.v542PersonActivityOpen();
+ $("#personActivityOverlay").classList.add("open");$("#personActivityOverlay").style.display="flex";
 }
 function renderPersonnelChange(){
  if(!$("#personnelChangeList"))return;
@@ -2660,7 +2739,7 @@ function closePersonActivityModal(restoreScroll=true){
   }
   overlay.classList.remove("open");
   overlay.style.display="none";
-  if(window.v542PersonActivityClose)window.v542PersonActivityClose();
+  
   if(restoreScroll && main){
     requestAnimationFrame(()=>{main.scrollTop=y;});
   }
@@ -2924,7 +3003,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=542&refresh="+Date.now()+hash);
+  location.replace(base+"?v=543&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -3126,48 +3205,24 @@ $("#refreshForUpdate").onclick=()=>{
 <script>
 
 (function(){
-  let raf=0;
-
-  function syncPersonActivityViewport(){
-    const vv=window.visualViewport;
-    const top=vv ? vv.offsetTop : 0;
-    const height=vv ? vv.height : window.innerHeight;
-    document.documentElement.style.setProperty("--pa-vv-top",Math.max(0,top)+"px");
-    document.documentElement.style.setProperty("--pa-vv-height",Math.max(260,height)+"px");
+  function syncActivityBodyClass(){
+    const o=document.getElementById("personActivityOverlay");
+    if(!o)return;
+    const open=o.classList.contains("open") || getComputedStyle(o).display!=="none";
+    document.body.classList.toggle("personActivityOpen",open);
   }
 
-  function scheduleSync(){
-    cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(syncPersonActivityViewport);
-  }
-
-  window.v542PersonActivityOpen=function(){
-    document.body.classList.add("personActivityOpen");
-    syncPersonActivityViewport();
-    requestAnimationFrame(()=>{
-      const panel=document.querySelector("#personActivityOverlay .candidatePanel");
-      if(panel)panel.scrollTop=0;
-    });
-  };
-
-  window.v542PersonActivityClose=function(){
-    document.body.classList.remove("personActivityOpen");
-    document.documentElement.style.removeProperty("--pa-vv-top");
-    document.documentElement.style.removeProperty("--pa-vv-height");
-  };
-
-  syncPersonActivityViewport();
-  window.addEventListener("resize",scheduleSync,{passive:true});
-
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize",scheduleSync,{passive:true});
-    window.visualViewport.addEventListener("scroll",scheduleSync,{passive:true});
-  }
+  document.addEventListener("click",e=>{
+    const t=e.target;
+    if(t && (t.closest?.(".dutyActivityCard") || t.id==="closePersonActivity" || t.id==="savePersonActivity" || t.id==="deletePersonActivity")){
+      setTimeout(syncActivityBodyClass,0);
+    }
+  },true);
 
   document.addEventListener("focusin",e=>{
-    const overlay=document.getElementById("personActivityOverlay");
-    if(overlay && overlay.classList.contains("open") && overlay.contains(e.target)){
-      scheduleSync();
+    const o=document.getElementById("personActivityOverlay");
+    if(o && o.contains(e.target)){
+      document.body.classList.add("personActivityOpen");
     }
   });
 })();
