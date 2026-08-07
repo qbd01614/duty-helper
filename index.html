@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.32</title>
-<link rel="manifest" href="manifest.json?v=532">
+<title>值星小幫手 V5.33</title>
+<link rel="manifest" href="manifest.json?v=533">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,75 +172,16 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.32 safe update ===== */
-#peoplePage #allQual,#peoplePage #clearAllQual{display:none!important}
-
-/* 排哨四個主要按鍵固定同一排 */
-#schedule .scheduleActions{
- display:grid!important;
- grid-template-columns:repeat(4,minmax(0,1fr))!important;
- gap:7px!important;
- align-items:stretch!important;
-}
-#schedule .scheduleActions button{
- min-width:0!important;
- width:100%!important;
- padding:9px 4px!important;
- font-size:12px!important;
- line-height:1.25!important;
- white-space:normal!important;
-}
-
-/* 排哨頁美化 */
-#schedule .card{border-radius:20px!important}
-#schedule .traineeToggleRow{gap:8px!important}
-#schedule .traineeToggle{flex:1 1 0;border-radius:14px!important}
-#schedule #validationBox .notice{border-radius:15px!important}
-
-/* 人員勤務選擇視覺 */
-.dutyChoiceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
-.dutyChoiceGrid label{display:flex;align-items:center;gap:8px;padding:11px;border:1px solid #dfe7f1;border-radius:14px;background:#f8fafc;font-weight:700}
-
-/* 快速模式視覺 */
-.quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.quickModeToggle button.active{background:#111827!important;color:#fff!important}
-.quickPersonRow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eef2f7}
-.quickPersonActions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
-.quickPersonActions button{min-height:36px!important;padding:7px 10px!important;font-size:12px!important}
-
-/* 即時人員統計圓餅圖 */
-.livePieCard{margin-top:12px}
-.livePieGrid{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center}
-.livePieChart{width:148px;height:148px;border-radius:50%;position:relative;margin:auto}
-.livePieChart:after{content:"";position:absolute;inset:31px;border-radius:50%;background:#fff}
-.livePieCenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:2;font-weight:800}
-.livePieLegend{font-size:12px;line-height:1.9}
-.livePieLegend div{display:flex;justify-content:space-between;gap:12px}
-
-/* 艱苦哨燈號 */
-.hardshipLight{display:inline-flex;align-items:center;gap:6px;font-weight:800}
-.hardshipDot{width:12px;height:12px;border-radius:50%;display:inline-block;box-shadow:0 0 0 3px rgba(15,23,42,.06)}
-.hardshipDot.green{background:#22c55e}
-.hardshipDot.yellow{background:#eab308}
-.hardshipDot.red{background:#ef4444}
-.hardshipLegend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:#64748b}
-
-/* 排哨規則美化：保留一般/人力充足兩組設定，非模式選擇 */
-#settingsPage .tablewrap{border-radius:16px!important}
-#settingsPage table input{min-width:92px}
-#settingsPage #activeDutyRuleInfo{border-radius:14px!important}
-.ruleHelpBox{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:14px;padding:12px;margin:10px 0}
-
-@media(max-width:520px){
- .livePieGrid{grid-template-columns:1fr}
- #schedule .scheduleActions{grid-template-columns:repeat(4,minmax(0,1fr))!important}
-}
+/* ===== V5.33 display recovery ===== */
+#peoplePage #allQual,#peoplePage #clearAllQual{display:none!important;pointer-events:none!important;}
+#schedule .row:has(#autoAssign){display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;}
+#schedule .row:has(#autoAssign) button{min-width:0!important;width:100%!important;padding:9px 4px!important;font-size:12px!important;line-height:1.25!important;white-space:normal!important;}
 
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.32</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.33</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -264,7 +205,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
   <h2>👥 每日人員狀態</h2>
   <p class="muted">先選日期，再設定該日人員狀態。姓名、階級、性別與人員增減請至「更多 → 人員異動」。勤務資格、EMT、戰鬥隊仍在本頁設定。</p>
   <div class="row"><label>📅 狀態日期</label><input id="peopleStatusDate" type="date"></div>
-  <div class="row" style="margin-top:8px"></div>
+  <div class="row" style="margin-top:8px"><button id="allQual">☑ 全員三哨全選</button><button id="clearAllQual">☐ 全員三哨取消</button></div>
   <div class="row" style="margin-top:8px"><label>人員排序：</label><select id="peopleSortMode"><option value="manual">手動排序</option><option value="rank">階級排序</option></select><button id="refreshPeopleSort">🔄 重新整理排序</button></div>
   <div class="card" style="margin-top:10px;background:#f9fafb;box-shadow:none;border:1px solid #eee">
     <h3 style="margin-bottom:8px">🔎 人員搜尋 / 篩選</h3>
@@ -294,7 +235,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
  <div class="card">
   <h2>📋 今日排哨</h2>
   <input id="scheduleDate" type="date">
-  <div class="row scheduleActions" style="margin-top:8px">
+  <div class="row" style="margin-top:8px">
    <button id="autoAssign" class="primary">🤖 智慧排哨</button>
    <button id="repairBtn">🛠️ 一鍵檢查除錯</button>
    <button id="clearToday">🧹 全部清除</button>
@@ -404,9 +345,9 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.32</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.32</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.33</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.33</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.32</b><br>重新以乾淨 V5.27 原始檔重建，避免 V5.31 初始化失敗。整合：移除全員三哨按鍵、排哨四主按鍵同排、即時人員統計圓餅圖外觀、快速點選模式、打靶／洽公快捷設定、排哨規則說明改為預先設定後由智慧排哨自動套用；保留原有首頁、人員、統計與排哨核心初始化。<br><br>
+  <b>V5.33</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -456,13 +397,15 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
  <button data-page="stats">📊<span>統計</span></button>
  <button data-page="peoplePage">👥<span>人員</span></button>
  <button data-page="more">☰<span>更多</span></button>
-</nafunction applyAppHeight(){
+</nav>
+<script>
+function applyAppHeight(){
  document.documentElement.style.setProperty("--app-height",(window.visualViewport?window.visualViewport.height:window.innerHeight)+"px");
 }
 applyAppHeight();
 window.addEventListener("resize",applyAppHeight);
 if(window.visualViewport)window.visualViewport.addEventListener("resize",applyAppHeight);
-v>
+</script>
 
 <div id="appToast" role="status" aria-live="polite"></div>
 <script>
@@ -471,7 +414,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.32";
+const APP_VERSION="V5.33";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2324,7 +2267,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=527&refresh="+Date.now()+hash);
+  location.replace(base+"?v=533&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -2334,107 +2277,6 @@ async function refreshForUpdate(){
 $("#refreshForUpdate").onclick=()=>{
  if(confirm("確定重新整理並檢查最新版本？\n\n目前資料會先儲存，不會執行清除。"))refreshForUpdate();
 };
-</script>
-<script>
-(function(){
-  function addQuickModeUI(){
-    var peopleList=document.getElementById("peopleList");
-    if(!peopleList || document.getElementById("v532QuickToggle")) return;
-    var toggle=document.createElement("div");
-    toggle.className="quickModeToggle";
-    toggle.id="v532QuickToggle";
-    toggle.innerHTML='<button type="button" class="active" id="v532DetailBtn">詳細模式</button><button type="button" id="v532QuickBtn">⚡ 快速模式</button>';
-    peopleList.parentNode.insertBefore(toggle, peopleList);
-
-    var quick=document.createElement("div");
-    quick.id="v532QuickPanel";
-    quick.style.display="none";
-    peopleList.parentNode.insertBefore(quick, peopleList.nextSibling);
-
-    function renderQuick(){
-      quick.innerHTML="";
-      var dateEl=document.getElementById("peopleStatusDate");
-      var dateStr=(dateEl&&dateEl.value)|| (typeof todayISO==="function"?todayISO():"");
-      (state.people||[]).forEach(function(p){
-        var row=document.createElement("div");
-        row.className="quickPersonRow";
-        var rec=(typeof personDayRecord==="function")?personDayRecord(p,dateStr):{status:p.status||"正常"};
-        row.innerHTML='<div><b>'+p.name+'</b><div class="muted">'+(rec.status||"正常")+'</div></div><div></div><div class="quickPersonActions"></div>';
-        var box=row.querySelector(".quickPersonActions");
-        ["正常","休假","受訓","打靶","洽公"].forEach(function(st){
-          var b=document.createElement("button");
-          b.type="button";
-          b.textContent=st;
-          b.addEventListener("click",function(){
-            if(typeof snapshot==="function")snapshot();
-            var cur=(typeof personDayRecord==="function")?personDayRecord(p,dateStr):{activities:{}};
-            if(typeof setPersonDayRecord==="function"){
-              if(st==="打靶"){
-                var acts=Object.assign({},cur.activities||{});
-                acts.range={start:"08:00",end:"12:00",reason:""};
-                setPersonDayRecord(p,dateStr,{status:"正常",activities:acts});
-              }else if(st==="洽公"){
-                var acts2=Object.assign({},cur.activities||{});
-                acts2.business={start:"08:00",end:"17:00",reason:""};
-                setPersonDayRecord(p,dateStr,{status:"正常",activities:acts2});
-              }else{
-                setPersonDayRecord(p,dateStr,{status:st});
-              }
-              if(typeof saveState==="function")saveState();
-              renderQuick();
-            }
-          });
-          box.appendChild(b);
-        });
-        quick.appendChild(row);
-      });
-    }
-
-    document.getElementById("v532DetailBtn").addEventListener("click",function(){
-      this.classList.add("active");
-      document.getElementById("v532QuickBtn").classList.remove("active");
-      peopleList.style.display="";
-      quick.style.display="none";
-    });
-    document.getElementById("v532QuickBtn").addEventListener("click",function(){
-      this.classList.add("active");
-      document.getElementById("v532DetailBtn").classList.remove("active");
-      peopleList.style.display="none";
-      quick.style.display="block";
-      renderQuick();
-    });
-  }
-
-  function addPieShell(){
-    var box=document.getElementById("livePeopleBox");
-    if(!box || document.getElementById("v532PieCard")) return;
-    var card=document.createElement("div");
-    card.id="v532PieCard";
-    card.className="card livePieCard";
-    card.style.boxShadow="none";
-    card.innerHTML='<h3>📊 即時人力分布</h3><div class="livePieGrid"><div style="position:relative"><div class="livePieChart" id="v532Pie"></div><div class="livePieCenter"><span class="muted">即時</span><b>人力</b></div></div><div class="livePieLegend" id="v532PieLegend"><div><span>勤務</span><b>—</b></div><div><span>公差</span><b>—</b></div><div><span>受訓</span><b>—</b></div><div><span>休假</span><b>—</b></div><div><span>補休</span><b>—</b></div><div><span>實到</span><b>—</b></div></div></div>';
-    box.parentNode.insertBefore(card, box.nextSibling);
-    document.getElementById("v532Pie").style.background="conic-gradient(#1677ff 0 20%,#a855f7 20% 30%,#22c55e 30% 40%,#f97316 40% 55%,#06b6d4 55% 65%,#94a3b8 65% 100%)";
-  }
-
-  function addRuleHelp(){
-    var saveBtn=document.getElementById("saveDutyRules");
-    if(!saveBtn || document.getElementById("v532RuleHelp")) return;
-    var d=document.createElement("div");
-    d.id="v532RuleHelp";
-    d.className="ruleHelpBox";
-    d.textContent="這裡是排哨預設規則。一般休息與人力充足休息會在後續智慧排哨時自動套用，不需要每次排哨前再選模式。";
-    saveBtn.parentNode.parentNode.insertBefore(d, saveBtn.parentNode);
-  }
-
-  document.addEventListener("DOMContentLoaded",function(){
-    setTimeout(function(){
-      addQuickModeUI();
-      addPieShell();
-      addRuleHelp();
-    },300);
-  });
-})();
 </script>
 </body>
 </html>
