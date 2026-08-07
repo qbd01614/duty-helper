@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.41</title>
-<link rel="manifest" href="manifest.json?v=541">
+<title>值星小幫手 V5.42</title>
+<link rel="manifest" href="manifest.json?v=542">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.41 display recovery ===== */
+/* ===== V5.42 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.41 restore dashboard + bottom navigation ===== */
+/* ===== V5.42 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.41 incremental features on stable V5.34 ===== */
+/* ===== V5.42 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.41 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.42 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.41 人員勤務選擇修正版 ===== */
+/* ===== V5.42 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.41 修正版 ===== */
+/* ===== V5.42 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.41 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.42 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.41 彈窗穩定修正 ===== */
+/* ===== V5.42 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,32 +694,33 @@ main{
 }
 
 
-/* ===== V5.41 iPhone 打靶／洽公彈窗修正 ===== */
-body.personActivityOpen{
-  overflow:hidden!important;
-}
-body.personActivityOpen .bottom{
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
+/* ===== V5.42 iPhone 打靶／洽公彈窗修正版 ===== */
+body.personActivityOpen{overflow:hidden!important}
+body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!important}
 
 #personActivityOverlay{
   position:fixed!important;
-  inset:0!important;
+  left:0!important;
+  right:0!important;
+  top:var(--pa-vv-top,0px)!important;
+  height:var(--pa-vv-height,100dvh)!important;
+  bottom:auto!important;
+  inset:auto 0 auto 0!important;
   z-index:10000!important;
   display:none;
   align-items:flex-start!important;
   justify-content:center!important;
   padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))!important;
   overflow:hidden!important;
+  background:rgba(15,23,42,.42)!important;
 }
-#personActivityOverlay.open{
-  display:flex!important;
-}
+#personActivityOverlay.open{display:flex!important}
+
 #personActivityOverlay .candidatePanel{
   width:min(100%,430px)!important;
   max-width:430px!important;
-  max-height:calc(var(--activity-vvh,100dvh) - 16px)!important;
+  max-height:calc(var(--pa-vv-height,100dvh) - 16px)!important;
+  height:auto!important;
   margin:0 auto!important;
   padding:14px!important;
   border-radius:18px!important;
@@ -728,9 +729,10 @@ body.personActivityOpen .bottom{
   -webkit-overflow-scrolling:touch!important;
   overscroll-behavior:contain!important;
   scroll-behavior:auto!important;
-  scroll-padding-top:76px!important;
-  scroll-padding-bottom:110px!important;
+  scroll-padding-top:70px!important;
+  scroll-padding-bottom:90px!important;
 }
+
 #personActivityOverlay .candidatePanel>.row:first-child{
   position:sticky!important;
   top:-14px!important;
@@ -748,26 +750,19 @@ body.personActivityOpen .bottom{
   border-top:1px solid #e5e7eb!important;
 }
 #personActivityOverlay input{
-  scroll-margin-top:80px!important;
-  scroll-margin-bottom:120px!important;
+  scroll-margin-top:70px!important;
+  scroll-margin-bottom:90px!important;
 }
 @media(max-width:520px){
-  #personActivityOverlay{
-    padding-left:6px!important;
-    padding-right:6px!important;
-  }
-  #personActivityOverlay .candidatePanel{
-    width:100%!important;
-    max-width:none!important;
-    border-radius:16px!important;
-  }
+  #personActivityOverlay{padding-left:6px!important;padding-right:6px!important}
+  #personActivityOverlay .candidatePanel{width:100%!important;max-width:none!important;border-radius:16px!important}
 }
 
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.41</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.42</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -956,9 +951,9 @@ body.personActivityOpen .bottom{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.41</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.41</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.42</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.42</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.41</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.42</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1024,7 +1019,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.41";
+const APP_VERSION="V5.42";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2006,7 +2001,7 @@ function openPersonActivity(i,type,dateStr){
  $("#personActivityEnd").value=a.end||(type==="range"?"12:00":"17:00");
  $("#personActivityReason").value=a.reason||"";
  $("#deletePersonActivity").style.display=a.start?"inline-block":"none";
- $("#personActivityOverlay").classList.add("open");$("#personActivityOverlay").style.display="flex";if(window.v541PersonActivityOpen)window.v541PersonActivityOpen();
+ $("#personActivityOverlay").classList.add("open");$("#personActivityOverlay").style.display="flex";if(window.v542PersonActivityOpen)window.v542PersonActivityOpen();
 }
 function renderPersonnelChange(){
  if(!$("#personnelChangeList"))return;
@@ -2227,7 +2222,7 @@ function renderLivePeople(){
 
  const nextDuty=nextFormalDutyByPost(selectedDate,v);
  $("#livePeopleBox").innerHTML=
-   '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜打靶、洽公與公差皆依設定時段即時比對</div>'+
+   '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜公差依目前公差設定時間即時比對</div>'+
    '<div class="livePeopleGrid">'+cards.map(([title,names])=>
      '<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+
      (names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+
@@ -2361,6 +2356,20 @@ function renderErrands(){
  const d=$("#errandViewDate").value||$("#errandDate").value||currentDate();
  const today=state.errandLogs.filter(x=>x.date===d);
  $("#todayErrandBox").innerHTML='<h3>📅 '+d+' 今日公差（'+today.length+'）</h3>'+(today.length?today.map(x=>{const t=errandTypeByName(x.type);const tm=t?(t.start===t.end?t.start+'（單一時間點）':t.start+'–'+t.end):'未設定時間';return '<div class="item"><span><b>'+x.person+'</b>｜'+x.type+'｜'+tm+'</span><button class="errandLogDel" data-id="'+x.id+'">🗑️刪除</button></div>';}).join(""):'<p class="muted">今日尚無公差。</p>');
+ const typeRows=state.errandTypes.map(t=>{
+   const people=state.people.map(p=>{
+     const logs=state.errandLogs.filter(x=>x.type===t.name&&x.person===p.name);
+     return logs.length?'<div class="item"><span>'+p.name+'</span><span>'+logs.length+' 次｜'+logs.map(x=>x.date).join("、")+'</span></div>':'';
+   }).join("");
+   return '<div class="notice"><b>'+t.name+'</b>'+ (people||'<div class="muted">尚無紀錄</div>') +'</div>';
+ }).join("");
+ const personRows=state.people.map(p=>{
+   const logs=state.errandLogs.filter(x=>x.person===p.name);
+   if(!logs.length)return "";
+   const grouped={};logs.forEach(x=>{if(!grouped[x.type])grouped[x.type]=[];grouped[x.type].push(x.date);});
+   return '<div class="notice"><b>'+p.name+'</b><br>'+Object.entries(grouped).map(([t,ds])=>t+'：'+ds.length+' 次（'+ds.join("、")+'）').join("<br>")+'</div>';
+ }).join("");
+ if($("#errandStats"))$("#errandStats").innerHTML='<h4>依公差看人員</h4>'+(typeRows||'<p class="muted">尚無資料</p>')+'<h4>依人員看公差</h4>'+(personRows||'<p class="muted">尚無資料</p>');
  $$(".errandTypeEdit").forEach(x=>x.onclick=()=>{
    const t=state.errandTypes[Number(x.dataset.i)];if(!t)return;
    const name=prompt("公差名稱",t.name);if(name===null)return;
@@ -2651,7 +2660,7 @@ function closePersonActivityModal(restoreScroll=true){
   }
   overlay.classList.remove("open");
   overlay.style.display="none";
-  if(window.v541PersonActivityClose)window.v541PersonActivityClose();
+  if(window.v542PersonActivityClose)window.v542PersonActivityClose();
   if(restoreScroll && main){
     requestAnimationFrame(()=>{main.scrollTop=y;});
   }
@@ -2915,7 +2924,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=540&refresh="+Date.now()+hash);
+  location.replace(base+"?v=542&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -3117,58 +3126,48 @@ $("#refreshForUpdate").onclick=()=>{
 <script>
 
 (function(){
-  function setPersonActivityViewport(){
-    const h=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;
-    document.documentElement.style.setProperty("--activity-vvh",Math.max(260,h)+"px");
+  let raf=0;
+
+  function syncPersonActivityViewport(){
+    const vv=window.visualViewport;
+    const top=vv ? vv.offsetTop : 0;
+    const height=vv ? vv.height : window.innerHeight;
+    document.documentElement.style.setProperty("--pa-vv-top",Math.max(0,top)+"px");
+    document.documentElement.style.setProperty("--pa-vv-height",Math.max(260,height)+"px");
   }
 
-  function keepPersonActivityFieldVisible(){
-    const overlay=document.getElementById("personActivityOverlay");
-    const active=document.activeElement;
-    if(!overlay || !overlay.classList.contains("open") || !active || !overlay.contains(active))return;
-    setTimeout(()=>{
-      try{
-        active.scrollIntoView({behavior:"auto",block:"center",inline:"nearest"});
-      }catch(e){}
-    },80);
+  function scheduleSync(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(syncPersonActivityViewport);
   }
 
-  window.v541PersonActivityOpen=function(){
+  window.v542PersonActivityOpen=function(){
     document.body.classList.add("personActivityOpen");
-    setPersonActivityViewport();
+    syncPersonActivityViewport();
     requestAnimationFrame(()=>{
       const panel=document.querySelector("#personActivityOverlay .candidatePanel");
       if(panel)panel.scrollTop=0;
     });
   };
 
-  window.v541PersonActivityClose=function(){
+  window.v542PersonActivityClose=function(){
     document.body.classList.remove("personActivityOpen");
+    document.documentElement.style.removeProperty("--pa-vv-top");
+    document.documentElement.style.removeProperty("--pa-vv-height");
   };
 
-  setPersonActivityViewport();
-
-  window.addEventListener("resize",()=>{
-    setPersonActivityViewport();
-    keepPersonActivityFieldVisible();
-  });
+  syncPersonActivityViewport();
+  window.addEventListener("resize",scheduleSync,{passive:true});
 
   if(window.visualViewport){
-    window.visualViewport.addEventListener("resize",()=>{
-      setPersonActivityViewport();
-      keepPersonActivityFieldVisible();
-    });
-    window.visualViewport.addEventListener("scroll",()=>{
-      setPersonActivityViewport();
-      keepPersonActivityFieldVisible();
-    });
+    window.visualViewport.addEventListener("resize",scheduleSync,{passive:true});
+    window.visualViewport.addEventListener("scroll",scheduleSync,{passive:true});
   }
 
   document.addEventListener("focusin",e=>{
     const overlay=document.getElementById("personActivityOverlay");
     if(overlay && overlay.classList.contains("open") && overlay.contains(e.target)){
-      setPersonActivityViewport();
-      keepPersonActivityFieldVisible();
+      scheduleSync();
     }
   });
 })();
