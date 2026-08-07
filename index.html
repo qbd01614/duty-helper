@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.39</title>
-<link rel="manifest" href="manifest.json?v=539">
+<title>值星小幫手 V5.40</title>
+<link rel="manifest" href="manifest.json?v=540">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.39 display recovery ===== */
+/* ===== V5.40 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.39 restore dashboard + bottom navigation ===== */
+/* ===== V5.40 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.39 incremental features on stable V5.34 ===== */
+/* ===== V5.40 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.39 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.40 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.39 人員勤務選擇修正版 ===== */
+/* ===== V5.40 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.39 修正版 ===== */
+/* ===== V5.40 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,16 +653,51 @@ main{
 }
 
 
-/* ===== V5.39 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.40 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
+
+
+/* ===== V5.40 彈窗穩定修正 ===== */
+#personActivityOverlay{
+  align-items:center!important;
+  justify-content:center!important;
+  padding:12px 12px calc(86px + env(safe-area-inset-bottom))!important;
+}
+#personActivityOverlay .candidatePanel{
+  position:relative!important;
+  width:min(100%,520px)!important;
+  max-height:min(72svh,620px)!important;
+  margin:0 auto!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  scroll-behavior:auto!important;
+}
+#personActivityOverlay .candidatePanel>.row:first-child{
+  position:static!important;
+  top:auto!important;
+}
+#personActivityOverlay .candidatePanel>.row:last-child{
+  position:static!important;
+  bottom:auto!important;
+  padding-bottom:calc(6px + env(safe-area-inset-bottom))!important;
+}
+#personActivityOverlay input{
+  scroll-margin-top:16px!important;
+  scroll-margin-bottom:120px!important;
+}
+@media(max-width:520px){
+  #personActivityOverlay .candidatePanel{
+    max-height:min(70svh,560px)!important;
+  }
+}
 
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.39</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.40</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -851,9 +886,9 @@ main{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.39</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.39</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.40</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.40</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.39</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.40</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -920,7 +955,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.39";
+const APP_VERSION="V5.40";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2550,20 +2585,48 @@ $("#errandTypeSelect").onchange=()=>{
  $("#errandPersonSelect").innerHTML='<option value="">選擇在營人員</option>'+people.map(p=>'<option value="'+p.name+'">'+p.name+'</option>').join("");
  $("#errandSuggestBox").innerHTML="";
 };
-$("#closePersonActivity").onclick=()=>$("#personActivityOverlay").classList.remove("open");$("#personActivityOverlay").style.display="none";
-$("#personActivityOverlay").onclick=e=>{if(e.target===$("#personActivityOverlay"))$("#personActivityOverlay").style.display="none";};
+
+function closePersonActivityModal(restoreScroll=true){
+  const overlay=$("#personActivityOverlay");
+  if(!overlay)return;
+  const main=document.querySelector("main");
+  const y=main?main.scrollTop:0;
+  if(document.activeElement && typeof document.activeElement.blur==="function"){
+    try{document.activeElement.blur();}catch(e){}
+  }
+  overlay.classList.remove("open");
+  overlay.style.display="none";
+  if(restoreScroll && main){
+    requestAnimationFrame(()=>{main.scrollTop=y;});
+  }
+}
+
+$("#closePersonActivity").onclick=()=>closePersonActivityModal();
+$("#personActivityOverlay").onclick=e=>{if(e.target===$("#personActivityOverlay"))closePersonActivityModal();};
 $("#savePersonActivity").onclick=()=>{
  const name=$("#personActivityName").value,type=$("#personActivityType").value,dateStr=$("#peopleStatusDate").value||todayISO();
  const p=state.people.find(x=>x.name===name);if(!p)return;
  const start=$("#personActivityStart").value,end=$("#personActivityEnd").value,reason=$("#personActivityReason").value.trim();
  if(!start||!end)return alert("請設定開始與結束時間");
  snapshot();const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});
- activities[type]={start,end,reason};setPersonDayRecord(p,dateStr,{activities});saveState();$("#personActivityOverlay").style.display="none";
+ activities[type]={start,end,reason};setPersonDayRecord(p,dateStr,{activities});
+ const main=document.querySelector("main"),y=main?main.scrollTop:0;
+ closePersonActivityModal(false);
+ saveState(false);
+ renderAll();
+ requestAnimationFrame(()=>{if(main)main.scrollTop=y;});
+ showToast(type==="range"?"打靶已新增":"洽公已新增","success");
 };
 $("#deletePersonActivity").onclick=()=>{
  const name=$("#personActivityName").value,type=$("#personActivityType").value,dateStr=$("#peopleStatusDate").value||todayISO();
  const p=state.people.find(x=>x.name===name);if(!p)return;
- snapshot();const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});delete activities[type];setPersonDayRecord(p,dateStr,{activities});saveState();$("#personActivityOverlay").style.display="none";
+ snapshot();const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});delete activities[type];setPersonDayRecord(p,dateStr,{activities});
+ const main=document.querySelector("main"),y=main?main.scrollTop:0;
+ closePersonActivityModal(false);
+ saveState(false);
+ renderAll();
+ requestAnimationFrame(()=>{if(main)main.scrollTop=y;});
+ showToast("勤務紀錄已刪除","success");
 };
 $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,rank:$("#newPersonRank").value||"",gender:$("#newPersonGender").value||"",status:"正常",exemptReason:"",qualifications:[]});$("#newPerson").value="";$("#newPersonRank").value="";$("#newPersonGender").value="";saveState();};
 $("#autoAssign").onclick=autoAssign;
@@ -2796,7 +2859,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=539&refresh="+Date.now()+hash);
+  location.replace(base+"?v=540&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
