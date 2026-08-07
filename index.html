@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.36</title>
-<link rel="manifest" href="manifest.json?v=536">
+<title>值星小幫手 V5.37</title>
+<link rel="manifest" href="manifest.json?v=537">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.36 display recovery ===== */
+/* ===== V5.37 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.36 restore dashboard + bottom navigation ===== */
+/* ===== V5.37 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.36 incremental features on stable V5.34 ===== */
+/* ===== V5.37 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.36 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.37 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -397,11 +397,112 @@ main{
   #more .moreLaunch{font-size:13px!important;padding:10px 6px!important}
 }
 
+
+/* ===== V5.37 人員勤務選擇修正版 ===== */
+
+/* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
+#peoplePage .peopleDetails{
+  overflow:visible!important;
+}
+
+#peoplePage .dutySelectionTitle{
+  margin:14px 0 8px!important;
+  padding-top:2px!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  color:#475569!important;
+}
+
+#peoplePage .dutySelectionGrid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  width:100%!important;
+}
+
+#peoplePage .dutySelectItem,
+#peoplePage .dutyActivityBtn{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:58px!important;
+  margin:0!important;
+  padding:10px 12px!important;
+  border:1px solid #dbe5f1!important;
+  border-radius:14px!important;
+  background:#f8fafc!important;
+  color:#0f172a!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+}
+
+/* 資格 checkbox 改成正常的小方框，不再放大 */
+#peoplePage .dutySelectItem{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  justify-content:flex-start!important;
+}
+
+#peoplePage .dutySelectItem input[type="checkbox"]{
+  appearance:auto!important;
+  -webkit-appearance:checkbox!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  min-height:20px!important;
+  margin:0!important;
+  padding:0!important;
+  flex:0 0 20px!important;
+  border-radius:4px!important;
+}
+
+/* 打靶 / 洽公同樣做成整齊的勤務卡 */
+#peoplePage .dutyActivityBtn{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+
+/* 有設定時給明確狀態 */
+#peoplePage .dutyActivityBtn.isSet{
+  background:#eef6ff!important;
+  border-color:#93c5fd!important;
+  color:#1d4ed8!important;
+}
+
+/* 備考放在勤務選擇後面，保持完整寬度 */
+#peoplePage .trainingNote,
+#peoplePage .exemptReason{
+  margin-top:10px!important;
+}
+
+/* 舊資格排列樣式不得干擾新版 */
+#peoplePage .qualToggleRow{
+  display:none!important;
+}
+
+@media(max-width:360px){
+  #peoplePage .dutySelectionGrid{
+    gap:8px!important;
+  }
+  #peoplePage .dutySelectItem,
+  #peoplePage .dutyActivityBtn{
+    min-height:54px!important;
+    padding:9px 10px!important;
+    font-size:13px!important;
+  }
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.36</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.37</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -565,9 +666,9 @@ main{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.36</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.36</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.37</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.37</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.36</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.37</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -634,7 +735,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.36";
+const APP_VERSION="V5.37";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -1595,8 +1696,8 @@ function renderPeople(){
     '<div class="peopleCardActions">'+move+'<button class="togglePerson" data-i="'+i+'">編輯 ▾</button></div>'+
     '<div class="peopleDetails"><div class="peopleEditGrid"><select class="personStatus" data-i="'+i+'">'+["正常","受訓","見習","休假","當日18休假","免哨"].map(x=>'<option '+(r.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select></div>'+
     '<div class="dutySelectionTitle">勤務選擇</div><div class="dutySelectionGrid">'+checks+
-    '<button type="button" class="setPersonActivity dutyActivityBtn" data-i="'+i+'" data-type="range">🎯 打靶'+(acts.range?' ✓':'')+'</button>'+
-    '<button type="button" class="setPersonActivity dutyActivityBtn" data-i="'+i+'" data-type="business">🏢 洽公'+(acts.business?' ✓':'')+'</button></div>'+
+    '<button type="button" class="setPersonActivity dutyActivityBtn '+(acts.range?'isSet':'')+'" data-i="'+i+'" data-type="range">🎯 打靶'+(acts.range?' ✓':'')+'</button>'+
+    '<button type="button" class="setPersonActivity dutyActivityBtn '+(acts.business?'isSet':'')+'" data-i="'+i+'" data-type="business">🏢 洽公'+(acts.business?' ✓':'')+'</button></div>'+
     trainingInput+exemptInput+'</div></div>';
  }).join("");
  $$(".togglePerson").forEach(x=>x.onclick=()=>{const c=document.querySelector('[data-card-i="'+x.dataset.i+'"]');c.classList.toggle("open");openPeopleCardName=c.classList.contains("open")?(state.people[+x.dataset.i]?.name||""):"";x.textContent=c.classList.contains("open")?"收合 ▴":"編輯 ▾";});
@@ -2510,7 +2611,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=536&refresh="+Date.now()+hash);
+  location.replace(base+"?v=537&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
