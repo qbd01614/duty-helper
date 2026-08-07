@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.33</title>
-<link rel="manifest" href="manifest.json?v=533">
+<title>值星小幫手 V5.34</title>
+<link rel="manifest" href="manifest.json?v=534">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,16 +172,118 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.33 display recovery ===== */
-#peoplePage #allQual,#peoplePage #clearAllQual{display:none!important;pointer-events:none!important;}
-#schedule .row:has(#autoAssign){display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;}
-#schedule .row:has(#autoAssign) button{min-width:0!important;width:100%!important;padding:9px 4px!important;font-size:12px!important;line-height:1.25!important;white-space:normal!important;}
+/* ===== V5.34 display recovery ===== */
+#peoplePage #allQual,
+#peoplePage #clearAllQual{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+/* 排哨四個主要按鍵固定同一排 */
+#schedule .row:has(#autoAssign){
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+#schedule .row:has(#autoAssign) button{
+  min-width:0!important;
+  width:100%!important;
+  padding:9px 4px!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+  white-space:normal!important;
+}
+
+
+/* ===== V5.34 restore dashboard + bottom navigation ===== */
+
+/* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
+#home .hero{
+  background:#fff!important;
+  color:#0f172a!important;
+  border-radius:20px!important;
+}
+#home .hero h2{color:#0f172a!important}
+#home #dashboard,
+#home #dashboard.dash{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-top:10px!important;
+}
+#home #dashboard .tile{
+  min-width:0!important;
+  min-height:108px!important;
+  padding:13px 10px!important;
+  border:1px solid #dbe5f1!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  color:#0f172a!important;
+  box-shadow:0 2px 8px rgba(15,23,42,.035)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+}
+#home #dashboard .tile small{
+  color:#64748b!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:1.3!important;
+}
+#home #dashboard .tile b{
+  color:#0f172a!important;
+  font-size:31px!important;
+  line-height:1!important;
+  margin-top:8px!important;
+}
+
+/* 下方導覽框：固定貼底 + 安全區 */
+body{
+  padding-bottom:calc(74px + env(safe-area-inset-bottom))!important;
+}
+main{
+  padding-bottom:18px!important;
+}
+.bottom{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  width:100%!important;
+  z-index:1000!important;
+  margin:0!important;
+  padding:0 0 env(safe-area-inset-bottom)!important;
+  background:rgba(255,255,255,.98)!important;
+  border-top:1px solid #e5e7eb!important;
+  box-shadow:0 -4px 16px rgba(15,23,42,.07)!important;
+  backdrop-filter:blur(14px);
+}
+.bottom button{
+  min-height:64px!important;
+  padding:7px 2px!important;
+  border-radius:0!important;
+}
+.bottom button.active,
+.bottom .active{
+  background:#eaf4ff!important;
+  color:#1677ff!important;
+}
+.bottom span{
+  font-size:12px!important;
+  margin-top:2px!important;
+}
+
+@media(max-width:390px){
+  #home #dashboard .tile{min-height:102px!important}
+  #home #dashboard .tile b{font-size:28px!important}
+}
 
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.33</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.34</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -345,9 +447,9 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.33</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.33</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.34</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.34</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.33</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.34</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -414,7 +516,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.33";
+const APP_VERSION="V5.34";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2267,7 +2369,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=533&refresh="+Date.now()+hash);
+  location.replace(base+"?v=534&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
