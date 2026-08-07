@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.50</title>
-<link rel="manifest" href="manifest.json?v=550">
+<title>值星小幫手 V5.53</title>
+<link rel="manifest" href="manifest.json?v=553">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.50 display recovery ===== */
+/* ===== V5.53 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.50 restore dashboard + bottom navigation ===== */
+/* ===== V5.53 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.50 incremental features on stable V5.34 ===== */
+/* ===== V5.53 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.50 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.53 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.50 人員勤務選擇修正版 ===== */
+/* ===== V5.53 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.50 修正版 ===== */
+/* ===== V5.53 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.50 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.53 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.50 彈窗穩定修正 ===== */
+/* ===== V5.53 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,7 +694,7 @@ main{
 }
 
 
-/* ===== V5.50 打靶／洽公：改成獨立設定頁 ===== */
+/* ===== V5.53 打靶／洽公：改成獨立設定頁 ===== */
 body.activityEditorOpen{
   padding-bottom:0!important;
 }
@@ -741,7 +741,7 @@ body.activityEditorOpen .bottom{
 }
 
 
-/* ===== V5.50 iPhone 鍵盤白邊修正 ===== */
+/* ===== V5.53 iPhone 鍵盤白邊修正 ===== */
 body.activityEditorOpen{
   height:100dvh!important;
   min-height:100dvh!important;
@@ -772,7 +772,7 @@ body.activityEditorOpen .activityEditorCard{
 }
 
 
-/* ===== V5.50 全站 iPhone 鍵盤修正 ===== */
+/* ===== V5.53 全站 iPhone 鍵盤修正 ===== */
 body.keyboardEditing{
   height:100dvh!important;
   min-height:100dvh!important;
@@ -798,7 +798,7 @@ body.keyboardEditing.activityEditorOpen{
 }
 
 
-/* ===== V5.50 鍵盤收起後白邊修正 ===== */
+/* ===== V5.53 鍵盤收起後白邊修正 ===== */
 body.keyboardEditing{
   height:100dvh!important;
   min-height:100dvh!important;
@@ -810,7 +810,7 @@ body.keyboardEditing main{
 }
 
 
-/* ===== V5.50 iPhone 鍵盤白邊根本修正 ===== */
+/* ===== V5.53 iPhone 鍵盤白邊根本修正 ===== */
 
 /* 完全停用舊的 JS --app-height 機制 */
 html{
@@ -859,11 +859,126 @@ input,textarea,select,[contenteditable="true"]{
   touch-action:manipulation!important;
 }
 
+
+/* ===== V5.53 排哨卡片完整顯示修正 ===== */
+
+/* 每個哨別欄位不要用固定高度，內容可自然撐開 */
+#schedule .postColumn,
+#schedule .slotList,
+#schedule .slotCard{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+/* 時段卡片重新留足空間 */
+#schedule .slotCard{
+  min-height:188px!important;
+  padding:16px 14px 14px!important;
+  margin-bottom:14px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+  position:relative!important;
+}
+
+/* 時段標題 */
+#schedule .slotTime{
+  position:static!important;
+  margin:0 0 2px!important;
+  line-height:1.2!important;
+  min-height:28px!important;
+  flex:0 0 auto!important;
+}
+
+/* 人員選擇按鈕完整顯示 */
+#schedule .slotPersonBtn,
+#schedule .personBtn{
+  position:static!important;
+  width:100%!important;
+  min-height:62px!important;
+  height:auto!important;
+  margin:0!important;
+  padding:12px 14px!important;
+  box-sizing:border-box!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  line-height:1.35!important;
+  flex:0 0 auto!important;
+}
+
+/* 休息資訊 / 提示文字不要被鎖定按鈕蓋住 */
+#schedule .slotMeta,
+#schedule .restInfo,
+#schedule .slotNote{
+  position:static!important;
+  min-height:22px!important;
+  margin:0!important;
+  line-height:1.4!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  flex:0 0 auto!important;
+}
+
+/* 鎖定 + 昨日同班改成底部一列 */
+#schedule .slotBottom,
+#schedule .slotFooter{
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  margin-top:auto!important;
+  min-height:42px!important;
+  flex:0 0 auto!important;
+}
+
+/* 若原版沒有 slotBottom 容器，至少確保兩個元素本身不再 absolute */
+#schedule .lockBtn,
+#schedule .slotLockBtn,
+#schedule .lockSlot,
+#schedule .yesterdaySame,
+#schedule .prevSame{
+  position:static!important;
+  inset:auto!important;
+  margin:0!important;
+  flex:0 0 auto!important;
+}
+
+#schedule .yesterdaySame,
+#schedule .prevSame{
+  margin-left:auto!important;
+  text-align:right!important;
+  white-space:normal!important;
+  max-width:58%!important;
+}
+
+/* 手機再增加一點高度，避免字體放大時擠住 */
+@media(max-width:520px){
+  #schedule .slotCard{
+    min-height:200px!important;
+    padding:16px 12px 14px!important;
+    gap:10px!important;
+  }
+  #schedule .slotPersonBtn,
+  #schedule .personBtn{
+    min-height:66px!important;
+    font-size:16px!important;
+  }
+  #schedule .slotMeta,
+  #schedule .restInfo,
+  #schedule .slotNote{
+    font-size:13px!important;
+  }
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.50</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.53</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -1077,9 +1192,9 @@ input,textarea,select,[contenteditable="true"]{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.50</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.50</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.53</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.53</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.50</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.53</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1130,7 +1245,7 @@ input,textarea,select,[contenteditable="true"]{
  <button data-page="more">☰<span>更多</span></button>
 </nav>
 <script>
-/* V5.50：不再用 visualViewport 動態改整個 App 高度。
+/* V5.53：不再用 visualViewport 動態改整個 App 高度。
    讓 CSS 100dvh 與 iOS 原生鍵盤自行處理。 */
 function applyAppHeight(){
   document.documentElement.style.removeProperty("--app-height");
@@ -1145,7 +1260,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.50";
+const APP_VERSION="V5.53";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -1656,7 +1771,7 @@ function tags(s){
 function renderCell(s){
  const r=s.person?eligible(s.person,s,s.id):[false,""];
  const cls="cell "+(s.locked?"locked ":"")+(s.person&&!r[0]?"problem":"");
- return '<div class="'+cls+'"><select class="shiftSelect" data-id="'+s.id+'">'+personOptions(s.person,s)+'</select><button class="lockBtn" data-id="'+s.id+'">'+(s.locked?"🔒 已鎖定":"🔓 可調整")+'</button>'+(s.person?'<div class="'+(r[0]?"ok":"bad")+'" style="font-size:11px">'+(r[0]?"✓符合":"⚠ "+r[1])+'</div>':'')+'</div>';
+ return '<div class="'+cls+'"><select class="shiftSelect" data-id="'+s.id+'">'+personOptions(s.person,s)+'</select><div class="slotFooter"><button class="lockBtn" data-id="'+s.id+'">'+(s.locked?"🔒 已鎖定":"🔓 可調整")+'</button>'+(s.person?'<div class="'+(r[0]?"ok":"bad")+'" style="font-size:11px">'+(r[0]?"✓符合":"⚠ "+r[1])+'</div>':'')+'</div>';
 }
 
 function isDutyVisiblePerson(p){
@@ -1829,7 +1944,7 @@ function renderPostBoard(){
      const displayTime=slotDisplayTime(s),cross=FIXED_NEXT_DAY_TIMES.has(displayTime);
      const streak=s.person&&isNight(s)?nightStreakStatus(s.person,s,s.id):null;
      const streakText=streak?(streak.blocked?'｜🔴第4天':streak.warning?'｜🟡第3天':''):'';
-     return '<div class="slotCard '+(isNight(s)?'night ':'')+(isHard(s)?'hardDuty':'')+'"><div class="slotTime">'+displayTime+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn officialPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'+streakText):'待安排')+'</div><button class="manualLockBtn '+(s.locked?'locked':'')+'" data-lock-slot="'+s.id+'">'+(s.locked?'🔒 已鎖定':'🔓 未鎖定')+'</button><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div>';
+     return '<div class="slotCard '+(isNight(s)?'night ':'')+(isHard(s)?'hardDuty':'')+'"><div class="slotTime">'+displayTime+(cross?' <span class="tag">+1日</span>':'')+(isNight(s)?' 🌙':'')+'</div><button class="slotPersonBtn officialPersonBtn" data-slot="'+s.id+'">'+(s.person||'＋ 選擇人員')+'</button><div class="slotMeta">'+(s.person?('🌙 夜哨 '+todayNightCount(s.person)+' 次'+streakText):'待安排')+'</div><button class="manualLockBtn '+(s.locked?'locked':'')+'" data-lock-slot="'+s.id+'">'+(s.locked?'🔒 已鎖定':'🔓 未鎖定')+'</button><div class="yesterdaySame">昨日同班：'+previousSameSlotPerson(s)+'</div></div></div>';
    }).join("")+'</div>';
  }).join("");
  $$(".officialPersonBtn").forEach(btn=>btn.onclick=()=>openCandidate(btn.dataset.slot));
@@ -2188,7 +2303,34 @@ function liveRestInfo(name,m){
 }
 function dateAtMinutes(dateStr,mins){const d=new Date(dateStr+"T00:00:00");d.setMinutes(mins);return d.getTime();}
 function slotAbsoluteRange(slot,dutyDate){const r=dutyRelativeRange(slot);return [dateAtMinutes(dutyDate,r[0]),dateAtMinutes(dutyDate,r[1])];}
-function getLiveDutyAssignments(selectedDate,timeValue){const q=dateAtMinutes(selectedDate,timeToMinutes(timeValue)),map=new Map();[addDays(selectedDate,-1),selectedDate].forEach(dutyDate=>{const day=state.days[dutyDate];if(!day||!Array.isArray(day.slots))return;day.slots.forEach(s=>{if(!s.person)return;const [a,b]=slotAbsoluteRange(s,dutyDate);if(a<=q&&q<b){const arr=map.get(s.person)||[];arr.push(s.post+"｜"+slotDisplayTime(s));map.set(s.person,arr);}});});return map;}
+function getLiveDutyAssignments(selectedDate,timeValue){
+ const map=new Map();
+ const qRaw=timeToMinutes(timeValue);
+
+ /* 正式勤務直接用各哨別自己的「勤務日起班時間」換算，
+    不再經 Date timestamp 轉換，避免 00:00~07:59 查不到前一勤務日。 */
+ ["安官","管制","門禁"].forEach(post=>{
+   const dutyStart=dutyStartMinutes(post);
+   const dutyDate=qRaw<dutyStart ? addDays(selectedDate,-1) : selectedDate;
+   const qDutyMin=qRaw<dutyStart ? qRaw+1440 : qRaw;
+
+   const day=state.days[dutyDate];
+   if(!day||!Array.isArray(day.slots))return;
+
+   day.slots
+     .filter(s=>s.post===post && s.person)
+     .forEach(s=>{
+       const r=dutyRelativeRange(s);
+       if(r[0]<=qDutyMin && qDutyMin<r[1]){
+         const arr=map.get(s.person)||[];
+         arr.push(s.post+"｜"+slotDisplayTime(s));
+         map.set(s.person,arr);
+       }
+     });
+ });
+
+ return map;
+}
 function timedRecordActive(start,end,q){
  let a=timeToMinutes(start),b=(end==="24:00"?1440:timeToMinutes(end)),x=timeToMinutes(q);
  if(b===a)return x===a;
@@ -2248,6 +2390,34 @@ function nextDutyDisplayRow(post,item,queryDate){
  return '<div class="nextDutyCard"><b>'+post+' 下一班</b><div class="time">'+slotDisplayTime(s)+dayTag+'</div><div>'+(s.person||'待安排')+'</div></div>';
 }
 
+
+function dutyTimedRecordActiveOnDate(recordDate,start,end,queryDate,queryTime){
+  const dutyStart=8*60;
+  let a=timeToMinutes(start);
+  let b=(end==="24:00"?1440:timeToMinutes(end));
+
+  if(a<dutyStart)a+=1440;
+
+  if(end==="24:00"){
+    b=1440;
+  }else{
+    if(b<dutyStart)b+=1440;
+    if(b<=a)b+=1440;
+  }
+
+  const qRaw=timeToMinutes(queryTime);
+  const qDutyDate=qRaw<dutyStart ? addDays(queryDate,-1) : queryDate;
+  const qMin=qRaw<dutyStart ? qRaw+1440 : qRaw;
+
+  return recordDate===qDutyDate && a<=qMin && qMin<b;
+}
+
+function emergencyEmtActiveOnDutyDate(recordDate,queryDate,queryTime){
+  const qRaw=timeToMinutes(queryTime);
+  const qDutyDate=qRaw<8*60 ? addDays(queryDate,-1) : queryDate;
+  return recordDate===qDutyDate;
+}
+
 function activePersonActivityAt(person,type,queryDate,queryTime){
   const candidates=[addDays(queryDate,-1),queryDate];
   for(const recordDate of candidates){
@@ -2292,11 +2462,22 @@ function renderLivePeople(){
 
  const emtRows=[];
  const activeEmtNames=new Set();
- (state.emtAssignments||[]).filter(x=>x.date===selectedDate).forEach(x=>{
+
+ const emtDutyDate=timeToMinutes(v)<8*60?addDays(selectedDate,-1):selectedDate;
+
+ (state.emtAssignments||[]).filter(x=>x.date===emtDutyDate).forEach(x=>{
    const emergency=x.kind==="緊急醫療小組 EMT";
-   const active=emergency||timedRecordActive(x.start,x.end,v);
+   const active=emergency
+     ? emergencyEmtActiveOnDutyDate(x.date,selectedDate,v)
+     : dutyTimedRecordActiveOnDate(x.date,x.start,x.end,selectedDate,v);
+
    if(!active)return;
-   emtRows.push(x.person+"｜"+x.kind+"｜"+(emergency?"整日":x.start+"–"+x.end));
+
+   emtRows.push(
+     x.person+"｜"+x.kind+"｜"+
+     (emergency?"整勤務日":x.start+"–"+x.end)
+   );
+
    if(!emergency)activeEmtNames.add(x.person);
  });
 
@@ -2335,6 +2516,16 @@ function renderLivePeople(){
      );
    }
 
+   if(dutyMap.has(p.name)){
+     g.duty.push(p.name+"｜"+dutyMap.get(p.name).join("、"));
+     dutyNames.add(p.name);
+   }
+   if(visitorNames.has(p.name)){
+     const rows=visitorRows.filter(x=>x.startsWith(p.name+"｜"));
+     rows.forEach(row=>g.duty.push(row));
+     dutyNames.add(p.name);
+   }
+
    if(p.status==="休假"){
      g.leave.push(p.name);leaveNames.add(p.name);return;
    }
@@ -2349,16 +2540,6 @@ function renderLivePeople(){
    let rest="";
    if(selectedDate===currentDate())rest=liveRestInfo(p.name,m);
    if(rest){g.rest.push(p.name+"｜"+rest);restNames.add(p.name);}
-
-   if(dutyMap.has(p.name)){
-     g.duty.push(p.name+"｜"+dutyMap.get(p.name).join("、"));
-     dutyNames.add(p.name);
-   }
-   if(visitorNames.has(p.name)){
-     const rows=visitorRows.filter(x=>x.startsWith(p.name+"｜"));
-     rows.forEach(row=>g.duty.push(row));
-     dutyNames.add(p.name);
-   }
  });
 
  const rangeNames=new Set(g.range.map(x=>x.split("｜")[0])),businessNames=new Set(g.business.map(x=>x.split("｜")[0]));
@@ -2388,7 +2569,7 @@ function renderLivePeople(){
 
  const nextDuty=nextFormalDutyByPost(selectedDate,v);
  $("#livePeopleBox").innerHTML=
-   '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜打靶、洽公、公差皆依設定時段即時比對</div>'+
+   '<div class="muted"><b>查詢：'+selectedDate+' '+v+'</b>｜正式勤務依各哨別起班時間判定勤務日；EMT依勤務日；打靶／洽公／公差依設定時段即時比對</div>'+
    '<div class="livePeopleGrid">'+cards.map(([title,names])=>
      '<div class="liveGroup"><h4>'+title+'｜'+names.length+'人</h4><div class="liveNames">'+
      (names.length?names.map(n=>'<div>'+n+'</div>').join(""):'—')+
