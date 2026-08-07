@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.37</title>
-<link rel="manifest" href="manifest.json?v=537">
+<title>值星小幫手 V5.38</title>
+<link rel="manifest" href="manifest.json?v=538">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.37 display recovery ===== */
+/* ===== V5.38 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.37 restore dashboard + bottom navigation ===== */
+/* ===== V5.38 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.37 incremental features on stable V5.34 ===== */
+/* ===== V5.38 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.37 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.38 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.37 人員勤務選擇修正版 ===== */
+/* ===== V5.38 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -498,11 +498,165 @@ main{
   }
 }
 
+
+/* ===== V5.38 修正版 ===== */
+
+/* 打靶 / 洽公與其他勤務卡一致 */
+#peoplePage .dutyActivityCard{
+  cursor:pointer!important;
+}
+#peoplePage .dutyActivityCard input[type="checkbox"]{
+  pointer-events:none!important;
+}
+#peoplePage .dutyActivityCard.isSet{
+  background:#eef6ff!important;
+  border-color:#93c5fd!important;
+  color:#1d4ed8!important;
+}
+
+/* 打靶 / 洽公設定彈窗：完整顯示、可捲動、避開底部導覽 */
+#personActivityOverlay{
+  display:none;
+  position:fixed!important;
+  inset:0!important;
+  z-index:5000!important;
+  padding:12px 12px calc(88px + env(safe-area-inset-bottom))!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+}
+#personActivityOverlay[style*="display: flex"],
+#personActivityOverlay[style*="display:flex"]{
+  display:flex!important;
+}
+#personActivityOverlay .candidatePanel{
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 120px - env(safe-area-inset-bottom))!important;
+  margin:0 auto!important;
+  padding:14px!important;
+  border-radius:20px 20px 16px 16px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+}
+#personActivityOverlay .candidatePanel>.row:first-child{
+  position:sticky!important;
+  top:-14px!important;
+  z-index:5!important;
+  background:#fff!important;
+  padding:12px 0 10px!important;
+  border-bottom:1px solid #e5e7eb!important;
+}
+#personActivityOverlay .candidatePanel>.row:last-child{
+  position:sticky!important;
+  bottom:-14px!important;
+  z-index:5!important;
+  background:#fff!important;
+  padding:10px 0 calc(8px + env(safe-area-inset-bottom))!important;
+  border-top:1px solid #e5e7eb!important;
+}
+#personActivityOverlay #savePersonActivity,
+#personActivityOverlay #deletePersonActivity{
+  flex:1 1 0!important;
+  min-width:120px!important;
+}
+@media(max-width:520px){
+  #personActivityOverlay{
+    padding:8px 8px calc(80px + env(safe-area-inset-bottom))!important;
+  }
+  #personActivityOverlay .candidatePanel{
+    max-height:calc(100dvh - 104px - env(safe-area-inset-bottom))!important;
+    border-radius:18px 18px 12px 12px!important;
+  }
+}
+
+/* 排哨規則：手機卡片式，不使用橫向表格 */
+#settingsPage .ruleCards{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:12px!important;
+}
+#settingsPage .ruleCard{
+  border:1px solid #dfe7f1!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  padding:13px!important;
+  box-shadow:0 2px 8px rgba(15,23,42,.035)!important;
+}
+#settingsPage .ruleCardHead{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin-bottom:12px!important;
+}
+#settingsPage .ruleIcon{
+  width:38px!important;
+  height:38px!important;
+  border-radius:11px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#eff6ff!important;
+  font-size:20px!important;
+}
+#settingsPage .ruleCardHead b{
+  display:block!important;
+  font-size:17px!important;
+}
+#settingsPage .ruleCardHead small{
+  display:block!important;
+  margin-top:2px!important;
+  color:#64748b!important;
+  font-size:11px!important;
+}
+#settingsPage .ruleCard>label,
+#settingsPage .rulePair label{
+  display:block!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  color:#475569!important;
+}
+#settingsPage .ruleCard input[type="time"],
+#settingsPage .ruleCard input[type="number"]{
+  margin-top:5px!important;
+  width:100%!important;
+}
+#settingsPage .rulePair{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:9px!important;
+  margin-top:10px!important;
+}
+#settingsPage .rulePair label{
+  position:relative!important;
+}
+#settingsPage .rulePair label span{
+  display:block!important;
+  margin-top:3px!important;
+  color:#64748b!important;
+  font-size:11px!important;
+}
+#settingsPage .ruleAutoNote{
+  margin-top:12px!important;
+  padding:12px!important;
+  border:1px solid #bfdbfe!important;
+  border-radius:14px!important;
+  background:#eff6ff!important;
+  color:#1e3a8a!important;
+  font-size:13px!important;
+  line-height:1.55!important;
+}
+@media(max-width:360px){
+  #settingsPage .rulePair{grid-template-columns:1fr!important}
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.37</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.38</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -656,19 +810,44 @@ main{
  <div class="card">
  <h2>📏 排哨規則</h2>
  <p class="muted">各哨別依當日「在營且具有該哨資格」的人數，自動判斷使用一般或人力充足休息間隔。起班時間、休息時間與人力充足門檻都可自由修改。</p>
- <div class="tablewrap"><table>
-  <tr><th>哨別</th><th>起班時間</th><th>一般休息</th><th>人力充足休息</th><th>充足門檻</th></tr>
-  <tr><td>安官</td><td><input id="ruleAnguanStart" type="time"></td><td><input id="ruleAnguanNormal" type="number" min="0" step="0.5"> 小時</td><td><input id="ruleAnguanAmple" type="number" min="0" step="0.5"> 小時</td><td><input id="ruleAnguanThreshold" type="number" min="1" step="1"> 人</td></tr>
-  <tr><td>管制</td><td><input id="ruleControlStart" type="time"></td><td><input id="ruleControlNormal" type="number" min="0" step="0.5"> 小時</td><td><input id="ruleControlAmple" type="number" min="0" step="0.5"> 小時</td><td><input id="ruleControlThreshold" type="number" min="1" step="1"> 人</td></tr>
-  <tr><td>門禁</td><td><input id="ruleGateStart" type="time"></td><td><input id="ruleGateNormal" type="number" min="0" step="0.5"> 小時</td><td><input id="ruleGateAmple" type="number" min="0" step="0.5"> 小時</td><td><input id="ruleGateThreshold" type="number" min="1" step="1"> 人</td></tr>
- </table></div>
+ 
+<div class="ruleCards">
+  <div class="ruleCard">
+    <div class="ruleCardHead"><span class="ruleIcon">🛡️</span><div><b>安官</b><small>智慧排哨預設規則</small></div></div>
+    <label>起班時間<input id="ruleAnguanStart" type="time"></label>
+    <div class="rulePair">
+      <label>一般休息<input id="ruleAnguanNormal" type="number" min="0" step="0.5"><span>小時</span></label>
+      <label>人力充足休息<input id="ruleAnguanAmple" type="number" min="0" step="0.5"><span>小時</span></label>
+    </div>
+    <input id="ruleAnguanThreshold" type="hidden">
+  </div>
+  <div class="ruleCard">
+    <div class="ruleCardHead"><span class="ruleIcon">📟</span><div><b>管制</b><small>智慧排哨預設規則</small></div></div>
+    <label>起班時間<input id="ruleControlStart" type="time"></label>
+    <div class="rulePair">
+      <label>一般休息<input id="ruleControlNormal" type="number" min="0" step="0.5"><span>小時</span></label>
+      <label>人力充足休息<input id="ruleControlAmple" type="number" min="0" step="0.5"><span>小時</span></label>
+    </div>
+    <input id="ruleControlThreshold" type="hidden">
+  </div>
+  <div class="ruleCard">
+    <div class="ruleCardHead"><span class="ruleIcon">🚪</span><div><b>門禁</b><small>智慧排哨預設規則</small></div></div>
+    <label>起班時間<input id="ruleGateStart" type="time"></label>
+    <div class="rulePair">
+      <label>一般休息<input id="ruleGateNormal" type="number" min="0" step="0.5"><span>小時</span></label>
+      <label>人力充足休息<input id="ruleGateAmple" type="number" min="0" step="0.5"><span>小時</span></label>
+    </div>
+    <input id="ruleGateThreshold" type="hidden">
+  </div>
+</div>
+<div class="ruleAutoNote">系統會依各哨別「在營且具資格」的人數，自動套用一般休息或人力充足休息；不需要每次排哨前另外選模式。</div>
  <div class="row" style="margin-top:10px"><button id="saveDutyRules" class="primary">💾 儲存排哨規則</button><span id="dutyRuleStatus" class="muted"></span></div>
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.37</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.37</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.38</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.38</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.37</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.38</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -735,7 +914,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.37";
+const APP_VERSION="V5.38";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -1696,8 +1875,8 @@ function renderPeople(){
     '<div class="peopleCardActions">'+move+'<button class="togglePerson" data-i="'+i+'">編輯 ▾</button></div>'+
     '<div class="peopleDetails"><div class="peopleEditGrid"><select class="personStatus" data-i="'+i+'">'+["正常","受訓","見習","休假","當日18休假","免哨"].map(x=>'<option '+(r.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select></div>'+
     '<div class="dutySelectionTitle">勤務選擇</div><div class="dutySelectionGrid">'+checks+
-    '<button type="button" class="setPersonActivity dutyActivityBtn '+(acts.range?'isSet':'')+'" data-i="'+i+'" data-type="range">🎯 打靶'+(acts.range?' ✓':'')+'</button>'+
-    '<button type="button" class="setPersonActivity dutyActivityBtn '+(acts.business?'isSet':'')+'" data-i="'+i+'" data-type="business">🏢 洽公'+(acts.business?' ✓':'')+'</button></div>'+
+    '<label class="dutySelectItem dutyActivityCard '+(acts.range?'isSet':'')+'" data-i="'+i+'" data-type="range"><input type="checkbox" '+(acts.range?'checked':'')+' tabindex="-1" aria-hidden="true"><span>🎯 打靶</span></label>'+
+    '<label class="dutySelectItem dutyActivityCard '+(acts.business?'isSet':'')+'" data-i="'+i+'" data-type="business"><input type="checkbox" '+(acts.business?'checked':'')+' tabindex="-1" aria-hidden="true"><span>🏢 洽公</span></label></div>'+
     trainingInput+exemptInput+'</div></div>';
  }).join("");
  $$(".togglePerson").forEach(x=>x.onclick=()=>{const c=document.querySelector('[data-card-i="'+x.dataset.i+'"]');c.classList.toggle("open");openPeopleCardName=c.classList.contains("open")?(state.people[+x.dataset.i]?.name||""):"";x.textContent=c.classList.contains("open")?"收合 ▴":"編輯 ▾";});
@@ -2611,7 +2790,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=537&refresh="+Date.now()+hash);
+  location.replace(base+"?v=538&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
