@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.47</title>
-<link rel="manifest" href="manifest.json?v=547">
+<title>值星小幫手 V5.48</title>
+<link rel="manifest" href="manifest.json?v=548">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.47 display recovery ===== */
+/* ===== V5.48 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.47 restore dashboard + bottom navigation ===== */
+/* ===== V5.48 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.47 incremental features on stable V5.34 ===== */
+/* ===== V5.48 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.47 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.48 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.47 人員勤務選擇修正版 ===== */
+/* ===== V5.48 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.47 修正版 ===== */
+/* ===== V5.48 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.47 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.48 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.47 彈窗穩定修正 ===== */
+/* ===== V5.48 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,7 +694,7 @@ main{
 }
 
 
-/* ===== V5.47 打靶／洽公：改成獨立設定頁 ===== */
+/* ===== V5.48 打靶／洽公：改成獨立設定頁 ===== */
 body.activityEditorOpen{
   padding-bottom:0!important;
 }
@@ -741,7 +741,7 @@ body.activityEditorOpen .bottom{
 }
 
 
-/* ===== V5.47 iPhone 鍵盤白邊修正 ===== */
+/* ===== V5.48 iPhone 鍵盤白邊修正 ===== */
 body.activityEditorOpen{
   height:100dvh!important;
   min-height:100dvh!important;
@@ -772,7 +772,7 @@ body.activityEditorOpen .activityEditorCard{
 }
 
 
-/* ===== V5.47 全站 iPhone 鍵盤修正 ===== */
+/* ===== V5.48 全站 iPhone 鍵盤修正 ===== */
 body.keyboardEditing{
   height:100dvh!important;
   min-height:100dvh!important;
@@ -797,11 +797,23 @@ body.keyboardEditing.activityEditorOpen{
   min-height:100dvh!important;
 }
 
+
+/* ===== V5.48 鍵盤收起後白邊修正 ===== */
+body.keyboardEditing{
+  height:100dvh!important;
+  min-height:100dvh!important;
+}
+body.keyboardEditing main{
+  min-height:0!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.47</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.48</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -1015,9 +1027,9 @@ body.keyboardEditing.activityEditorOpen{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.47</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.47</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.48</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.48</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.47</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.48</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1080,38 +1092,116 @@ function isEditableElement(el){
  return false;
 }
 
+let __keyboardEditing=false;
+let __viewportRestoreTimer=0;
+let __viewportStableRaf=0;
+let __lastViewportHeight=0;
+let __stableViewportFrames=0;
+
 function appKeyboardEditing(){
- return document.body?.classList.contains("keyboardEditing") || isEditableElement(document.activeElement);
+ return __keyboardEditing || document.body?.classList.contains("keyboardEditing") || isEditableElement(document.activeElement);
 }
 
-function applyAppHeight(){
- /* iPhone 鍵盤打開時，不使用 visualViewport.height 縮短整個 App。
-    所有輸入欄位統一改用 layout viewport 高度，避免鍵盤上方白邊。 */
- const h=appKeyboardEditing()
+function currentVisualHeight(){
+ return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+}
+
+function applyAppHeight(forceLayoutHeight=false){
+ const editing=appKeyboardEditing();
+
+ /* 輸入期間與鍵盤剛收起的恢復階段，都先使用 layout viewport，
+    避免 iOS 把過渡中的 visualViewport.height 寫進 --app-height。 */
+ const h=(editing || forceLayoutHeight)
    ? window.innerHeight
-   : (window.visualViewport?window.visualViewport.height:window.innerHeight);
+   : currentVisualHeight();
+
  document.documentElement.style.setProperty("--app-height",h+"px");
 }
 
+function cancelViewportRestore(){
+ clearTimeout(__viewportRestoreTimer);
+ cancelAnimationFrame(__viewportStableRaf);
+ __viewportStableRaf=0;
+ __stableViewportFrames=0;
+}
+
+function restoreAfterViewportStable(){
+ cancelViewportRestore();
+
+ const check=()=>{
+   const h=currentVisualHeight();
+
+   if(Math.abs(h-__lastViewportHeight)<1){
+     __stableViewportFrames++;
+   }else{
+     __stableViewportFrames=0;
+     __lastViewportHeight=h;
+   }
+
+   /* 至少連續 4 個 animation frame 高度不再變動，
+      才視為 iOS 鍵盤收合動畫結束。 */
+   if(__stableViewportFrames>=4){
+     document.body.classList.remove("keyboardEditing");
+     __keyboardEditing=false;
+     applyAppHeight(false);
+     return;
+   }
+
+   /* 恢復期間持續維持 layout viewport 高度，禁止白邊跳出。 */
+   applyAppHeight(true);
+   __viewportStableRaf=requestAnimationFrame(check);
+ };
+
+ /* 先等 Safari 開始/完成鍵盤收合動畫，再檢查穩定。 */
+ __viewportRestoreTimer=setTimeout(()=>{
+   __lastViewportHeight=currentVisualHeight();
+   __stableViewportFrames=0;
+   applyAppHeight(true);
+   __viewportStableRaf=requestAnimationFrame(check);
+ },220);
+}
+
 applyAppHeight();
-window.addEventListener("resize",applyAppHeight);
-if(window.visualViewport)window.visualViewport.addEventListener("resize",applyAppHeight);
+window.addEventListener("resize",()=>{
+ if(appKeyboardEditing()){
+   applyAppHeight(true);
+ }else{
+   applyAppHeight(false);
+ }
+});
+
+if(window.visualViewport){
+ window.visualViewport.addEventListener("resize",()=>{
+   if(appKeyboardEditing()){
+     applyAppHeight(true);
+   }
+ });
+}
 
 document.addEventListener("focusin",e=>{
  if(isEditableElement(e.target)){
+   cancelViewportRestore();
+   __keyboardEditing=true;
    document.body.classList.add("keyboardEditing");
-   requestAnimationFrame(applyAppHeight);
+   requestAnimationFrame(()=>applyAppHeight(true));
  }
 });
 
 document.addEventListener("focusout",e=>{
  if(isEditableElement(e.target)){
    setTimeout(()=>{
-     if(!isEditableElement(document.activeElement)){
-       document.body.classList.remove("keyboardEditing");
+     if(isEditableElement(document.activeElement)){
+       /* 只是從一個輸入框切到另一個，不當成鍵盤關閉。 */
+       __keyboardEditing=true;
+       document.body.classList.add("keyboardEditing");
+       applyAppHeight(true);
+       return;
      }
-     applyAppHeight();
-   },180);
+
+     /* 不立即恢復 visualViewport.height。
+        等 viewport 完全穩定後再一次性恢復。 */
+     restoreAfterViewportStable();
+   },60);
  }
 });
 </script>
@@ -1123,7 +1213,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.47";
+const APP_VERSION="V5.48";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
