@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.29</title>
-<link rel="manifest" href="manifest.json?v=529">
+<title>值星小幫手 V5.30</title>
+<link rel="manifest" href="manifest.json?v=530">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,251 +172,197 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.29 全專區 UI 美化 ===== */
+/* ===== V5.30 真正重排版 ===== */
 :root{
- --v529-bg:#f4f7fb;
- --v529-card:#ffffff;
- --v529-ink:#0f172a;
- --v529-muted:#64748b;
- --v529-line:#e2e8f0;
- --v529-blue:#1677ff;
- --v529-navy:#111827;
- --v529-shadow:0 6px 22px rgba(15,23,42,.07);
+ --v530-bg:#f4f7fb;
+ --v530-card:#fff;
+ --v530-line:#dfe7f1;
+ --v530-text:#0f172a;
+ --v530-muted:#64748b;
+ --v530-blue:#1677ff;
+ --v530-navy:#111827;
+ --v530-shadow:0 6px 20px rgba(15,23,42,.07);
 }
-body{background:var(--v529-bg)!important;color:var(--v529-ink)!important;padding-bottom:0!important}
-header{background:var(--v529-navy)!important;padding-left:16px!important;padding-right:16px!important}
-header h1{font-size:21px!important;letter-spacing:.01em}
-header button{border-radius:14px!important;min-width:48px;min-height:48px;background:#334155!important}
-.version{font-size:13px!important;padding:5px 10px!important;background:#ffffff20!important}
-
-main{padding-top:14px!important;padding-bottom:16px!important}
-.page{padding-bottom:10px!important}
+body{background:var(--v530-bg)!important;color:var(--v530-text)!important;padding-bottom:0!important}
+header{background:var(--v530-navy)!important;padding:calc(12px + env(safe-area-inset-top)) 16px 12px!important}
+header h1{font-size:21px!important}
+header button{min-width:48px;min-height:48px;border-radius:14px!important}
+.version{font-size:13px!important;padding:5px 10px!important}
+main{padding:14px 10px 12px!important}
 .card{
- border:1px solid var(--v529-line)!important;
+ background:#fff!important;
+ border:1px solid var(--v530-line)!important;
  border-radius:20px!important;
- box-shadow:var(--v529-shadow)!important;
- background:#fff!important;
- padding:15px!important;
+ box-shadow:var(--v530-shadow)!important;
+ padding:14px!important;
  margin-bottom:14px!important;
- overflow:visible!important;
 }
-.card h2{font-size:20px!important;margin-bottom:12px!important}
-.card h3{font-size:17px!important;margin-bottom:10px!important}
-
-button{
- border-radius:12px!important;
- min-height:44px!important;
- padding:10px 13px!important;
- font-weight:800!important;
-}
-.primary{background:#1677ff!important;color:white!important}
-.danger{background:#ef4444!important;color:white!important}
-input,select,textarea{
- border:1px solid #d6dee9!important;
- border-radius:12px!important;
- min-height:44px!important;
- padding:10px 12px!important;
- background:white!important;
-}
-.notice{
- border-radius:14px!important;
- padding:12px!important;
- line-height:1.55!important;
- overflow-wrap:anywhere;
-}
-
-/* 首頁 */
-#home .homeNow{
- padding:17px!important;
- background:#fff!important;
-}
+#home .homeNow{padding:16px!important}
 #home .homeNowDate{font-size:15px!important}
-#home .homeNowTime{font-size:38px!important;letter-spacing:1.5px!important}
-#home .hero{background:#fff!important;color:#0f172a!important}
-#home .hero h2{color:#0f172a!important}
-#home #dashboard.dash{
+#home .homeNowTime{font-size:38px!important;letter-spacing:1px!important}
+
+/* 首頁人力儀表板：真正改成 3 x 2 緊湊卡 */
+#home .hero{background:#fff!important;color:var(--v530-text)!important}
+#home .hero h2{color:var(--v530-text)!important}
+#home #dashboard,
+#home #dashboard.dash,
+#home .v530Dash{
  display:grid!important;
- grid-template-columns:repeat(2,minmax(0,1fr))!important;
- gap:10px!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:9px!important;
 }
 #home #dashboard .tile{
  min-width:0!important;
- min-height:100px!important;
+ min-height:112px!important;
+ padding:12px 8px!important;
  border:1px solid #dbe5f1!important;
  border-radius:16px!important;
  background:#fff!important;
- color:#0f172a!important;
- padding:14px!important;
- box-shadow:0 2px 8px rgba(15,23,42,.03);
+ box-shadow:0 2px 8px rgba(15,23,42,.03)!important;
+ text-align:center!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:center!important;
+ align-items:center!important;
 }
-#home #dashboard .tile small{color:#64748b!important;font-size:14px!important;font-weight:700}
-#home #dashboard .tile b{font-size:31px!important;color:#0f172a!important;margin-top:7px!important}
-#home #fairnessBox{background:#fff4c9!important}
+#home #dashboard .tile small{
+ color:#475569!important;
+ font-size:13px!important;
+ font-weight:800!important;
+ line-height:1.3!important;
+ text-align:center!important;
+}
+#home #dashboard .tile b{
+ display:block!important;
+ color:#0f172a!important;
+ font-size:31px!important;
+ line-height:1!important;
+ margin-top:8px!important;
+ text-align:center!important;
+}
 
-/* 即時人員統計 */
-#home #livePeopleBox .dash{
+/* 控制台更緊湊 */
+#home .card:has(#health){
+ padding:14px!important;
+}
+#home #health{
+ line-height:1.5!important;
+ margin-top:3px!important;
+}
+#home #fairnessBox{
+ margin-top:12px!important;
+ background:#fff3c4!important;
+ border-radius:14px!important;
+ padding:12px!important;
+ line-height:1.5!important;
+}
+
+/* 即時統計六格 */
+#home #livePeopleBox .dash,
+#home .v530Live .dash{
  display:grid!important;
- grid-template-columns:repeat(3,minmax(0,1fr))!important;
- gap:8px!important;
+ grid-template-columns:repeat(6,minmax(0,1fr))!important;
+ gap:7px!important;
 }
 #home #livePeopleBox .tile{
  min-width:0!important;
+ padding:9px 3px!important;
  border:1px solid #e2e8f0!important;
  border-radius:13px!important;
- padding:10px 4px!important;
- text-align:center;
  background:#f8fafc!important;
+ text-align:center!important;
 }
-#home #livePeopleBox .tile small{font-size:12px!important;color:#64748b!important}
-#home #livePeopleBox .tile b{font-size:22px!important;margin-top:4px!important}
-.livePeopleGrid{grid-template-columns:1fr!important;gap:9px!important}
-.liveGroup{border-radius:14px!important;background:#fff!important;overflow:hidden}
+#home #livePeopleBox .tile small{
+ font-size:11px!important;
+ color:#64748b!important;
+ white-space:normal!important;
+}
+#home #livePeopleBox .tile b{
+ display:block!important;
+ font-size:20px!important;
+ margin-top:3px!important;
+}
+.livePeopleGrid{grid-template-columns:1fr!important;gap:8px!important}
 
-/* 排哨 */
-#schedule .postBoard{gap:12px!important}
+/* 其他專區統一重排 */
+#schedule .postBoard{grid-template-columns:1fr!important;gap:11px!important}
 #schedule .postColumn{
- border:1px solid #dfe7f1!important;
+ border:1px solid var(--v530-line)!important;
  border-radius:18px!important;
  box-shadow:0 4px 14px rgba(15,23,42,.05)!important;
- padding:11px!important;
 }
-#schedule .postColumn h3{
- background:#f4f7fb!important;
- border-radius:13px!important;
- padding:11px!important;
+#schedule .slotCard{border-radius:15px!important;padding:12px 12px 30px!important}
+#schedule .slotPersonBtn{border-radius:11px!important;background:#f8fafc!important}
+#stats .card,#peoplePage .card,#more .card,#settingsPage .card,#errandPage .card,#outingPage .card,#todoPage .card,#handoverPage .card,#personnelChangePage .card{
+ border-radius:19px!important;
 }
-#schedule .slotCard{
- border-radius:15px!important;
- padding:12px 12px 30px!important;
- box-shadow:0 2px 8px rgba(15,23,42,.035)!important;
-}
-#schedule .slotPersonBtn{
- background:#f8fafc!important;
- border-radius:11px!important;
- border:1px solid #d9e2ec!important;
-}
-#schedule .traineeToggle{border-radius:999px!important}
-#schedule .tablewrap{border-radius:15px!important}
-#schedule summary{padding:7px 0!important}
-
-/* 統計 */
-#stats .card{padding:16px!important}
-#stats table{font-size:14px!important}
-#stats th{background:#f8fafc!important}
-.hardshipPersonCard{
- border-radius:15px!important;
- padding:12px!important;
- box-shadow:0 2px 8px rgba(15,23,42,.035);
-}
-
-/* 人員 */
-#peoplePage .peopleIdentityCard{
- border:1px solid #dfe7f1!important;
+.peopleIdentityCard{
  border-radius:17px!important;
- padding:14px!important;
  box-shadow:0 4px 14px rgba(15,23,42,.05)!important;
 }
-#peoplePage .peopleName{font-size:19px!important}
-#peoplePage .statusPill{padding:5px 9px!important;border-radius:999px!important}
-#peoplePage .qualPill{padding:4px 8px!important;border-radius:999px!important}
-#peoplePage .peopleDetails{padding-top:12px!important}
-#peoplePage .peopleEditGrid{gap:9px!important}
-
-/* 更多首頁 */
 #more .grid2{
  display:grid!important;
- grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-columns:1fr 1fr!important;
  gap:10px!important;
 }
 #more .moreLaunch{
  min-height:76px!important;
- text-align:left!important;
- padding:14px!important;
- background:#f8fafc!important;
- border:1px solid #dfe7f1!important;
- color:#0f172a!important;
- box-shadow:0 2px 8px rgba(15,23,42,.035);
-}
-
-/* 更多子專區 */
-#settingsPage .card,#errandPage .card,#outingPage .card,#todoPage .card,
-#handoverPage .card,#personnelChangePage .card{
- border-radius:19px!important;
-}
-.backMore{
- background:#eef4ff!important;
- color:#1d4ed8!important;
-}
-#errandPage .liveGroup{
- border:1px solid #e2e8f0!important;
+ border:1px solid var(--v530-line)!important;
  border-radius:15px!important;
- padding:12px!important;
- margin:9px 0!important;
-}
-#todoPage .item,#handoverPage .item,#outingPage .item,#errandPage .item{
- padding:11px 2px!important;
-}
-#handoverSummary{
- background:#f8fafc;
- border:1px solid #e2e8f0;
- border-radius:14px;
- padding:13px!important;
- line-height:1.65;
+ background:#f8fafc!important;
+ color:#0f172a!important;
+ text-align:left!important;
 }
 
-/* 候選人面板 */
-.candidatePanel{
- border-radius:22px!important;
- box-shadow:0 18px 55px rgba(15,23,42,.22)!important;
-}
-.candidateRow{
- border-radius:14px!important;
- padding:11px!important;
-}
-.candidateFilter{border-radius:999px!important}
-
-/* 底部導覽：貼底，不上浮 */
+/* 底部導覽真正貼底 */
 .bottom{
  position:relative!important;
- flex:0 0 auto!important;
+ left:auto!important;
+ right:auto!important;
  bottom:auto!important;
+ width:100%!important;
  margin:0!important;
+ flex:0 0 auto!important;
  padding-bottom:env(safe-area-inset-bottom)!important;
- background:rgba(255,255,255,.98)!important;
- backdrop-filter:blur(14px);
+ background:#fff!important;
  box-shadow:0 -4px 16px rgba(15,23,42,.07)!important;
 }
 .bottom button{
- min-height:62px!important;
+ min-height:64px!important;
  padding:8px 2px!important;
- color:#334155;
+ color:#334155!important;
 }
-.bottom button.active,.bottom .active{
+.bottom .active{
  background:#eaf4ff!important;
  color:#1677ff!important;
 }
-.bottom span{font-size:12px!important;margin-top:2px}
+.bottom span{font-size:12px!important}
 
-/* 手機 */
+/* 手機版 */
 @media(max-width:520px){
- main{padding-left:10px!important;padding-right:10px!important}
- .card{padding:13px!important;border-radius:18px!important}
- #home #dashboard .tile{min-height:94px!important;padding:12px!important}
- #home #dashboard .tile b{font-size:29px!important}
- #home #livePeopleBox .dash{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ #home #dashboard,
+ #home #dashboard.dash,
+ #home .v530Dash{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ #home #dashboard .tile{min-height:105px!important;padding:10px 5px!important}
+ #home #dashboard .tile small{font-size:12px!important}
+ #home #dashboard .tile b{font-size:28px!important}
+ #home #livePeopleBox .dash,
+ #home .v530Live .dash{grid-template-columns:repeat(3,minmax(0,1fr))!important}
  #more .grid2{grid-template-columns:1fr!important}
- #schedule .postBoard{grid-template-columns:1fr!important}
 }
 @media(max-width:360px){
- #home #livePeopleBox .dash{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- #home #dashboard .tile b{font-size:25px!important}
+ #home #dashboard,
+ #home #dashboard.dash,
+ #home .v530Dash{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #home #livePeopleBox .dash,
+ #home .v530Live .dash{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.29</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.30</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -580,9 +526,9 @@ input,select,textarea{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.29</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.29</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.30</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.30</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.29</b><br>全介面美化版：首頁、排哨、統計、人員、更多、設定、公差、外散、待辦、自動交接摘要與人員異動統一手機 UI；底部導覽貼齊安全區底部；保留原有排哨邏輯與永久資料。<br><br>
+  <b>V5.30</b><br>真正重排版：首頁人力儀表板改為緊湊 3×2 卡片、即時統計改為 6 格手機網格、勤務控制台壓縮高度；排哨、人員、統計與更多子專區統一重排；底部導覽真正貼齊安全區底部。<br><br>
   <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -632,15 +578,13 @@ input,select,textarea{
  <button data-page="stats">📊<span>統計</span></button>
  <button data-page="peoplePage">👥<span>人員</span></button>
  <button data-page="more">☰<span>更多</span></button>
-</nav>
-<script>
-function applyAppHeight(){
+</nafunction applyAppHeight(){
  document.documentElement.style.setProperty("--app-height",(window.visualViewport?window.visualViewport.height:window.innerHeight)+"px");
 }
 applyAppHeight();
 window.addEventListener("resize",applyAppHeight);
 if(window.visualViewport)window.visualViewport.addEventListener("resize",applyAppHeight);
-</script>
+v>
 
 <div id="appToast" role="status" aria-live="polite"></div>
 <script>
@@ -648,8 +592,23 @@ function hardshipLampInfo(count){count=Number(count)||0;if(count>=3)return {cls:
 function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '<div class="hardshipPersonCard"><b>'+name+'</b><span class="hardshipLamp '+x.cls+'">'+x.text+'</span></div>';}
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
+
+function applyV530HomeLayout(){
+ const dash=document.getElementById("dashboard");
+ if(dash){
+   dash.classList.add("v530Dash");
+ }
+ const health=document.getElementById("health");
+ if(health) health.classList.add("v530Health");
+ const fair=document.getElementById("fairnessBox");
+ if(fair) fair.classList.add("v530Fair");
+ const live=document.getElementById("livePeopleBox");
+ if(live) live.classList.add("v530Live");
+}
+document.addEventListener("DOMContentLoaded",()=>{applyV530HomeLayout();setTimeout(applyV530HomeLayout,300);});
+
 "use strict";
-const APP_VERSION="V5.29";
+const APP_VERSION="V5.30";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
