@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.44</title>
-<link rel="manifest" href="manifest.json?v=544">
+<title>值星小幫手 V5.45</title>
+<link rel="manifest" href="manifest.json?v=545">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.44 display recovery ===== */
+/* ===== V5.45 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.44 restore dashboard + bottom navigation ===== */
+/* ===== V5.45 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.44 incremental features on stable V5.34 ===== */
+/* ===== V5.45 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.44 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.45 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.44 人員勤務選擇修正版 ===== */
+/* ===== V5.45 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.44 修正版 ===== */
+/* ===== V5.45 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.44 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.45 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.44 彈窗穩定修正 ===== */
+/* ===== V5.45 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,239 +694,49 @@ main{
 }
 
 
-/* ===== V5.44 iPhone 打靶／洽公彈窗修正版 ===== */
-body.personActivityOpen{overflow:hidden!important}
-body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!important}
-
-#personActivityOverlay{
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  top:var(--pa-vv-top,0px)!important;
-  height:var(--pa-vv-height,100dvh)!important;
-  bottom:auto!important;
-  inset:auto 0 auto 0!important;
-  z-index:10000!important;
-  display:none;
-  align-items:flex-start!important;
-  justify-content:center!important;
-  padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))!important;
-  overflow:hidden!important;
-  background:rgba(15,23,42,.42)!important;
+/* ===== V5.45 打靶／洽公：改成獨立設定頁 ===== */
+body.activityEditorOpen{
+  padding-bottom:0!important;
 }
-#personActivityOverlay.open{display:flex!important}
-
-#personActivityOverlay .candidatePanel{
-  width:min(100%,430px)!important;
-  max-width:430px!important;
-  max-height:calc(var(--pa-vv-height,100dvh) - 16px)!important;
-  height:auto!important;
-  margin:0 auto!important;
-  padding:14px!important;
-  border-radius:18px!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior:contain!important;
-  scroll-behavior:auto!important;
-  scroll-padding-top:70px!important;
-  scroll-padding-bottom:90px!important;
+body.activityEditorOpen .bottom{
+  display:none!important;
 }
-
-#personActivityOverlay .candidatePanel>.row:first-child{
-  position:sticky!important;
-  top:-14px!important;
-  z-index:10!important;
-  background:#fff!important;
-  padding:12px 0 10px!important;
-  border-bottom:1px solid #e5e7eb!important;
+#personActivityPage{
+  padding-bottom:calc(28px + env(safe-area-inset-bottom))!important;
 }
-#personActivityOverlay .candidatePanel>.row:last-child{
-  position:sticky!important;
-  bottom:-14px!important;
-  z-index:10!important;
-  background:#fff!important;
-  padding:10px 0 12px!important;
-  border-top:1px solid #e5e7eb!important;
+#personActivityPage .activityEditorCard{
+  padding:16px!important;
+  overflow:visible!important;
 }
-#personActivityOverlay input{
-  scroll-margin-top:70px!important;
-  scroll-margin-bottom:90px!important;
+#personActivityPage .activityEditorField{
+  margin-bottom:14px!important;
 }
-@media(max-width:520px){
-  #personActivityOverlay{padding-left:6px!important;padding-right:6px!important}
-  #personActivityOverlay .candidatePanel{width:100%!important;max-width:none!important;border-radius:16px!important}
+#personActivityPage .activityEditorField label{
+  display:block!important;
+  margin-bottom:6px!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  color:#475569!important;
 }
-
-
-/* ===== V5.44 iPhone 鍵盤可正常彈出版 ===== */
-
-/* 不鎖 body、不監聽 visualViewport，避免 Safari 取消鍵盤焦點 */
-body.personActivityOpen{overflow:visible!important}
-
-/* 彈窗開啟時仍隱藏底部導覽，避免被鍵盤夾住 */
-body.personActivityOpen .bottom{
-  visibility:hidden!important;
-  pointer-events:none!important;
+#personActivityPage .activityEditorField input{
+  width:100%!important;
+  min-height:54px!important;
+  font-size:18px!important;
+  padding:12px 14px!important;
 }
-
-#personActivityOverlay{
-  position:fixed!important;
-  inset:0!important;
-  z-index:10000!important;
-  display:none;
-  align-items:flex-start!important;
-  justify-content:center!important;
-  padding:max(10px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom))!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  background:rgba(15,23,42,.42)!important;
-  -webkit-overflow-scrolling:touch!important;
+#personActivityPage .activityEditorActions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:10px!important;
+  margin-top:18px!important;
 }
-
-#personActivityOverlay.open{
-  display:flex!important;
+#personActivityPage .activityEditorActions button{
+  min-height:50px!important;
+  font-size:15px!important;
 }
-
-/* 面板靠上顯示，避免 Safari 鍵盤出現時把整張面板推離畫面 */
-#personActivityOverlay .candidatePanel{
-  position:relative!important;
-  width:min(100%,430px)!important;
-  max-width:430px!important;
-  height:auto!important;
-  max-height:min(68dvh,560px)!important;
-  margin:0 auto!important;
-  padding:14px!important;
-  border-radius:18px!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior:contain!important;
-  scroll-behavior:auto!important;
-}
-
-/* 不使用 sticky，減少 iOS 鍵盤出現時重新排版 */
-#personActivityOverlay .candidatePanel>.row:first-child,
-#personActivityOverlay .candidatePanel>.row:last-child{
-  position:static!important;
-  top:auto!important;
-  bottom:auto!important;
-  background:#fff!important;
-  z-index:auto!important;
-}
-
-/* 保持輸入欄位原生可聚焦 */
-#personActivityOverlay input,
-#personActivityOverlay textarea{
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-}
-
-@media(max-width:520px){
-  #personActivityOverlay{
-    padding-left:6px!important;
-    padding-right:6px!important;
-  }
-  #personActivityOverlay .candidatePanel{
-    width:100%!important;
-    max-width:none!important;
-    max-height:66dvh!important;
-    border-radius:16px!important;
-  }
-}
-
-
-/* ===== V5.44 iPhone 鍵盤遮擋修正 ===== */
-body.personActivityOpen{
-  overflow:hidden!important;
-}
-body.personActivityOpen .bottom{
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-
-/* 不再用固定 66/68dvh，高度直接由 keyboard offset 控制 */
-#personActivityOverlay{
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  top:0!important;
-  bottom:var(--activity-kb-offset,0px)!important;
-  height:auto!important;
-  inset:0 0 var(--activity-kb-offset,0px) 0!important;
-  z-index:10000!important;
-
-  display:none;
-  align-items:flex-start!important;
-  justify-content:center!important;
-
-  padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))!important;
-  overflow:hidden!important;
-  background:rgba(15,23,42,.42)!important;
-}
-#personActivityOverlay.open{
-  display:flex!important;
-}
-
-#personActivityOverlay .candidatePanel{
-  width:min(100%,430px)!important;
-  max-width:430px!important;
-  max-height:calc(100% - 16px)!important;
-  height:auto!important;
-  margin:0 auto!important;
-  padding:14px!important;
-  border-radius:18px!important;
-
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior:contain!important;
-  scroll-behavior:auto!important;
-  scroll-padding-top:72px!important;
-  scroll-padding-bottom:92px!important;
-}
-
-/* 標題固定 */
-#personActivityOverlay .candidatePanel>.row:first-child{
-  position:sticky!important;
-  top:-14px!important;
-  z-index:10!important;
-  background:#fff!important;
-  padding:12px 0 10px!important;
-  border-bottom:1px solid #e5e7eb!important;
-}
-
-/* 儲存/刪除永遠固定在鍵盤上方的面板底部 */
-#personActivityOverlay .candidatePanel>.row:last-child{
-  position:sticky!important;
-  bottom:-14px!important;
-  z-index:10!important;
-  background:#fff!important;
-  padding:10px 0 12px!important;
-  border-top:1px solid #e5e7eb!important;
-}
-
-#personActivityOverlay input,
-#personActivityOverlay textarea{
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  scroll-margin-top:72px!important;
-  scroll-margin-bottom:92px!important;
-}
-
-@media(max-width:520px){
-  #personActivityOverlay{
-    padding-left:6px!important;
-    padding-right:6px!important;
-  }
-  #personActivityOverlay .candidatePanel{
-    width:100%!important;
-    max-width:none!important;
-    border-radius:16px!important;
+@media(max-width:360px){
+  #personActivityPage .activityEditorActions{
+    grid-template-columns:1fr!important;
   }
 }
 
@@ -934,7 +744,7 @@ body.personActivityOpen .bottom{
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.44</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.45</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -974,16 +784,41 @@ body.personActivityOpen .bottom{
  </div>
 </section>
 
-<div id="personActivityOverlay" class="candidateOverlay">
- <div class="candidatePanel" style="max-width:430px">
-  <div class="row" style="justify-content:space-between"><h3 id="personActivityTitle" style="margin:0">設定</h3><button id="closePersonActivity">關閉</button></div>
+
+<section id="personActivityPage" class="page">
+ <div class="card">
+  <div class="row" style="justify-content:space-between;align-items:center">
+   <button id="closePersonActivity">← 返回人員</button>
+   <h2 id="personActivityTitle" style="margin:0">勤務設定</h2>
+  </div>
+ </div>
+
+ <div class="card activityEditorCard">
   <input id="personActivityName" type="hidden">
   <input id="personActivityType" type="hidden">
-  <div class="row" style="margin-top:12px"><label>開始</label><input id="personActivityStart" type="time" value="08:00"><span>～</span><label>結束</label><input id="personActivityEnd" type="time" value="12:00"></div>
-  <div style="margin-top:10px"><input id="personActivityReason" placeholder="原因／備註"></div>
-  <div class="row" style="margin-top:12px"><button id="savePersonActivity" class="primary">💾 儲存</button><button id="deletePersonActivity" class="danger">刪除此紀錄</button></div>
+
+  <div class="activityEditorField">
+   <label>開始時間</label>
+   <input id="personActivityStart" type="time" value="08:00">
+  </div>
+
+  <div class="activityEditorField">
+   <label>結束時間</label>
+   <input id="personActivityEnd" type="time" value="12:00">
+  </div>
+
+  <div class="activityEditorField">
+   <label>原因／備註</label>
+   <input id="personActivityReason" type="text" placeholder="輸入原因／備註">
+  </div>
+
+  <div class="activityEditorActions">
+   <button id="savePersonActivity" class="primary">💾 儲存</button>
+   <button id="deletePersonActivity" class="danger">🗑️ 刪除此紀錄</button>
+  </div>
  </div>
-</div>
+</section>
+
 <section id="schedule" class="page">
  <div class="card">
   <h2>📋 今日排哨</h2>
@@ -1123,9 +958,9 @@ body.personActivityOpen .bottom{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.44</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.44</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.45</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.45</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.44</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.45</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1191,7 +1026,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.44";
+const APP_VERSION="V5.45";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2166,14 +2001,21 @@ function renderPeople(){
  $$(".qualCheck").forEach(x=>x.onchange=()=>{snapshot();const p=state.people[+x.dataset.i];p.qualifications=p.qualifications||[];if(x.checked&&!p.qualifications.includes(x.dataset.post))p.qualifications.push(x.dataset.post);if(!x.checked)p.qualifications=p.qualifications.filter(q=>q!==x.dataset.post);saveState();});
 }
 function openPersonActivity(i,type,dateStr){
- const p=state.people[i];if(!p)return;const r=personDayRecord(p,dateStr),a=(r.activities||{})[type]||{};
- $("#personActivityName").value=p.name;$("#personActivityType").value=type;
+ const p=state.people[i];if(!p)return;
+ const r=personDayRecord(p,dateStr),a=(r.activities||{})[type]||{};
+ const main=document.querySelector("main");
+ window.__peopleScrollBeforeActivity=main?main.scrollTop:0;
+
+ $("#personActivityName").value=p.name;
+ $("#personActivityType").value=type;
  $("#personActivityTitle").textContent=(type==="range"?"🎯 打靶":"🏢 洽公")+"｜"+p.name+"｜"+dateStr;
- $("#personActivityStart").value=a.start||(type==="range"?"08:00":"08:00");
+ $("#personActivityStart").value=a.start||"08:00";
  $("#personActivityEnd").value=a.end||(type==="range"?"12:00":"17:00");
  $("#personActivityReason").value=a.reason||"";
- $("#deletePersonActivity").style.display=a.start?"inline-block":"none";
- $("#personActivityOverlay").classList.add("open");$("#personActivityOverlay").style.display="flex";
+ $("#deletePersonActivity").style.display=a.start?"block":"none";
+
+ document.body.classList.add("activityEditorOpen");
+ openPage("personActivityPage");
 }
 function renderPersonnelChange(){
  if(!$("#personnelChangeList"))return;
@@ -2770,7 +2612,7 @@ function openPage(id){
 }
 $$(".moreLaunch").forEach(b=>b.onclick=()=>{openPage(b.dataset.subpage);if(b.dataset.subpage==="personnelChangePage")renderPersonnelChange();});
 $$(".backMore").forEach(b=>b.onclick=()=>openPage("more"));
-$$(".bottom button").forEach(b=>b.onclick=()=>openPage(b.dataset.page));
+$$(".bottom button").forEach(b=>b.onclick=()=>{document.body.classList.remove("activityEditorOpen");openPage(b.dataset.page);});
 $("#scheduleDate").onchange=()=>{renderAll();if($("#prevSyncStatus"))$("#prevSyncStatus").textContent="";};
 $("#personSearch").oninput=()=>renderPeople();
 $("#peopleStatusDate").onchange=()=>renderPeople();
@@ -2823,46 +2665,42 @@ $("#errandTypeSelect").onchange=()=>{
 };
 
 function closePersonActivityModal(restoreScroll=true){
-  const overlay=$("#personActivityOverlay");
-  if(!overlay)return;
-  const main=document.querySelector("main");
-  const y=main?main.scrollTop:0;
-  if(document.activeElement && typeof document.activeElement.blur==="function"){
-    try{document.activeElement.blur();}catch(e){}
-  }
-  overlay.classList.remove("open");
-  overlay.style.display="none";
-  
-  if(restoreScroll && main){
-    requestAnimationFrame(()=>{main.scrollTop=y;});
-  }
+ if(document.activeElement && typeof document.activeElement.blur==="function"){
+   try{document.activeElement.blur();}catch(e){}
+ }
+ document.body.classList.remove("activityEditorOpen");
+ openPage("peoplePage");
+ if(restoreScroll){
+   const main=document.querySelector("main");
+   requestAnimationFrame(()=>{if(main)main.scrollTop=window.__peopleScrollBeforeActivity||0;});
+ }
 }
 
 $("#closePersonActivity").onclick=()=>closePersonActivityModal();
-$("#personActivityOverlay").onclick=e=>{if(e.target===$("#personActivityOverlay"))closePersonActivityModal();};
 $("#savePersonActivity").onclick=()=>{
  const name=$("#personActivityName").value,type=$("#personActivityType").value,dateStr=$("#peopleStatusDate").value||todayISO();
  const p=state.people.find(x=>x.name===name);if(!p)return;
  const start=$("#personActivityStart").value,end=$("#personActivityEnd").value,reason=$("#personActivityReason").value.trim();
  if(!start||!end)return alert("請設定開始與結束時間");
- snapshot();const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});
- activities[type]={start,end,reason};setPersonDayRecord(p,dateStr,{activities});
- const main=document.querySelector("main"),y=main?main.scrollTop:0;
- closePersonActivityModal(false);
+ snapshot();
+ const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});
+ activities[type]={start,end,reason};
+ setPersonDayRecord(p,dateStr,{activities});
  saveState(false);
  renderAll();
- requestAnimationFrame(()=>{if(main)main.scrollTop=y;});
+ closePersonActivityModal(true);
  showToast(type==="range"?"打靶已新增":"洽公已新增","success");
 };
 $("#deletePersonActivity").onclick=()=>{
  const name=$("#personActivityName").value,type=$("#personActivityType").value,dateStr=$("#peopleStatusDate").value||todayISO();
  const p=state.people.find(x=>x.name===name);if(!p)return;
- snapshot();const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});delete activities[type];setPersonDayRecord(p,dateStr,{activities});
- const main=document.querySelector("main"),y=main?main.scrollTop:0;
- closePersonActivityModal(false);
+ snapshot();
+ const r=personDayRecord(p,dateStr),activities=Object.assign({},r.activities||{});
+ delete activities[type];
+ setPersonDayRecord(p,dateStr,{activities});
  saveState(false);
  renderAll();
- requestAnimationFrame(()=>{if(main)main.scrollTop=y;});
+ closePersonActivityModal(true);
  showToast("勤務紀錄已刪除","success");
 };
 $("#addPerson").onclick=()=>{const n=$("#newPerson").value.trim();if(!n)return;if(state.people.some(p=>p.name===n))return alert("人員已存在");snapshot();state.people.push({name:n,rank:$("#newPersonRank").value||"",gender:$("#newPersonGender").value||"",status:"正常",exemptReason:"",qualifications:[]});$("#newPerson").value="";$("#newPersonRank").value="";$("#newPersonGender").value="";saveState();};
@@ -3096,7 +2934,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=544&refresh="+Date.now()+hash);
+  location.replace(base+"?v=540&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -3294,78 +3132,6 @@ $("#refreshForUpdate").onclick=()=>{
     setInterval(function(){ renderHardshipPanel(); },3000);
   });
 })();
-</script>
-<script>
-
-(function(){
-  let raf=0;
-
-  function updateKeyboardOffset(){
-    const vv=window.visualViewport;
-    let offset=0;
-
-    if(vv){
-      /* layout viewport 下方被鍵盤占掉的高度 */
-      offset=Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-
-      /* 某些 iOS/PWA 會回傳極小誤差，避免誤判 */
-      if(offset<40) offset=0;
-    }
-
-    document.documentElement.style.setProperty("--activity-kb-offset",offset+"px");
-  }
-
-  function scheduleKeyboardOffset(){
-    cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(updateKeyboardOffset);
-  }
-
-  function modalIsOpen(){
-    const o=document.getElementById("personActivityOverlay");
-    return !!(o && (o.classList.contains("open") || getComputedStyle(o).display!=="none"));
-  }
-
-  function syncModalClass(){
-    document.body.classList.toggle("personActivityOpen",modalIsOpen());
-    scheduleKeyboardOffset();
-  }
-
-  window.addEventListener("resize",scheduleKeyboardOffset,{passive:true});
-
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize",scheduleKeyboardOffset,{passive:true});
-    window.visualViewport.addEventListener("scroll",scheduleKeyboardOffset,{passive:true});
-  }
-
-  /* 只同步尺寸，不碰焦點，因此鍵盤仍由 iOS 原生控制 */
-  document.addEventListener("focusin",e=>{
-    const o=document.getElementById("personActivityOverlay");
-    if(o && o.contains(e.target)){
-      document.body.classList.add("personActivityOpen");
-      scheduleKeyboardOffset();
-    }
-  });
-
-  document.addEventListener("focusout",e=>{
-    const o=document.getElementById("personActivityOverlay");
-    if(o && o.contains(e.target)){
-      setTimeout(scheduleKeyboardOffset,80);
-    }
-  });
-
-  document.addEventListener("click",e=>{
-    const t=e.target;
-    if(t && (t.closest?.(".dutyActivityCard") ||
-             t.id==="closePersonActivity" ||
-             t.id==="savePersonActivity" ||
-             t.id==="deletePersonActivity")){
-      setTimeout(syncModalClass,0);
-    }
-  },true);
-
-  updateKeyboardOffset();
-})();
-
 </script>
 </body>
 </html>
