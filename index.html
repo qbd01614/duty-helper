@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.43</title>
-<link rel="manifest" href="manifest.json?v=543">
+<title>值星小幫手 V5.44</title>
+<link rel="manifest" href="manifest.json?v=544">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.43 display recovery ===== */
+/* ===== V5.44 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.43 restore dashboard + bottom navigation ===== */
+/* ===== V5.44 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.43 incremental features on stable V5.34 ===== */
+/* ===== V5.44 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.43 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.44 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.43 人員勤務選擇修正版 ===== */
+/* ===== V5.44 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.43 修正版 ===== */
+/* ===== V5.44 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.43 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.44 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.43 彈窗穩定修正 ===== */
+/* ===== V5.44 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,7 +694,7 @@ main{
 }
 
 
-/* ===== V5.43 iPhone 打靶／洽公彈窗修正版 ===== */
+/* ===== V5.44 iPhone 打靶／洽公彈窗修正版 ===== */
 body.personActivityOpen{overflow:hidden!important}
 body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!important}
 
@@ -759,7 +759,7 @@ body.personActivityOpen .bottom{visibility:hidden!important;pointer-events:none!
 }
 
 
-/* ===== V5.43 iPhone 鍵盤可正常彈出版 ===== */
+/* ===== V5.44 iPhone 鍵盤可正常彈出版 ===== */
 
 /* 不鎖 body、不監聽 visualViewport，避免 Safari 取消鍵盤焦點 */
 body.personActivityOpen{overflow:visible!important}
@@ -837,11 +837,104 @@ body.personActivityOpen .bottom{
   }
 }
 
+
+/* ===== V5.44 iPhone 鍵盤遮擋修正 ===== */
+body.personActivityOpen{
+  overflow:hidden!important;
+}
+body.personActivityOpen .bottom{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* 不再用固定 66/68dvh，高度直接由 keyboard offset 控制 */
+#personActivityOverlay{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:var(--activity-kb-offset,0px)!important;
+  height:auto!important;
+  inset:0 0 var(--activity-kb-offset,0px) 0!important;
+  z-index:10000!important;
+
+  display:none;
+  align-items:flex-start!important;
+  justify-content:center!important;
+
+  padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))!important;
+  overflow:hidden!important;
+  background:rgba(15,23,42,.42)!important;
+}
+#personActivityOverlay.open{
+  display:flex!important;
+}
+
+#personActivityOverlay .candidatePanel{
+  width:min(100%,430px)!important;
+  max-width:430px!important;
+  max-height:calc(100% - 16px)!important;
+  height:auto!important;
+  margin:0 auto!important;
+  padding:14px!important;
+  border-radius:18px!important;
+
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  scroll-behavior:auto!important;
+  scroll-padding-top:72px!important;
+  scroll-padding-bottom:92px!important;
+}
+
+/* 標題固定 */
+#personActivityOverlay .candidatePanel>.row:first-child{
+  position:sticky!important;
+  top:-14px!important;
+  z-index:10!important;
+  background:#fff!important;
+  padding:12px 0 10px!important;
+  border-bottom:1px solid #e5e7eb!important;
+}
+
+/* 儲存/刪除永遠固定在鍵盤上方的面板底部 */
+#personActivityOverlay .candidatePanel>.row:last-child{
+  position:sticky!important;
+  bottom:-14px!important;
+  z-index:10!important;
+  background:#fff!important;
+  padding:10px 0 12px!important;
+  border-top:1px solid #e5e7eb!important;
+}
+
+#personActivityOverlay input,
+#personActivityOverlay textarea{
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  scroll-margin-top:72px!important;
+  scroll-margin-bottom:92px!important;
+}
+
+@media(max-width:520px){
+  #personActivityOverlay{
+    padding-left:6px!important;
+    padding-right:6px!important;
+  }
+  #personActivityOverlay .candidatePanel{
+    width:100%!important;
+    max-width:none!important;
+    border-radius:16px!important;
+  }
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.43</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.44</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -1030,9 +1123,9 @@ body.personActivityOpen .bottom{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.43</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.43</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.44</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.44</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.43</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.44</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1098,7 +1191,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.43";
+const APP_VERSION="V5.44";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -3003,7 +3096,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=543&refresh="+Date.now()+hash);
+  location.replace(base+"?v=544&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -3205,26 +3298,72 @@ $("#refreshForUpdate").onclick=()=>{
 <script>
 
 (function(){
-  function syncActivityBodyClass(){
-    const o=document.getElementById("personActivityOverlay");
-    if(!o)return;
-    const open=o.classList.contains("open") || getComputedStyle(o).display!=="none";
-    document.body.classList.toggle("personActivityOpen",open);
+  let raf=0;
+
+  function updateKeyboardOffset(){
+    const vv=window.visualViewport;
+    let offset=0;
+
+    if(vv){
+      /* layout viewport 下方被鍵盤占掉的高度 */
+      offset=Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+
+      /* 某些 iOS/PWA 會回傳極小誤差，避免誤判 */
+      if(offset<40) offset=0;
+    }
+
+    document.documentElement.style.setProperty("--activity-kb-offset",offset+"px");
   }
 
-  document.addEventListener("click",e=>{
-    const t=e.target;
-    if(t && (t.closest?.(".dutyActivityCard") || t.id==="closePersonActivity" || t.id==="savePersonActivity" || t.id==="deletePersonActivity")){
-      setTimeout(syncActivityBodyClass,0);
-    }
-  },true);
+  function scheduleKeyboardOffset(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(updateKeyboardOffset);
+  }
 
+  function modalIsOpen(){
+    const o=document.getElementById("personActivityOverlay");
+    return !!(o && (o.classList.contains("open") || getComputedStyle(o).display!=="none"));
+  }
+
+  function syncModalClass(){
+    document.body.classList.toggle("personActivityOpen",modalIsOpen());
+    scheduleKeyboardOffset();
+  }
+
+  window.addEventListener("resize",scheduleKeyboardOffset,{passive:true});
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize",scheduleKeyboardOffset,{passive:true});
+    window.visualViewport.addEventListener("scroll",scheduleKeyboardOffset,{passive:true});
+  }
+
+  /* 只同步尺寸，不碰焦點，因此鍵盤仍由 iOS 原生控制 */
   document.addEventListener("focusin",e=>{
     const o=document.getElementById("personActivityOverlay");
     if(o && o.contains(e.target)){
       document.body.classList.add("personActivityOpen");
+      scheduleKeyboardOffset();
     }
   });
+
+  document.addEventListener("focusout",e=>{
+    const o=document.getElementById("personActivityOverlay");
+    if(o && o.contains(e.target)){
+      setTimeout(scheduleKeyboardOffset,80);
+    }
+  });
+
+  document.addEventListener("click",e=>{
+    const t=e.target;
+    if(t && (t.closest?.(".dutyActivityCard") ||
+             t.id==="closePersonActivity" ||
+             t.id==="savePersonActivity" ||
+             t.id==="deletePersonActivity")){
+      setTimeout(syncModalClass,0);
+    }
+  },true);
+
+  updateKeyboardOffset();
 })();
 
 </script>
