@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.27</title>
-<link rel="manifest" href="manifest.json?v=527">
+<title>值星小幫手 V5.28</title>
+<link rel="manifest" href="manifest.json?v=528">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -171,11 +171,104 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 #appToast.show{opacity:1;transform:translate(-50%,0)}#appToast.success{background:#166534}#appToast.error{background:#991b1b}#appToast.warn{background:#92400e}
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
+
+/* ===== V5.28 HOME readability fix ===== */
+#home .hero{
+  background:#fff !important;
+  color:#0f172a !important;
+}
+#home .hero h2{color:#0f172a}
+#home #dashboard.dash{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+#home #dashboard .tile{
+  min-width:0 !important;
+  min-height:82px;
+  padding:12px !important;
+  border:1px solid #e2e8f0 !important;
+  border-radius:14px !important;
+  background:#fff !important;
+  color:#0f172a !important;
+  box-shadow:0 2px 8px rgba(15,23,42,.04);
+  overflow:hidden;
+}
+#home #dashboard .tile small{
+  color:#64748b !important;
+  font-size:13px;
+  line-height:1.35;
+  white-space:normal;
+}
+#home #dashboard .tile b{
+  display:block;
+  margin-top:5px;
+  font-size:25px !important;
+  line-height:1.1;
+  color:#0f172a !important;
+  overflow-wrap:anywhere;
+}
+#home #health{line-height:1.6}
+#home #fairnessBox{
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.55;
+}
+#home #livePeopleBox{
+  min-width:0;
+  overflow:hidden;
+}
+#home #livePeopleBox .dash{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:8px !important;
+}
+#home #livePeopleBox .tile{
+  min-width:0 !important;
+  padding:10px 6px !important;
+  text-align:center;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  background:#f8fafc;
+  overflow:hidden;
+}
+#home #livePeopleBox .tile small{
+  display:block;
+  font-size:12px;
+  line-height:1.3;
+  color:#64748b;
+  white-space:normal;
+}
+#home #livePeopleBox .tile b{
+  display:block;
+  margin-top:4px;
+  font-size:21px !important;
+  line-height:1.15;
+}
+#home .livePeopleGrid{
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+}
+#home .liveGroup{
+  min-width:0;
+  overflow:hidden;
+}
+#home .liveNames{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+@media(max-width:360px){
+  #home #dashboard.dash{grid-template-columns:1fr 1fr !important;gap:7px !important}
+  #home #dashboard .tile{min-height:74px;padding:9px !important}
+  #home #dashboard .tile b{font-size:21px !important}
+  #home #livePeopleBox .dash{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.27</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.28</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -339,8 +432,9 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.27</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.27</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.28</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.28</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
+  <b>V5.28</b><br>修正首頁人員統計擁擠：統計卡改為清楚的雙欄配置、數字放大；即時人員統計改為手機可讀網格，窄螢幕自動換行；其餘 V5.27 功能與資料結構保留。<br><br>
   <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -405,7 +499,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.27";
+const APP_VERSION="V5.28";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
