@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.45</title>
-<link rel="manifest" href="manifest.json?v=545">
+<title>值星小幫手 V5.46</title>
+<link rel="manifest" href="manifest.json?v=546">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.45 display recovery ===== */
+/* ===== V5.46 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.45 restore dashboard + bottom navigation ===== */
+/* ===== V5.46 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.45 incremental features on stable V5.34 ===== */
+/* ===== V5.46 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -328,7 +328,7 @@ main{
 }
 
 
-/* ===== V5.45 精準修正版（以 V5.35 為基底） ===== */
+/* ===== V5.46 精準修正版（以 V5.35 為基底） ===== */
 
 /* 圓餅圖取消 */
 #v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
@@ -398,7 +398,7 @@ main{
 }
 
 
-/* ===== V5.45 人員勤務選擇修正版 ===== */
+/* ===== V5.46 人員勤務選擇修正版 ===== */
 
 /* 只影響人員專區展開後的勤務選擇，不碰其他專區 */
 #peoplePage .peopleDetails{
@@ -499,7 +499,7 @@ main{
 }
 
 
-/* ===== V5.45 修正版 ===== */
+/* ===== V5.46 修正版 ===== */
 
 /* 打靶 / 洽公與其他勤務卡一致 */
 #peoplePage .dutyActivityCard{
@@ -653,13 +653,13 @@ main{
 }
 
 
-/* ===== V5.45 打靶／洽公彈窗事件修復 ===== */
+/* ===== V5.46 打靶／洽公彈窗事件修復 ===== */
 #personActivityOverlay.open{display:flex!important}
 #peoplePage .dutyActivityCard{cursor:pointer!important}
 #peoplePage .dutyActivityCard *{pointer-events:none!important}
 
 
-/* ===== V5.45 彈窗穩定修正 ===== */
+/* ===== V5.46 彈窗穩定修正 ===== */
 #personActivityOverlay{
   align-items:center!important;
   justify-content:center!important;
@@ -694,7 +694,7 @@ main{
 }
 
 
-/* ===== V5.45 打靶／洽公：改成獨立設定頁 ===== */
+/* ===== V5.46 打靶／洽公：改成獨立設定頁 ===== */
 body.activityEditorOpen{
   padding-bottom:0!important;
 }
@@ -740,11 +740,42 @@ body.activityEditorOpen .bottom{
   }
 }
 
+
+/* ===== V5.46 iPhone 鍵盤白邊修正 ===== */
+body.activityEditorOpen{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  padding-bottom:0!important;
+  overflow:hidden!important;
+}
+body.activityEditorOpen main{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow-y:auto!important;
+  padding-bottom:calc(24px + env(safe-area-inset-bottom))!important;
+  background:#f4f7fb!important;
+}
+body.activityEditorOpen #personActivityPage{
+  min-height:100%!important;
+  padding-bottom:calc(32px + env(safe-area-inset-bottom))!important;
+}
+body.activityEditorOpen .activityEditorCard{
+  margin-bottom:24px!important;
+}
+/* 輸入欄位保持原生 iOS 行為 */
+#personActivityPage input{
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  touch-action:manipulation!important;
+  scroll-margin-bottom:24px!important;
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.45</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.46</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -958,9 +989,9 @@ body.activityEditorOpen .bottom{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.45</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.45</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.46</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.46</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.45</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.46</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1012,7 +1043,11 @@ body.activityEditorOpen .bottom{
 </nav>
 <script>
 function applyAppHeight(){
- document.documentElement.style.setProperty("--app-height",(window.visualViewport?window.visualViewport.height:window.innerHeight)+"px");
+ const editing=document.body && document.body.classList.contains("activityEditorOpen");
+ /* 打靶／洽公輸入時不要跟著 visualViewport 縮短整個 app，
+    交給 iOS 原生鍵盤處理，避免鍵盤上方出現大片空白。 */
+ const h=editing ? window.innerHeight : (window.visualViewport?window.visualViewport.height:window.innerHeight);
+ document.documentElement.style.setProperty("--app-height",h+"px");
 }
 applyAppHeight();
 window.addEventListener("resize",applyAppHeight);
@@ -1026,7 +1061,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.45";
+const APP_VERSION="V5.46";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2015,6 +2050,7 @@ function openPersonActivity(i,type,dateStr){
  $("#deletePersonActivity").style.display=a.start?"block":"none";
 
  document.body.classList.add("activityEditorOpen");
+ applyAppHeight();
  openPage("personActivityPage");
 }
 function renderPersonnelChange(){
@@ -2669,6 +2705,7 @@ function closePersonActivityModal(restoreScroll=true){
    try{document.activeElement.blur();}catch(e){}
  }
  document.body.classList.remove("activityEditorOpen");
+ applyAppHeight();
  openPage("peoplePage");
  if(restoreScroll){
    const main=document.querySelector("main");
@@ -3132,6 +3169,18 @@ $("#refreshForUpdate").onclick=()=>{
     setInterval(function(){ renderHardshipPanel(); },3000);
   });
 })();
+</script>
+<script>
+
+(function(){
+  document.addEventListener("focusin",e=>{
+    if(document.body.classList.contains("activityEditorOpen") &&
+       document.getElementById("personActivityPage")?.contains(e.target)){
+      requestAnimationFrame(applyAppHeight);
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
