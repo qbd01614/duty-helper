@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.35</title>
-<link rel="manifest" href="manifest.json?v=535">
+<title>值星小幫手 V5.36</title>
+<link rel="manifest" href="manifest.json?v=536">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.35 display recovery ===== */
+/* ===== V5.36 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.35 restore dashboard + bottom navigation ===== */
+/* ===== V5.36 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -280,7 +280,7 @@ main{
 }
 
 
-/* ===== V5.35 incremental features on stable V5.34 ===== */
+/* ===== V5.36 incremental features on stable V5.34 ===== */
 
 /* 快速模式 */
 .quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -327,11 +327,81 @@ main{
  .v535RuleModes{grid-template-columns:1fr}
 }
 
+
+/* ===== V5.36 精準修正版（以 V5.35 為基底） ===== */
+
+/* 圓餅圖取消 */
+#v535PieCard,.v535PieGrid,.v535PieWrap,.v535Pie,.v535PieCenter,.v535Legend{display:none!important}
+
+/* 排哨專區：解除擁擠 */
+#schedule .card{padding:15px!important;margin-bottom:16px!important}
+#schedule .postBoard{gap:16px!important}
+#schedule .postColumn{padding:12px!important;border-radius:18px!important}
+#schedule .postColumn h3{margin-bottom:12px!important}
+#schedule .slotCard{
+  margin:12px 0!important;
+  padding:13px 12px 38px!important;
+  min-height:108px!important;
+  border-radius:15px!important;
+}
+#schedule .slotTime{font-size:16px!important;margin-bottom:9px!important}
+#schedule .slotPersonBtn{min-height:48px!important;padding:10px 11px!important}
+#schedule .slotMeta{margin-top:8px!important;line-height:1.45!important}
+#schedule .manualLockBtn{bottom:8px!important;left:9px!important}
+#schedule .yesterdaySame{bottom:9px!important;right:9px!important;max-width:48%;text-align:right}
+
+/* 人員詳細模式：勤務選擇統一在同一區 */
+.dutySelectionTitle{font-size:13px;font-weight:900;color:#475569;margin:12px 0 7px}
+.dutySelectionGrid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.dutySelectItem,.dutyActivityBtn{
+  min-height:44px!important;
+  border:1px solid #dfe7f1!important;
+  border-radius:12px!important;
+  background:#f8fafc!important;
+  padding:9px 10px!important;
+  font-size:13px!important;
+  color:#0f172a!important;
+}
+.dutySelectItem{display:flex;align-items:center;gap:7px}
+.dutyActivityBtn{width:100%;text-align:left}
+.activityButtons{display:none!important}
+
+/* 更多：固定 2欄 x 3排，不再擠成四格 */
+#more .grid2{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+#more .moreLaunch{
+  width:100%!important;
+  min-width:0!important;
+  min-height:72px!important;
+  padding:12px 10px!important;
+  white-space:normal!important;
+  line-height:1.35!important;
+  text-align:center!important;
+  border-radius:14px!important;
+}
+
+/* 艱苦哨燈號 */
+.hardshipSummaryList{display:grid;gap:8px}
+.hardshipLegendNote{margin-top:10px;font-size:12px;color:#64748b;line-height:1.6}
+
+@media(max-width:360px){
+  #schedule .slotCard{min-height:112px!important}
+  #more .grid2{gap:9px!important}
+  #more .moreLaunch{font-size:13px!important;padding:10px 6px!important}
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.35</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.36</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -413,7 +483,7 @@ main{
 </div>
 <div class="card"><h3>🧩 欄位／卡片式哨表</h3><div id="postBoard" class="postBoard"></div></div>
  <div class="card"><h3>📊 當日勤務統計表</h3><div id="dailyDutyStats"></div></div>
- <div class="card"><h3>🌙 夜哨統計</h3><div id="nightSummaryBox"></div></div>
+ <div class="card"><h3>🚦 艱苦哨連續統計</h3><div id="nightSummaryBox"></div></div>
 
  <div class="card">
   <h3>📤 輸出／分享</h3>
@@ -495,9 +565,9 @@ main{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.35</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.35</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.36</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.36</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.35</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.36</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -564,7 +634,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.35";
+const APP_VERSION="V5.36";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -1369,15 +1439,14 @@ function clearTodaySchedule(){
  $("#validationBox").innerHTML='<div class="notice"><b>🧹 今日哨表已永久清除</b><br>正式勤務、見習勤務及鎖定狀態均已清空，此操作無法復原。</div>';
 }
 function renderNightSummary(){
- const rows=state.people.map(p=>{
-   const todayN=todayNightCount(p.name),sample=currentDay().slots.find(s=>s.person===p.name&&isNight(s));
-   const streak=sample?nightStreakStatus(p.name,sample,sample.id):{after:0};
-   return {name:p.name,night:todayN,total:todayDutyCount(p.name),streak:streak.after};
- }).filter(x=>x.night>0||x.total>0).sort((a,b)=>b.streak-a.streak||b.night-a.night||b.total-a.total||a.name.localeCompare(b.name,"zh-Hant"));
+ const date=$("#scheduleDate")?.value||todayISO();
+ const rows=state.people.map(p=>({name:p.name,streak:hardshipConsecutiveCount(p.name,date)}))
+   .filter(x=>x.streak>0)
+   .sort((a,b)=>b.streak-a.streak||a.name.localeCompare(b.name,"zh-Hant"));
  $("#nightSummaryBox").innerHTML=rows.length?
- '<div class="tablewrap"><table><tr><th>人員</th><th>夜哨</th><th>連續天數</th><th>今日總勤務</th><th>狀態</th></tr>'+
- rows.map(x=>'<tr><td>'+x.name+'</td><td>'+x.night+'</td><td>'+x.streak+'</td><td>'+x.total+'</td><td>'+(x.streak>=4?'🔴 違規':x.streak===3?'🟡 第3天提醒':x.night>=3?'⚠ 本日達上限':'🟢')+'</td></tr>').join("")+
- '</table></div>':'<p class="muted">目前尚無勤務。</p>';
+   '<div class="hardshipSummaryList">'+rows.map(x=>'<div class="hardshipPersonCard"><b>'+x.name+'</b>'+hardshipConsecutiveLamp(x.streak)+'</div>').join("")+'</div>'+
+   '<div class="hardshipLegendNote">🟢 第1次　🟡 連續第2次　🔴 連續第3次；中間一天沒有艱苦哨即歸零。</div>'
+   :'<p class="muted">目前沒有連續艱苦哨紀錄。</p>';
 }
 function renderDailyDutyStats(){
  const rows=state.people.map(p=>{
@@ -1387,7 +1456,7 @@ function renderDailyDutyStats(){
            total:arr.length,night:arr.filter(isNight).length,hard:arr.filter(isHard).length};
  }).filter(x=>x.total>0).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,"zh-Hant"));
  $("#dailyDutyStats").innerHTML=rows.length?
- '<div class="tablewrap"><table><tr><th>人員</th><th>安官</th><th>管制</th><th>門禁</th><th>總勤務</th><th>夜哨</th><th>艱苦哨</th></tr>'+
+ '<div class="tablewrap"><table><tr><th>人員</th><th>安官</th><th>管制</th><th>門禁</th><th>總勤務</th><th>艱苦哨</th></tr>'+
  rows.map(x=>'<tr><td>'+x.name+'</td><td>'+x.ag+'</td><td>'+x.ctrl+'</td><td>'+x.gate+'</td><td><b>'+x.total+'</b></td><td>'+x.night+'</td><td>'+x.hard+'</td></tr>').join("")+
  '</table></div>':'<p class="muted">今日尚未安排勤務。</p>';
 }
@@ -1510,7 +1579,7 @@ function renderPeople(){
  $("#peopleList").innerHTML=filtered.map(({p,i})=>{
    const q=Array.isArray(p.qualifications)?p.qualifications:[],r=personDayRecord(p,dateStr),acts=r.activities||{};
    const pills=q.map(x=>'<span class="qualPill">'+({"安官":"🛡️","管制":"🎛️","門禁":"🚪","EMT":"🩺","戰鬥隊":"⚔️"}[x]||"")+' '+x+'</span>').join("")||'<span class="muted">尚未設定資格</span>';
-   const checks=["安官","管制","門禁","EMT","戰鬥隊"].map(post=>'<label><input type="checkbox" class="qualCheck" data-i="'+i+'" data-post="'+post+'" '+(q.includes(post)?"checked":"")+'> '+post+'</label>').join("");
+   const checks=["安官","管制","門禁","EMT","戰鬥隊"].map(post=>'<label class="dutySelectItem"><input type="checkbox" class="qualCheck" data-i="'+i+'" data-post="'+post+'" '+(q.includes(post)?"checked":"")+'> '+post+'</label>').join("");
    const move=(state.peopleSortMode||"manual")==="manual"?'<button class="moveUp" data-i="'+i+'">↑</button><button class="moveDown" data-i="'+i+'">↓</button>':'';
    const statusExtra=r.status==="受訓"?'<div class="notice" style="margin-top:7px">📘 受訓｜'+(r.trainingNote||"未填備考")+'</div>':
      (r.status==="免哨"?'<div class="notice" style="margin-top:7px">🚫 免哨｜'+(r.exemptReason||"未填原因")+'</div>':'');
@@ -1522,10 +1591,13 @@ function renderPeople(){
    const exemptInput=r.status==="免哨"?'<div style="margin-top:7px"><input class="exemptReason" data-i="'+i+'" value="'+String(r.exemptReason||"").replace(/"/g,"&quot;")+'" placeholder="免哨原因（必填）"></div>':'';
    return '<div class="peopleIdentityCard" data-card-i="'+i+'"><div class="peopleCardTop"><div class="peopleIdentity"><div class="peopleRank">'+(p.rank||"未設定階級")+'</div><div class="peopleName"><span class="peopleGender">'+(p.gender||"—")+'</span>'+p.name+'</div></div>'+
     '<div class="peopleSummary"><span class="statusPill">'+(r.status||"正常")+'</span><div class="qualPills">'+pills+'</div>'+statusExtra+activityTags+'</div></div>'+
-    '<div class="activityButtons"><button class="setPersonActivity" data-i="'+i+'" data-type="range">🎯 打靶'+(acts.range?'（已設定）':'')+'</button><button class="setPersonActivity" data-i="'+i+'" data-type="business">🏢 洽公'+(acts.business?'（已設定）':'')+'</button></div>'+
+
     '<div class="peopleCardActions">'+move+'<button class="togglePerson" data-i="'+i+'">編輯 ▾</button></div>'+
     '<div class="peopleDetails"><div class="peopleEditGrid"><select class="personStatus" data-i="'+i+'">'+["正常","受訓","見習","休假","當日18休假","免哨"].map(x=>'<option '+(r.status===x?'selected':'')+'>'+x+'</option>').join("")+'</select></div>'+
-    '<div class="qualToggleRow">'+checks+'</div>'+trainingInput+exemptInput+'</div></div>';
+    '<div class="dutySelectionTitle">勤務選擇</div><div class="dutySelectionGrid">'+checks+
+    '<button type="button" class="setPersonActivity dutyActivityBtn" data-i="'+i+'" data-type="range">🎯 打靶'+(acts.range?' ✓':'')+'</button>'+
+    '<button type="button" class="setPersonActivity dutyActivityBtn" data-i="'+i+'" data-type="business">🏢 洽公'+(acts.business?' ✓':'')+'</button></div>'+
+    trainingInput+exemptInput+'</div></div>';
  }).join("");
  $$(".togglePerson").forEach(x=>x.onclick=()=>{const c=document.querySelector('[data-card-i="'+x.dataset.i+'"]');c.classList.toggle("open");openPeopleCardName=c.classList.contains("open")?(state.people[+x.dataset.i]?.name||""):"";x.textContent=c.classList.contains("open")?"收合 ▴":"編輯 ▾";});
  if(openPeopleCardName){const oi=state.people.findIndex(p=>p.name===openPeopleCardName),c=document.querySelector('[data-card-i="'+oi+'"]');if(c){c.classList.add("open");const b=c.querySelector(".togglePerson");if(b)b.textContent="收合 ▴";}}
@@ -1714,7 +1786,7 @@ function renderLivePeople(){
      g.leave.push(p.name);leaveNames.add(p.name);return;
    }
    if(p.status==="受訓"){
-     const rr=personDayRecord(p,selectedDate);g.training.push(p.name+(rr.trainingNote?"｜"+rr.trainingNote:"")+"｜"+selectedDate);return;
+     const rr=personDayRecord(p,selectedDate);g.training.push(p.name+"｜"+(rr.trainingNote||"未填備考"));return;
    }
    const rr=personDayRecord(p,selectedDate),acts=rr.activities||{};
    const rangeActive=activityActive(acts.range,v),businessActive=activityActive(acts.business,v);
@@ -1930,9 +2002,30 @@ function renderErrands(){
  });
  $$(".errandLogDel").forEach(x=>x.onclick=()=>{if(!confirm("確定刪除此筆公差紀錄？"))return;snapshot();state.errandLogs=state.errandLogs.filter(l=>l.id!==x.dataset.id);saveState();});
 }
+
+function hardshipConsecutiveCount(name,dateStr){
+ dateStr=dateStr||($("#scheduleDate")?.value||todayISO());
+ let count=0,d=dateStr;
+ for(let i=0;i<3;i++){
+   const day=state.days&&state.days[d];
+   const has=!!(day&&Array.isArray(day.slots)&&day.slots.some(s=>s.person===name&&countsAsHardForPerson(name,s,d)));
+   if(!has)break;
+   count++;
+   d=addDays(d,-1);
+ }
+ return count;
+}
+function hardshipConsecutiveLamp(count){
+ if(count>=3)return '<span class="hardshipLamp red">🔴 第3次</span>';
+ if(count===2)return '<span class="hardshipLamp yellow">🟡 第2次</span>';
+ if(count===1)return '<span class="hardshipLamp green">🟢 第1次</span>';
+ return '<span class="muted">—</span>';
+}
+
 function renderStats(){
  const c=allCounts();
- $("#statsBox").innerHTML='<div class="tablewrap"><table><tr><th>人員</th><th>總哨</th><th>夜哨</th><th>艱苦哨</th></tr>'+state.people.map(p=>'<tr class="personStat" data-name="'+p.name+'"><td>'+p.name+'</td><td>'+(c.total[p.name]||0)+'</td><td>'+(c.night[p.name]||0)+'</td><td>'+(c.hard[p.name]||0)+'</td></tr>').join("")+'</table></div>';
+ const statDate=($("#scheduleDate")?.value||todayISO());
+ $("#statsBox").innerHTML='<div class="tablewrap"><table><tr><th>人員</th><th>總哨</th><th>艱苦哨</th></tr>'+state.people.map(p=>{const streak=hardshipConsecutiveCount(p.name,statDate);return '<tr class="personStat" data-name="'+p.name+'"><td>'+p.name+'</td><td>'+(c.total[p.name]||0)+'</td><td>'+hardshipConsecutiveLamp(streak)+'</td></tr>';}).join("")+'</table></div>';
  const names=validTodayOutingNames(), week=getWeekOutings();
  const pool=state.people.filter(p=>!outingExcluded(p)&&!names.includes(p.name));
  $("#todayOutingPerson").innerHTML='<option value="">選擇人員</option>'+pool.map(p=>'<option>'+p.name+'</option>').join("");
@@ -2417,7 +2510,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=535&refresh="+Date.now()+hash);
+  location.replace(base+"?v=536&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -2607,14 +2700,12 @@ $("#refreshForUpdate").onclick=()=>{
   document.addEventListener("DOMContentLoaded",function(){
     setTimeout(function(){
       installQuickMode();
-      installPie();
       installHardshipPanel();
       installRuleNote();
       installDutyChoiceHint();
       renderHardshipPanel();
-      updatePie();
     },350);
-    setInterval(function(){ updatePie(); renderHardshipPanel(); },3000);
+    setInterval(function(){ renderHardshipPanel(); },3000);
   });
 })();
 </script>
