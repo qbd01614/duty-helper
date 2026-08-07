@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.34</title>
-<link rel="manifest" href="manifest.json?v=534">
+<title>值星小幫手 V5.35</title>
+<link rel="manifest" href="manifest.json?v=535">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -172,7 +172,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 @media(max-width:520px){.page{padding-left:10px;padding-right:10px}.card{padding:12px}.candidateSelectPanel{width:100%!important;max-width:none!important;max-height:90dvh!important;border-radius:20px 20px 0 0!important}.candidateTools{grid-template-columns:repeat(3,1fr)!important}.candidateTools input{grid-column:1/-1!important}.candidateRow{padding:10px!important}button{touch-action:manipulation}}
 
 
-/* ===== V5.34 display recovery ===== */
+/* ===== V5.35 display recovery ===== */
 #peoplePage #allQual,
 #peoplePage #clearAllQual{
   display:none!important;
@@ -195,7 +195,7 @@ nav button.active,.bottomNav button.active,#bottomNav button.active{background:#
 }
 
 
-/* ===== V5.34 restore dashboard + bottom navigation ===== */
+/* ===== V5.35 restore dashboard + bottom navigation ===== */
 
 /* 今日人力儀表板：恢復 2欄 × 3列獨立卡片 */
 #home .hero{
@@ -279,11 +279,59 @@ main{
   #home #dashboard .tile b{font-size:28px!important}
 }
 
+
+/* ===== V5.35 incremental features on stable V5.34 ===== */
+
+/* 快速模式 */
+.quickModeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.quickModeToggle button.active{background:#111827!important;color:#fff!important}
+#v535QuickPanel{display:none}
+#v535QuickPanel.active{display:block}
+.quickPersonRow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eef2f7}
+.quickPersonActions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.quickPersonActions button{min-height:36px!important;padding:7px 10px!important;font-size:12px!important}
+
+/* 即時人力圓餅圖 */
+#v535PieCard{margin-top:12px}
+.v535PieGrid{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.v535PieWrap{position:relative;width:150px;height:150px;margin:auto}
+.v535Pie{width:150px;height:150px;border-radius:50%;background:#e5e7eb}
+.v535Pie:after{content:"";position:absolute;inset:32px;border-radius:50%;background:#fff}
+.v535PieCenter{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.v535PieCenter b{font-size:22px}
+.v535Legend{font-size:12px;line-height:1.9}
+.v535Legend div{display:flex;justify-content:space-between;gap:10px}
+.v535Swatch{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
+
+/* 艱苦哨連續燈號 */
+.v535Hardship{display:inline-flex;align-items:center;gap:6px;font-weight:800}
+.v535Lamp{width:12px;height:12px;border-radius:50%;display:inline-block}
+.v535Lamp.green{background:#22c55e}.v535Lamp.yellow{background:#eab308}.v535Lamp.red{background:#ef4444}
+.v535HardshipBox{display:grid;gap:8px}
+.v535HardshipRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eef2f7}
+.v535HardshipLegend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#64748b;margin-top:8px}
+
+/* 打靶 / 洽公勤務快捷 */
+.v535DutyChoices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.v535DutyChoices button{background:#f8fafc!important;border:1px solid #dfe7f1!important;color:#0f172a!important}
+
+/* 排哨規則：設定供後續排哨使用 */
+.v535RuleNote{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:14px;padding:12px;margin:10px 0;line-height:1.55}
+.v535RuleModes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.v535RuleCard{border:1px solid #dfe7f1;border-radius:16px;padding:12px;background:#fff}
+.v535RuleCard h4{margin:0 0 8px}
+.v535RuleCard .muted{font-size:12px}
+
+@media(max-width:520px){
+ .v535PieGrid{grid-template-columns:1fr}
+ .v535RuleModes{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.34</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.35</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -447,9 +495,9 @@ main{
  <div id="activeDutyRuleInfo" class="notice" style="margin-top:10px"></div>
 </div>
 <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.34</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.34</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.35</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.35</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.34</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.35</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -516,7 +564,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.34";
+const APP_VERSION="V5.35";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -2369,7 +2417,7 @@ async function refreshForUpdate(){
   const base=location.pathname;
   const hash=location.hash||"";
   // 加上時間戳強制避開瀏覽器與 CDN 快取；永久資料仍在 localStorage。
-  location.replace(base+"?v=534&refresh="+Date.now()+hash);
+  location.replace(base+"?v=535&refresh="+Date.now()+hash);
  }catch(err){
   $("#refreshStatus").textContent="⚠️ 更新重新整理失敗："+err.message;
   // 即使快取 API 失敗，仍保底做一般強制重新整理。
@@ -2379,6 +2427,196 @@ async function refreshForUpdate(){
 $("#refreshForUpdate").onclick=()=>{
  if(confirm("確定重新整理並檢查最新版本？\n\n目前資料會先儲存，不會執行清除。"))refreshForUpdate();
 };
+</script>
+<script>
+(function(){
+  function dateAdd(s,n){
+    var d=new Date(s+"T12:00:00"); d.setDate(d.getDate()+n);
+    return d.toISOString().slice(0,10);
+  }
+
+  function dayHasHardship(name,dateStr){
+    try{
+      var day=state.days && state.days[dateStr];
+      if(!day || !Array.isArray(day.slots)) return false;
+      return day.slots.some(function(s){
+        return s && s.person===name && typeof countsAsHardForPerson==="function" && countsAsHardForPerson(name,s,dateStr);
+      });
+    }catch(e){return false}
+  }
+
+  function hardshipStreak(name,dateStr){
+    var n=0,d=dateStr;
+    for(var i=0;i<3;i++){
+      if(!dayHasHardship(name,d)) break;
+      n++; d=dateAdd(d,-1);
+    }
+    return n;
+  }
+
+  function hardshipHTML(n){
+    if(n>=3)return '<span class="v535Hardship"><i class="v535Lamp red"></i>連續3次</span>';
+    if(n===2)return '<span class="v535Hardship"><i class="v535Lamp yellow"></i>連續2次</span>';
+    if(n===1)return '<span class="v535Hardship"><i class="v535Lamp green"></i>1次</span>';
+    return '<span class="muted">—</span>';
+  }
+
+  function installHardshipPanel(){
+    var stats=document.getElementById("statsBox");
+    if(!stats || document.getElementById("v535HardshipPanel")) return;
+    var panel=document.createElement("div");
+    panel.id="v535HardshipPanel";
+    panel.className="card";
+    panel.innerHTML='<h3>🚦 艱苦哨連續燈號</h3><div class="v535HardshipLegend"><span>🟢 1次</span><span>🟡 連續2次</span><span>🔴 連續3次</span></div><div id="v535HardshipList" class="v535HardshipBox"></div>';
+    stats.parentNode.appendChild(panel);
+  }
+
+  function renderHardshipPanel(){
+    var box=document.getElementById("v535HardshipList");
+    if(!box) return;
+    var d=(document.getElementById("scheduleDate")||{}).value || (typeof todayISO==="function"?todayISO():"");
+    box.innerHTML="";
+    (state.people||[]).forEach(function(p){
+      var n=hardshipStreak(p.name,d);
+      var row=document.createElement("div");
+      row.className="v535HardshipRow";
+      row.innerHTML='<b>'+p.name+'</b>'+hardshipHTML(n);
+      box.appendChild(row);
+    });
+  }
+
+  function installQuickMode(){
+    var peopleList=document.getElementById("peopleList");
+    if(!peopleList || document.getElementById("v535QuickToggle")) return;
+    var toggle=document.createElement("div");
+    toggle.id="v535QuickToggle";
+    toggle.className="quickModeToggle";
+    toggle.innerHTML='<button type="button" id="v535DetailBtn" class="active">詳細模式</button><button type="button" id="v535QuickBtn">⚡ 快速模式</button>';
+    peopleList.parentNode.insertBefore(toggle,peopleList);
+
+    var panel=document.createElement("div");
+    panel.id="v535QuickPanel";
+    peopleList.parentNode.insertBefore(panel,peopleList.nextSibling);
+
+    function renderQuick(){
+      var date=(document.getElementById("peopleStatusDate")||{}).value || (typeof todayISO==="function"?todayISO():"");
+      panel.innerHTML="";
+      (state.people||[]).forEach(function(p){
+        var rec=typeof personDayRecord==="function"?personDayRecord(p,date):{status:p.status||"正常",activities:{}};
+        var row=document.createElement("div");
+        row.className="quickPersonRow";
+        row.innerHTML='<div><b>'+p.name+'</b><div class="muted">'+(rec.status||"正常")+'</div></div><div></div><div class="quickPersonActions"></div>';
+        var actions=row.querySelector(".quickPersonActions");
+        ["正常","休假","受訓","打靶","洽公"].forEach(function(st){
+          var b=document.createElement("button"); b.type="button"; b.textContent=st;
+          b.addEventListener("click",function(){
+            if(typeof snapshot==="function") snapshot();
+            var cur=typeof personDayRecord==="function"?personDayRecord(p,date):{activities:{}};
+            if(st==="打靶"){
+              var a=Object.assign({},cur.activities||{});
+              a.range={start:"08:00",end:"12:00",reason:""};
+              setPersonDayRecord(p,date,{status:"正常",activities:a});
+            }else if(st==="洽公"){
+              var a2=Object.assign({},cur.activities||{});
+              a2.business={start:"08:00",end:"17:00",reason:""};
+              setPersonDayRecord(p,date,{status:"正常",activities:a2});
+            }else{
+              setPersonDayRecord(p,date,{status:st});
+            }
+            if(typeof saveState==="function") saveState();
+            renderQuick();
+          });
+          actions.appendChild(b);
+        });
+        panel.appendChild(row);
+      });
+    }
+
+    document.getElementById("v535DetailBtn").addEventListener("click",function(){
+      this.classList.add("active"); document.getElementById("v535QuickBtn").classList.remove("active");
+      peopleList.style.display=""; panel.classList.remove("active");
+    });
+    document.getElementById("v535QuickBtn").addEventListener("click",function(){
+      this.classList.add("active"); document.getElementById("v535DetailBtn").classList.remove("active");
+      peopleList.style.display="none"; panel.classList.add("active"); renderQuick();
+    });
+  }
+
+  function installPie(){
+    var live=document.getElementById("livePeopleBox");
+    if(!live || document.getElementById("v535PieCard")) return;
+    var card=document.createElement("div");
+    card.id="v535PieCard";
+    card.className="card";
+    card.innerHTML='<h3>📊 即時人力分布</h3><div class="v535PieGrid"><div class="v535PieWrap"><div id="v535Pie" class="v535Pie"></div><div class="v535PieCenter"><span class="muted">應到</span><b id="v535PieTotal">0人</b></div></div><div id="v535PieLegend" class="v535Legend"></div></div>';
+    live.parentNode.insertBefore(card,live.nextSibling);
+  }
+
+  function updatePie(){
+    var pie=document.getElementById("v535Pie"), legend=document.getElementById("v535PieLegend"), totalEl=document.getElementById("v535PieTotal");
+    if(!pie||!legend||!totalEl) return;
+    // Read values already rendered by the app when possible
+    var txt=(document.getElementById("livePeopleBox")||{}).innerText || "";
+    function pick(label){
+      var m=txt.match(new RegExp(label+"[^0-9]*(\\d+)"));
+      return m?Number(m[1]):0;
+    }
+    var rows=[
+      ["勤務",pick("勤務"),"#1677ff"],
+      ["公差",pick("公差"),"#a855f7"],
+      ["受訓",pick("受訓"),"#22c55e"],
+      ["休假",pick("休假"),"#f97316"],
+      ["補休",pick("補休"),"#06b6d4"],
+      ["實到",pick("實到"),"#94a3b8"]
+    ];
+    var due=pick("應到");
+    var sum=rows.reduce(function(a,r){return a+r[1]},0);
+    var base=sum||1,start=0,parts=[];
+    rows.forEach(function(r){
+      var end=start+r[1]/base*100; parts.push(r[2]+" "+start+"% "+end+"%"); start=end;
+    });
+    pie.style.background="conic-gradient("+parts.join(",")+")";
+    totalEl.textContent=due+"人";
+    legend.innerHTML=rows.map(function(r){
+      return '<div><span><i class="v535Swatch" style="background:'+r[2]+'"></i>'+r[0]+'</span><b>'+r[1]+'人</b></div>';
+    }).join("");
+  }
+
+  function installRuleNote(){
+    var save=document.getElementById("saveDutyRules");
+    if(!save || document.getElementById("v535RuleNote")) return;
+    var n=document.createElement("div");
+    n.id="v535RuleNote";
+    n.className="v535RuleNote";
+    n.textContent="這裡只負責設定排哨規則。後續執行智慧排哨時，系統會依各哨別資格人數自動套用「一般休息」或「人力充足休息」，不需要另外選模式。";
+    save.parentNode.parentNode.insertBefore(n,save.parentNode);
+  }
+
+  function installDutyChoiceHint(){
+    // Add a lightweight explanation near people page without altering existing core form structure.
+    var card=document.querySelector("#peoplePage .card");
+    if(!card || document.getElementById("v535DutyHint")) return;
+    var d=document.createElement("div");
+    d.id="v535DutyHint";
+    d.className="notice";
+    d.style.marginTop="10px";
+    d.textContent="⚡ 快速模式可直接設定正常、休假、受訓、打靶、洽公；打靶與洽公視為勤務時段，會依時間避免排哨衝突。";
+    card.insertBefore(d,document.getElementById("peopleList"));
+  }
+
+  document.addEventListener("DOMContentLoaded",function(){
+    setTimeout(function(){
+      installQuickMode();
+      installPie();
+      installHardshipPanel();
+      installRuleNote();
+      installDutyChoiceHint();
+      renderHardshipPanel();
+      updatePie();
+    },350);
+    setInterval(function(){ updatePie(); renderHardshipPanel(); },3000);
+  });
+})();
 </script>
 </body>
 </html>
