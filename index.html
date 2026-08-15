@@ -1251,6 +1251,47 @@ input,textarea,select,[contenteditable="true"]{
  #outingPage .outingAction button{width:100%!important}
 }
 
+
+/* ===== V5.61 外散專區日期 / 取消 / 週紀錄 ===== */
+#outingPage .outingDateRow{
+ display:grid!important;
+ grid-template-columns:auto minmax(0,1fr) auto!important;
+ align-items:center!important;
+ gap:8px!important;
+ margin-top:14px!important;
+}
+#outingPage .outingDateRow input{
+ min-height:44px!important;
+}
+#outingPage .outingWeekControls{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:8px!important;
+ margin:10px 0 12px!important;
+}
+#outingPage .outingWeekControls button{
+ min-height:40px!important;
+}
+#outingPage .outingCancelBtn{
+ background:#fff!important;
+ color:#b42318!important;
+ border:1px solid #f1b4ae!important;
+}
+#outingPage .outingReadonlyCard{
+ grid-template-columns:1fr!important;
+}
+#outingPage .outingHistoryRow{
+ align-items:center!important;
+}
+@media(max-width:520px){
+ #outingPage .outingDateRow{
+  grid-template-columns:1fr auto!important;
+ }
+ #outingPage .outingDateRow label{
+  grid-column:1 / -1!important;
+ }
+}
+
 </style>
 </head>
 <body>
@@ -1434,7 +1475,8 @@ input,textarea,select,[contenteditable="true"]{
  <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
  <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.60</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.60</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.60</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
+  <b>V5.61</b><br>外散專區新增日期選擇；上半部新增「已外散」區，可對選錯的人員使用「取消登記」；下方在營人員維持純顯示；外散紀錄改為顯示所選日期對應的當週紀錄，並提供上一週／本週／下一週選擇鍵。<br><br>
+<b>V5.60</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
   <b>V5.18.7</b><br>修正 iPhone 三層固定版面。<br><br>
@@ -1470,23 +1512,31 @@ input,textarea,select,[contenteditable="true"]{
  <div class="liveGroup"><h4>上午 EMT</h4><div class="row"><input id="emtAmStart" type="time" value="08:00"><span>～</span><input id="emtAmEnd" type="time" value="12:00"><select id="emtAmPerson"></select><button id="saveEmtAm">儲存</button></div></div>
  <div class="liveGroup"><h4>下午 EMT</h4><div class="row"><input id="emtPmStart" type="time" value="13:00"><span>～</span><input id="emtPmEnd" type="time" value="17:00"><select id="emtPmPerson"></select><button id="saveEmtPm">儲存</button></div></div>
  <div class="liveGroup"><h4>緊急醫療小組 EMT｜整日</h4><div class="row"><select id="emtEmergencyPerson"></select><button id="saveEmtEmergency">儲存整日 EMT</button></div></div><div id="emtAssignmentList"></div></div>
-</section><section id="outingPage" class="page">
+</section>
+<section id="outingPage" class="page">
  <div class="card outingHero">
   <div class="row" style="justify-content:space-between;align-items:flex-start">
    <div>
     <button class="backMore">← 返回更多</button>
     <h2 style="margin:10px 0 4px">外散專區</h2>
-    <p class="muted" style="margin:0">自動整理今日符合外散資格的人員與外散狀態。</p>
+    <p class="muted" style="margin:0">依選擇日期整理可外散、已外散與在營人員。</p>
    </div>
   </div>
+
+  <div class="outingDateRow">
+   <label for="outingViewDate"><b>日期</b></label>
+   <input id="outingViewDate" type="date">
+   <button id="outingTodayBtn">今天</button>
+  </div>
+
   <div id="outingSummary" class="outingSummary"></div>
  </div>
 
  <div class="card">
   <div class="outingSectionTitle">
    <div>
-    <h3>今日可外散</h3>
-    
+    <h3>可外散</h3>
+    <div class="muted">只顯示當日在營且符合外散資格的人員。</div>
    </div>
   </div>
   <div id="availableOutingList" class="outingPeopleList"></div>
@@ -1495,8 +1545,18 @@ input,textarea,select,[contenteditable="true"]{
  <div class="card">
   <div class="outingSectionTitle">
    <div>
-    <h3>今日在營人員</h3>
-    <div class="muted">列出全部當日在營人員與外散狀態。</div>
+    <h3>已外散</h3>
+    <div class="muted">若登記錯人，可在這裡取消登記。</div>
+   </div>
+  </div>
+  <div id="todayOutingRegisteredList" class="outingPeopleList"></div>
+ </div>
+
+ <div class="card">
+  <div class="outingSectionTitle">
+   <div>
+    <h3>在營人員</h3>
+    <div class="muted">純顯示，不提供修改。</div>
    </div>
   </div>
 
@@ -1511,7 +1571,19 @@ input,textarea,select,[contenteditable="true"]{
  </div>
 
  <div class="card">
-  <h3>外散紀錄</h3>
+  <div class="outingSectionTitle">
+   <div>
+    <h3>當週外散紀錄</h3>
+    <div id="outingWeekLabel" class="muted"></div>
+   </div>
+  </div>
+
+  <div class="outingWeekControls">
+   <button id="outingPrevWeek">上一週</button>
+   <button id="outingThisWeek">本週</button>
+   <button id="outingNextWeek">下一週</button>
+  </div>
+
   <div id="outingHistoryList"></div>
  </div>
 </section>
@@ -3082,10 +3154,26 @@ function outingPersonState(person,dateStr){
  return {person,rec,status,inCamp,conflicts,alreadyOut,available};
 }
 
+let outingWeekOffset=0;
+
+function outingSelectedDate(){
+ return $("#outingViewDate")?.value || currentDate();
+}
+
+function outingWeekRangeFromDate(dateStr,offset=0){
+ const base=new Date(dateStr+"T00:00:00");
+ const day=(base.getDay()+6)%7;
+ const mon=new Date(base);
+ mon.setDate(base.getDate()-day+(offset*7));
+ const sun=new Date(mon);
+ sun.setDate(mon.getDate()+6);
+ return [todayISO(mon),todayISO(sun)];
+}
+
 function renderOutingPage(){
  if(!$("#outingSummary"))return;
 
- const dateStr=currentDate();
+ const dateStr=outingSelectedDate();
  const rows=state.people.map(p=>outingPersonState(p,dateStr)).filter(x=>x.inCamp);
  const available=rows.filter(x=>x.available);
  const out=rows.filter(x=>x.alreadyOut);
@@ -3098,25 +3186,31 @@ function renderOutingPage(){
   ["未外散",notout.length]
  ].map(([label,count])=>'<div class="outingSummaryCard"><span>'+label+'</span><b>'+count+'</b></div>').join("");
 
- // 上半部：只顯示符合資格者，可直接登記外散；不顯示 17:00–21:00 說明文字。
- const availableCard=x=>{
-  return '<div class="outingPersonCard">'+
+ const availableCard=x=>
+  '<div class="outingPersonCard">'+
    '<div class="outingPersonMain"><div><span class="outingPersonName">'+x.person.name+'</span><span class="outingStatus available">未外散</span></div></div>'+
-   '<div class="outingAction"><button class="outingAddBtn primary" data-name="'+x.person.name+'">登記外散</button></div></div>';
- };
+   '<div class="outingAction"><button class="outingAddBtn primary" data-name="'+x.person.name+'">登記外散</button></div>'+
+  '</div>';
 
  $("#availableOutingList").innerHTML=available.length
   ? available.map(availableCard).join("")
   : '<div class="outingEmpty">目前沒有符合條件的可外散人員。</div>';
 
- // 下半部：純顯示，不提供登記或取消操作。
+ const registeredCard=x=>
+  '<div class="outingPersonCard">'+
+   '<div class="outingPersonMain"><div><span class="outingPersonName">'+x.person.name+'</span><span class="outingStatus out">已外散</span></div></div>'+
+   '<div class="outingAction"><button class="outingCancelBtn" data-name="'+x.person.name+'">取消登記</button></div>'+
+  '</div>';
+
+ $("#todayOutingRegisteredList").innerHTML=out.length
+  ? out.map(registeredCard).join("")
+  : '<div class="outingEmpty">此日期尚無已外散人員。</div>';
+
  const readonlyCard=x=>{
   let label="",cls="",detail="";
   if(x.alreadyOut){label="已外散";cls="out";detail="已完成外散登記";}
   else if(x.available){label="未外散";cls="available";detail="符合外散資格";}
-  else if(x.conflicts.length){label="未外散";cls="blocked";detail="目前不符合外散資格";}
-  else{label="未外散";cls="notout";detail="目前不符合外散資格";}
-
+  else{label="未外散";cls="blocked";detail="目前不符合外散資格";}
   return '<div class="outingPersonCard outingReadonlyCard">'+
    '<div class="outingPersonMain"><div><span class="outingPersonName">'+x.person.name+'</span><span class="outingStatus '+cls+'">'+label+'</span></div>'+
    '<div class="outingDutyText">'+detail+'</div></div></div>';
@@ -3148,10 +3242,27 @@ function renderOutingPage(){
   dashboard();
  });
 
- const hist=(state.outings||[]).slice().sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+ $$(".outingCancelBtn").forEach(btn=>btn.onclick=()=>{
+  const name=btn.dataset.name;
+  if(!confirm("確定取消 "+name+" 的外散登記？"))return;
+  snapshot();
+  state.outings=(state.outings||[]).filter(x=>!(x.person===name&&x.date===dateStr));
+  saveState(false);
+  renderOutingPage();
+  dashboard();
+ });
+
+ const [weekStart,weekEnd]=outingWeekRangeFromDate(dateStr,outingWeekOffset);
+ $("#outingWeekLabel").textContent=weekStart+" ～ "+weekEnd;
+
+ const hist=(state.outings||[])
+   .filter(x=>x.date>=weekStart&&x.date<=weekEnd)
+   .slice()
+   .sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.person||"").localeCompare(String(b.person||""),"zh-Hant"));
+
  $("#outingHistoryList").innerHTML=hist.length
-  ? hist.map(x=>'<div class="item"><span><b>'+x.person+'</b><div class="muted">'+x.date+'</div></span></div>').join("")
-  : '<div class="muted">尚無外散紀錄。</div>';
+  ? hist.map(x=>'<div class="item outingHistoryRow"><span><b>'+x.date+'</b>｜'+x.person+'</span><span class="outingStatus out">已外散</span></div>').join("")
+  : '<div class="muted">此週尚無外散紀錄。</div>';
 }
 
 function renderStats(){
@@ -3338,6 +3449,16 @@ function openPage(id){
 }
 $$(".moreLaunch").forEach(b=>b.onclick=()=>{openPage(b.dataset.subpage);if(b.dataset.subpage==="personnelChangePage")renderPersonnelChange();if(b.dataset.subpage==="outingPage")renderOutingPage();});
 $$(".backMore").forEach(b=>b.onclick=()=>openPage("more"));
+
+if($("#outingViewDate")){
+ $("#outingViewDate").value=currentDate();
+ $("#outingViewDate").onchange=()=>{outingWeekOffset=0;renderOutingPage();};
+}
+if($("#outingTodayBtn"))$("#outingTodayBtn").onclick=()=>{$("#outingViewDate").value=currentDate();outingWeekOffset=0;renderOutingPage();};
+if($("#outingPrevWeek"))$("#outingPrevWeek").onclick=()=>{outingWeekOffset--;renderOutingPage();};
+if($("#outingThisWeek"))$("#outingThisWeek").onclick=()=>{outingWeekOffset=0;renderOutingPage();};
+if($("#outingNextWeek"))$("#outingNextWeek").onclick=()=>{outingWeekOffset++;renderOutingPage();};
+
 $$(".bottom button").forEach(b=>b.onclick=()=>{document.body.classList.remove("activityEditorOpen");openPage(b.dataset.page);});
 $("#scheduleDate").onchange=()=>{renderAll();if($("#prevSyncStatus"))$("#prevSyncStatus").textContent="";};
 $("#personSearch").oninput=()=>renderPeople();
