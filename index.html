@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>值星小幫手 V5.67</title>
-<link rel="manifest" href="manifest.json?v=567">
+<title>值星小幫手 V5.69</title>
+<link rel="manifest" href="manifest.json?v=569">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--bad:#b91c1c;--warn:#92400e;--ok:#166534}
 *{box-sizing:border-box}
@@ -303,13 +303,6 @@ main{
 .v535Legend div{display:flex;justify-content:space-between;gap:10px}
 .v535Swatch{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
 
-/* 艱苦哨連續燈號 */
-.v535Hardship{display:inline-flex;align-items:center;gap:6px;font-weight:800}
-.v535Lamp{width:12px;height:12px;border-radius:50%;display:inline-block}
-.v535Lamp.green{background:#22c55e}.v535Lamp.yellow{background:#eab308}.v535Lamp.red{background:#ef4444}
-.v535HardshipBox{display:grid;gap:8px}
-.v535HardshipRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eef2f7}
-.v535HardshipLegend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#64748b;margin-top:8px}
 
 /* 打靶 / 洽公勤務快捷 */
 .v535DutyChoices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
@@ -1525,7 +1518,7 @@ input,textarea,select,[contenteditable="true"]{
 </head>
 <body>
 <header>
- <div><h1>🪖 值星小幫手 <span class="version">V5.67</span></h1><small id="clock"></small></div>
+ <div><h1>🪖 值星小幫手 <span class="version">V5.69</span></h1><small id="clock"></small></div>
  <div><button id="undoBtn">↩️</button><button id="redoBtn">↪️</button></div>
 </header>
 
@@ -1710,8 +1703,9 @@ input,textarea,select,[contenteditable="true"]{
 <section id="settingsPage" class="page">
  <div class="card"><div class="row"><button class="backMore">← 返回更多</button><h2 style="margin:0">⚙️ 設定專區</h2></div></div>
  <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
- <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.67</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.67</div>
+ <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.69</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.69</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
+<b>V5.69</b><br>修正艱苦哨燈號顯示範圍：統計專區不顯示艱苦哨燈號；排哨專區保留艱苦哨連續燈號與綠／黃／紅提示。<br><br>
   <b>V5.67</b><br>外散專區新增日期選擇；上半部新增「已外散」區，可對選錯的人員使用「取消登記」；下方在營人員維持純顯示；外散紀錄改為顯示所選日期對應的當週紀錄，並提供上一週／本週／下一週選擇鍵。<br><br>
 <b>V5.67</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
@@ -1848,7 +1842,7 @@ function hardshipPersonCard(name,count){const x=hardshipLampInfo(count);return '
 function showToast(message,type="success"){const el=document.getElementById("appToast");if(!el)return;el.textContent=message;el.className="show "+type;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>{el.className="";},2200);}
 
 "use strict";
-const APP_VERSION="V5.67";
+const APP_VERSION="V5.69";
 const STORAGE_KEY="dutyHelperPermanent";
 const LAST_BACKUP_KEY="dutyHelperLastBackupAt";
 const LEGACY_KEYS=["dutyHelperV32","dutyHelperV3","dutyHelperV31","dutyHelperV2","dutyHelperV21"];
@@ -4103,30 +4097,6 @@ $("#refreshForUpdate").onclick=()=>{
     return '<span class="muted">—</span>';
   }
 
-  function installHardshipPanel(){
-    var stats=document.getElementById("statsBox");
-    if(!stats || document.getElementById("v535HardshipPanel")) return;
-    var panel=document.createElement("div");
-    panel.id="v535HardshipPanel";
-    panel.className="card";
-    panel.innerHTML='<h3>🚦 艱苦哨連續燈號</h3><div class="v535HardshipLegend"><span>🟢 1次</span><span>🟡 連續2次</span><span>🔴 連續3次</span></div><div id="v535HardshipList" class="v535HardshipBox"></div>';
-    stats.parentNode.appendChild(panel);
-  }
-
-  function renderHardshipPanel(){
-    var box=document.getElementById("v535HardshipList");
-    if(!box) return;
-    var d=(document.getElementById("scheduleDate")||{}).value || (typeof todayISO==="function"?todayISO():"");
-    box.innerHTML="";
-    (state.people||[]).forEach(function(p){
-      var n=hardshipStreak(p.name,d);
-      var row=document.createElement("div");
-      row.className="v535HardshipRow";
-      row.innerHTML='<b>'+p.name+'</b>'+hardshipHTML(n);
-      box.appendChild(row);
-    });
-  }
-
   function installQuickMode(){
     var peopleList=document.getElementById("peopleList");
     if(!peopleList || document.getElementById("v535QuickToggle")) return;
@@ -4249,12 +4219,9 @@ $("#refreshForUpdate").onclick=()=>{
   document.addEventListener("DOMContentLoaded",function(){
     setTimeout(function(){
       installQuickMode();
-      installHardshipPanel();
       installRuleNote();
       installDutyChoiceHint();
-      renderHardshipPanel();
     },350);
-    setInterval(function(){ renderHardshipPanel(); },3000);
   });
 })();
 </script>
