@@ -1252,7 +1252,7 @@ input,textarea,select,[contenteditable="true"]{
 }
 
 
-/* ===== V5.63 外散專區日期 / 取消 / 週紀錄 ===== */
+/* ===== V5.64 外散專區日期 / 取消 / 週紀錄 ===== */
 #outingPage .outingDateRow{
  display:grid!important;
  grid-template-columns:auto minmax(0,1fr) auto!important;
@@ -1293,13 +1293,13 @@ input,textarea,select,[contenteditable="true"]{
 }
 
 
-/* V5.63 外散日期選擇精簡版 */
+/* V5.64 外散日期選擇精簡版 */
 #outingPage .outingDateRow{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;margin-top:14px!important}
 #outingPage .outingDateRow label{display:block!important;grid-column:auto!important;margin:0!important}
 #outingPage .outingDateRow input[type="date"]{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;box-sizing:border-box!important;min-height:46px!important;margin:0!important}
 
 
-/* ===== V5.63 外散日期欄位對齊修正 ===== */
+/* ===== V5.64 外散日期欄位對齊修正 ===== */
 #outingPage .outingDateRow{
   display:block!important;
   width:100%!important;
@@ -1326,6 +1326,35 @@ input,textarea,select,[contenteditable="true"]{
 }
 #outingPage .outingHero{
   overflow:hidden!important;
+}
+
+
+/* ===== V5.64 外散日期欄位再次修正 ===== */
+#outingPage .outingDateRow{
+  display:block!important;
+  width:100%!important;
+  margin:14px 0 0!important;
+  padding:0 12px!important;
+  box-sizing:border-box!important;
+}
+#outingPage .outingDateRow label{
+  display:block!important;
+  margin:0 0 8px!important;
+}
+#outingPage .outingDateRow input[type="date"]{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0 auto!important;
+  padding:0 12px!important;
+  box-sizing:border-box!important;
+  border-radius:14px!important;
+  text-align:center!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
 }
 
 </style>
@@ -1511,7 +1540,7 @@ input,textarea,select,[contenteditable="true"]{
  <div class="card"><h2>🗄️ 備份與還原</h2><p class="muted">完整備份永久資料。</p><div class="row"><button id="backupBtn">📦 匯出完整備份</button><button id="restoreBtn">📥 匯入還原</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div><div id="lastBackupTime" class="notice" style="margin-top:10px">最近備份：尚無紀錄</div><div id="backupStatus" class="muted" style="margin-top:8px"></div></div>
  <div class="card"><h2>🔄 版本更新</h2><div class="row"><span class="muted">目前版本：V5.60</span><button id="refreshForUpdate">🔄 重新整理／檢查更新</button></div><div id="refreshStatus" class="muted" style="margin-top:8px">目前版本：V5.60</div>
   <div class="notice" style="margin-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch"><b>歷次版本更新資訊</b><hr>
-  <b>V5.63</b><br>外散專區新增日期選擇；上半部新增「已外散」區，可對選錯的人員使用「取消登記」；下方在營人員維持純顯示；外散紀錄改為顯示所選日期對應的當週紀錄，並提供上一週／本週／下一週選擇鍵。<br><br>
+  <b>V5.64</b><br>外散專區新增日期選擇；上半部新增「已外散」區，可對選錯的人員使用「取消登記」；下方在營人員維持純顯示；外散紀錄改為顯示所選日期對應的當週紀錄，並提供上一週／本週／下一週選擇鍵。<br><br>
 <b>V5.60</b><br>顯示修復版：修正 V5.32 因刪除原本按鈕 DOM，導致既有 JavaScript 在初始化時中斷的問題；改為保留按鈕節點但隱藏，確保首頁、人員、勤務控制台與即時統計正常渲染。另修正底部導覽 HTML 邊界。<br><br>
 <b>V5.27</b><br>更多新增待辦事項與自動交接事項摘要；待辦取消預定時間；摘要新增一鍵複製；版本紀錄改為下方常駐小視窗。<br><br>
   <b>V5.19</b><br>設定專區精簡；備份顯示最近備份時間。<br><br>
